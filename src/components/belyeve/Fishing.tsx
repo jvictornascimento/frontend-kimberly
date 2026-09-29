@@ -65,10 +65,10 @@ export function Fishing() {
 
         <div className="mt-14 grid grid-cols-5 gap-3 sm:gap-5">
           <Reveal className="col-span-3">
-            <MediaImage item={MEDIA.packets} ratio="5/4" />
+            <MediaImage item={MEDIA.packets} ratio="1/1" className="h-full" />
           </Reveal>
           <Reveal delay={120} className="col-span-2">
-            <MediaImage item={MEDIA.gifts} ratio="5/6" className="h-full" />
+            <MediaImage item={MEDIA.gifts} ratio="2/3" className="h-full w-full" />
           </Reveal>
         </div>
 

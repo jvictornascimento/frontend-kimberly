@@ -18,10 +18,10 @@ export function HowItWorks() {
             <span aria-hidden className="absolute top-3 bottom-3 left-[1.15rem] w-px bg-gold/50" />
             {HOW_IT_WORKS_STEPS.map((step, i) => (
               <li key={step.title} className="relative pb-10 pl-14 last:pb-0">
+                <span className="font-display absolute top-0 left-0 flex h-[2.3rem] w-[2.3rem] items-center justify-center rounded-full border border-gold bg-background text-lg text-gold-deep">
+                  {String(i + 1).padStart(2, "0")}
+                </span>
                 <Reveal delay={i * 80}>
-                  <span className="font-display absolute top-0 left-0 flex h-[2.3rem] w-[2.3rem] items-center justify-center rounded-full border border-gold bg-background text-lg text-gold-deep">
-                    {String(i + 1).padStart(2, "0")}
-                  </span>
                   <h3 className="font-display pt-1 text-2xl leading-tight">{step.title}</h3>
                   <p className="mt-2 text-sm leading-relaxed text-muted-foreground">{step.body}</p>
                   {step.detail && (
