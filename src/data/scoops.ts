@@ -11,8 +11,19 @@ export interface ScoopOption {
   quantity: 1 | 2 | 3;
   id: string;
   label: string;
-  /** Preenchido futuramente pelo backend. Nunca inventar valores. */
+  /**
+   * Preço cheio (anterior) em centavos. Nunca inventar valores —
+   * null exibe "Valor em breve".
+   */
   priceCents: number | null;
+  /** Preço promocional em centavos (opcional). Quando presente, vira o preço principal. */
+  promoPriceCents: number | null;
+  /** Número máximo de parcelas sem juros (opcional). */
+  installments: number | null;
+  /** Badge configurável, ex.: "MAIS ESCOLHIDO". null = sem badge. */
+  badge: string | null;
+  /** Destaque visual do card. */
+  highlighted?: boolean;
   note?: string;
 }
 
@@ -22,11 +33,67 @@ export const GUARANTEE_PER_SCOOP = {
   gifts: 3,
 } as const;
 
+/**
+ * CONFIGURAÇÃO DE PREÇOS — edite apenas aqui.
+ * Preço por Scoop, economia e parcela são calculados automaticamente.
+ */
 export const SCOOP_OPTIONS: ScoopOption[] = [
-  { id: "scoop-1", quantity: 1, label: "1 Scoop" },
-  { id: "scoop-2", quantity: 2, label: "2 Scoops" },
-  { id: "scoop-3", quantity: 3, label: "3 Scoops" },
-].map((o) => ({ ...o, priceCents: null })) as ScoopOption[];
+  {
+    id: "scoop-1",
+    quantity: 1,
+    label: "1 Scoop",
+    priceCents: null,
+    promoPriceCents: null,
+    installments: null,
+    badge: null,
+  },
+  {
+    id: "scoop-2",
+    quantity: 2,
+    label: "2 Scoops",
+    priceCents: null,
+    promoPriceCents: null,
+    installments: null,
+    badge: "MAIS ESCOLHIDO",
+    highlighted: true,
+  },
+  {
+    id: "scoop-3",
+    quantity: 3,
+    label: "3 Scoops",
+    priceCents: null,
+    promoPriceCents: null,
+    installments: null,
+    badge: "MELHOR VALOR",
+  },
+];
+
+/** Resolve os números exibidos no card a partir da configuração. */
+export function pricingFor(option: ScoopOption) {
+  const total = option.promoPriceCents ?? option.priceCents;
+  const previous =
+    option.promoPriceCents != null && option.priceCents != null && option.priceCents > option.promoPriceCents
+      ? option.priceCents
+      : null;
+  return {
+    total,
+    previous,
+    savings: previous != null && total != null ? previous - total : null,
+    perScoop: total != null ? Math.round(total / option.quantity) : null,
+    installment:
+      total != null && option.installments && option.installments > 1
+        ? { count: option.installments, value: Math.round(total / option.installments) }
+        : null,
+  };
+}
+
+/**
+ * Promoção de lançamento. Data final FIXA (não reinicia em refresh ou deploy).
+ * 10 dias a partir do lançamento: termina em 08/10/2026 às 23:59 (horário de Brasília).
+ * Para desativar, defina LAUNCH_PROMO_ENABLED = false.
+ */
+export const LAUNCH_PROMO_ENABLED = true;
+export const LAUNCH_PROMO_END_DATE = "2026-10-08T23:59:59-03:00";
 
 export const METAL_CATEGORIES: { value: MetalCategory; label: string; description: string }[] = [
   {
