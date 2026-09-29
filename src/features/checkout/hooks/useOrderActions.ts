@@ -3,7 +3,7 @@ import { PAYMENT_STATUS_POLL_MS } from "../config";
 import { toCreateOrderInput } from "../adapters/order.adapter";
 import { createOrder, createPayment, getPaymentStatus } from "../services/checkout.service";
 import { setCheckout, updatePlacedOrder } from "../state/checkout.store";
-import type { CardFormData, CheckoutState, PaymentStatus, PlacedOrder } from "../types";
+import type { CardFormData, CheckoutState, OrderStatus, PlacedOrder } from "../types";
 
 type ActionStatus = "idle" | "pending" | "error";
 
@@ -55,7 +55,7 @@ export function usePayWithCard(placed: PlacedOrder) {
   return { status, pay };
 }
 
-const FINAL_STATUSES: PaymentStatus[] = ["PAID", "PAYMENT_FAILED", "CANCELLED"];
+const FINAL_STATUSES: OrderStatus[] = ["PAID", "PAYMENT_FAILED", "CANCELLED"];
 
 /** Polls the backend for the real payment status. */
 export function usePaymentStatusPolling(placed: PlacedOrder) {

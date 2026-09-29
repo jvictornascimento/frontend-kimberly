@@ -21,7 +21,7 @@ export function PaymentStep({ state, totalCents }: { state: CheckoutState; total
   // Refresh the stored option when values change (e.g. shipping changed the total).
   useEffect(() => {
     if (installments.status !== "success") return;
-    const fresh = installments.data.find((o) => o.installments === installment?.installments) ?? installments.data[0];
+    const fresh = installments.data.find((o) => o.installments === installment?.installments) ?? installments.data[0] ?? null;
     if (JSON.stringify(fresh) !== JSON.stringify(installment)) setCheckout({ installment: fresh });
   }, [installments, installment]);
 

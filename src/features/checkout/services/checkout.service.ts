@@ -90,7 +90,7 @@ export async function createPayment(input: CreatePaymentInput): Promise<Payment>
   await mockDelay(900);
   if (input.method === "pix") return mockPixPayment(input.orderId);
   const options = mockInstallmentOptions(null, MAX_INSTALLMENTS);
-  const installment = options.find((o) => o.installments === input.installments) ?? options[0];
+  const installment = options.find((o) => o.installments === input.installments) ?? options[0]!;
   return mockCardPayment(input.orderId, installment);
 }
 

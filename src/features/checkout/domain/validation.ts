@@ -77,7 +77,7 @@ export function validateCard(card: CardFormData, now = new Date()): FieldErrors<
   if (card.holderName.trim().length < 3) errors.holderName = "Informe o nome como está no cartão.";
   const [mm, yy] = card.expiry.split("/").map(Number);
   const expiresAt = mm && yy ? new Date(2000 + yy, mm, 1) : null;
-  if (!expiresAt || mm < 1 || mm > 12 || expiresAt <= now) errors.expiry = "Validade inválida (MM/AA).";
+  if (!expiresAt || !mm || mm > 12 || expiresAt <= now) errors.expiry = "Validade inválida (MM/AA).";
   if (!/^\d{3,4}$/.test(card.cvv)) errors.cvv = "O CVV tem 3 ou 4 números.";
   return errors;
 }
