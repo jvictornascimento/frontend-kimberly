@@ -22,3 +22,13 @@ export const MEDIA = {
   box: { src: box, alt: "Caixinha de apresentação com papel verde e laço dourado", width: 1024, height: 1280, mock: true },
   gifts: { src: gifts, alt: "Itens de beleza neutros e chaveiro delicado", width: 1024, height: 1024, mock: true },
 } satisfies Record<string, MediaItem>;
+
+/** Vídeos reais das pescas (vertical 9:16). Vazio = seção oculta. */
+export interface ScoopVideo {
+  id: string;
+  src: string;
+  poster?: string;
+  caption?: string;
+}
+
+export const SCOOP_VIDEOS: ScoopVideo[] = [];
