@@ -30,6 +30,14 @@ export function PreferencesFields({ value, onChange }: PreferencesFieldsProps) {
               onSelect={() => onChange({ metal: c.value })}
               title={c.label}
               description={c.description}
+              aside={
+                <img
+                  src={METAL_FLOWERS[c.value]}
+                  alt=""
+                  aria-hidden
+                  className="h-8 w-auto opacity-90"
+                />
+              }
             />
           ))}
         </div>
