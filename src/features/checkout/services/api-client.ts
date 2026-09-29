@@ -26,11 +26,12 @@ export async function apiRequest<T>(
   path: string,
   init: { method?: "GET" | "POST"; body?: unknown } = {},
 ): Promise<T> {
-  const response = await fetch(`${API_BASE_URL}${path}`, {
+  const request: RequestInit = {
     method: init.method ?? "GET",
     headers: { Accept: "application/json", "Content-Type": "application/json" },
-    body: init.body === undefined ? undefined : JSON.stringify(init.body),
-  });
+  };
+  if (init.body !== undefined) request.body = JSON.stringify(init.body);
+  const response = await fetch(`${API_BASE_URL}${path}`, request);
   if (!response.ok) throw new ApiError(response.status, `Request failed with status ${response.status}`);
   return (await response.json()) as T;
 }

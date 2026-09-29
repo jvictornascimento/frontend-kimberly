@@ -9,7 +9,7 @@ interface ShippingOptionsProps {
   selectedId: string | null;
   onSelect: (option: ShippingOption) => void;
   onRetry: () => void;
-  error?: string;
+  error?: string | undefined;
 }
 
 export function ShippingOptions({ state, selectedId, onSelect, onRetry, error }: ShippingOptionsProps) {

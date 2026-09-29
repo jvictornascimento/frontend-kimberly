@@ -6,10 +6,10 @@ interface ChoiceRadioProps {
   checked: boolean;
   onSelect: () => void;
   title: ReactNode;
-  description?: ReactNode;
-  aside?: ReactNode;
+  description?: ReactNode | undefined;
+  aside?: ReactNode | undefined;
   center?: boolean;
-  describedBy?: string;
+  describedBy?: string | undefined;
 }
 
 /** Native radio styled as a tappable option. */

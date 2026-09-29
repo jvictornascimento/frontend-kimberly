@@ -2,7 +2,7 @@ import { SCOOP_OPTIONS, pricingFor } from "@/data/scoops";
 import type { OrderTotals, ScoopPackage, ScoopQuantity, ShippingOption } from "../types";
 
 export function findPackage(quantity: ScoopQuantity): ScoopPackage {
-  return SCOOP_OPTIONS.find((o) => o.quantity === quantity) ?? SCOOP_OPTIONS[0];
+  return SCOOP_OPTIONS.find((o) => o.quantity === quantity) ?? SCOOP_OPTIONS[0]!;
 }
 
 /** Display-only totals. The backend recalculates and is the source of truth. */

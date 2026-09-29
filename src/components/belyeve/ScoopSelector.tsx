@@ -5,6 +5,7 @@ import { LaunchCountdown } from "./LaunchCountdown";
 import { PreferencesFields } from "./PreferencesFields";
 import { cn } from "@/lib/utils";
 import { SCOOP_OPTIONS, formatPrice, guaranteeFor, pricingFor, type ScoopOption } from "@/data/scoops";
+import { findPackage } from "@/features/checkout/domain/pricing";
 import { preferencesError } from "@/features/checkout/domain/validation";
 import { setCheckout, updateSelection, useCheckout } from "@/features/checkout/state/checkout.store";
 
@@ -24,7 +25,7 @@ export function ScoopSelector() {
   }
 
   const guarantee = guaranteeFor(selection.quantity);
-  const selected = SCOOP_OPTIONS.find((o) => o.quantity === selection.quantity) ?? SCOOP_OPTIONS[0];
+  const selected = findPackage(selection.quantity);
   const selectedTotal = formatPrice(pricingFor(selected).total);
   const error = preferencesError(selection);
 

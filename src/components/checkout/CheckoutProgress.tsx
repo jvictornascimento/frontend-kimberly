@@ -15,7 +15,7 @@ export function CheckoutProgress({ current, onSelect }: { current: CheckoutStep;
     <nav aria-label="Etapas do checkout">
       <p className="text-xs text-muted-foreground">
         Etapa {currentIndex + 1} de {CHECKOUT_STEPS.length} ·{" "}
-        <span className="font-medium text-foreground">{CHECKOUT_STEPS[currentIndex].label}</span>
+        <span className="font-medium text-foreground">{CHECKOUT_STEPS[currentIndex]?.label}</span>
       </p>
       <ol className="mt-2 grid grid-cols-5 gap-1.5">
         {CHECKOUT_STEPS.map((step, i) => {

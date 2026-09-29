@@ -6,9 +6,9 @@ interface TextFieldProps extends Omit<InputHTMLAttributes<HTMLInputElement>, "va
   label: string;
   value: string;
   onChange: (value: string) => void;
-  error?: string;
-  hint?: ReactNode;
-  optional?: boolean;
+  error?: string | undefined;
+  hint?: ReactNode | undefined;
+  optional?: boolean | undefined;
 }
 
 export function TextField({ id, label, value, onChange, error, hint, optional, className, ...rest }: TextFieldProps) {
