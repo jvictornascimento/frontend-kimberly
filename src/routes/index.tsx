@@ -6,7 +6,6 @@ import { ScoopSelector } from "@/components/belyeve/ScoopSelector";
 import { Guarantee } from "@/components/belyeve/Guarantee";
 import { HowItWorks } from "@/components/belyeve/HowItWorks";
 import { Fishing } from "@/components/belyeve/Fishing";
-import { VideoShowcase } from "@/components/belyeve/VideoShowcase";
 import { Faq } from "@/components/belyeve/Faq";
 import { InsideScoop } from "@/components/belyeve/InsideScoop";
 import { FinalCta } from "@/components/belyeve/FinalCta";
@@ -39,7 +38,6 @@ function Index() {
       <Guarantee />
       <HowItWorks />
       <Fishing />
-      <VideoShowcase />
       <Faq />
       <InsideScoop />
       <FinalCta />
