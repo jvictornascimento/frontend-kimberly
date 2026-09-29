@@ -11,3 +11,6 @@
 
 ## Estrutura BELYEVE
 - Seções da landing vivem em `src/components/belyeve/` e são compostas em `src/routes/index.tsx`; conteúdo e regras ficam em `src/data/` (scoops.ts, content.ts) para manter apresentação separada de dados e preparar integrações futuras.
+- Checkout vive em `src/features/checkout/` (types, config, services, adapters, mocks, domain, state, hooks) e UI em `src/components/checkout/`; componentes só chamam hooks/services, nunca HTTP direto, para trocar mocks pelo backend BELYEVE sem refazer a UI.
+- Integrações futuras ficam marcadas com `TODO:` somente em `services/checkout.service.ts`; `VITE_API_BASE_URL` vazio = modo mock.
+- Dados de cartão ficam só no estado local do `CardForm`; o store (sessionStorage) nunca guarda dados sensíveis de pagamento.
