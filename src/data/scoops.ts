@@ -99,12 +99,12 @@ export const METAL_CATEGORIES: { value: MetalCategory; label: string; descriptio
   {
     value: "dourado",
     label: "Dourado",
-    description: "Semijoias banhadas a ouro e peças em tom dourado.",
+    description: "Semijoias banhadas a ouro",
   },
   {
     value: "prata",
     label: "Prata",
-    description: "Semijoias banhadas a prata, Prata 925 e inox.",
+    description: "Semijoias banhadas a prata, Prata 925 e inox",
   },
 ];
 
@@ -145,6 +145,8 @@ export interface ScoopOrderDraft {
   metal: MetalCategory | null;
   wearsRings: boolean | null;
   ringSize: string | null;
+  /** Observação opcional: tipo de peça que a cliente não usa. */
+  avoidNote: string;
 }
 
 export const EMPTY_ORDER: ScoopOrderDraft = {
@@ -152,4 +154,12 @@ export const EMPTY_ORDER: ScoopOrderDraft = {
   metal: null,
   wearsRings: null,
   ringSize: null,
+  avoidNote: "",
 };
+
+/**
+ * Tamanhos de anel disponíveis — AINDA NÃO DEFINIDOS pela marca.
+ * Enquanto a lista estiver vazia, a interface mostra um campo livre.
+ * Ex. futuro: ["12", "14", "16", "18", "20"]
+ */
+export const RING_SIZES: string[] = [];
