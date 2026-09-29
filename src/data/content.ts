@@ -31,23 +31,43 @@ export const HOW_IT_WORKS_STEPS: JourneyStep[] = [
 
 export const FAQ_ITEMS = [
   {
-    q: "O que vem garantido em cada Scoop?",
-    a: "No mínimo 2 joias e 3 brindes surpresa por Scoop.",
+    q: "Quantos itens vêm em cada Scoop?",
+    a: "No mínimo 5 itens: 2 joias + 3 brindes surpresa. Dependendo da pesca, podem aparecer pacotinhos extras.",
   },
   {
-    q: "Eu escolho as peças que vou receber?",
-    a: "Não. Você escolhe a categoria Dourado ou Prata e informa sobre o uso de anéis. Quais joias e brindes aparecem é a parte surpresa da experiência.",
+    q: "Posso receber mais de 5 itens?",
+    a: "Pode! A pesca pode revelar itens extras. Eles não são garantidos, mas, se aparecerem, são todos seus.",
   },
   {
-    q: "Quais tipos de joias podem vir?",
-    a: "Semijoias banhadas a ouro, semijoias banhadas a prata, Prata 925 e inox.",
+    q: "Posso escolher minhas joias?",
+    a: "Não, o Scoop é surpresa. Você escolhe só a categoria: Dourado (semijoias banhadas a ouro) ou Prata (semijoias banhadas a prata, Prata 925 e peças em inox).",
   },
   {
-    q: "E os brindes?",
-    a: "Podem incluir skincare, maquiagem, cosméticos, produtos para cuidados das unhas, chaveiros, entre outros.",
+    q: "E se eu não usar anéis?",
+    a: "No pedido você conta se usa anéis. Se não usar, não precisa informar tamanho.",
   },
   {
-    q: "Posso receber mais do que o mínimo?",
-    a: "Sim. A pesca pode resultar em pacotes extras, e os itens extras também são seus.",
+    q: "Posso informar alguma peça que não uso?",
+    a: "Sim. No pedido tem um espaço opcional para isso, por exemplo: \"Não uso pulseiras.\"",
+  },
+  {
+    q: "Quando recebo meu vídeo?",
+    a: "O vídeo do seu Scoop chega pelo WhatsApp informado no pedido em 2 a 5 dias úteis.",
+  },
+  {
+    q: "Quando meu pedido será enviado?",
+    a: "Depois do vídeo e da confirmação pelo WhatsApp, preparamos tudo e despachamos em até 7 dias. Aí você recebe o código de rastreamento.",
+  },
+  {
+    q: "Como funciona o frete?",
+    a: "Em Pedreira/SP a entrega é nossa e gratuita. Para outras cidades, o frete é calculado pelo CEP no checkout.",
+  },
+  {
+    q: "Como posso pagar?",
+    a: "PIX ou cartão de crédito em até 3x. O parcelamento pode ter acréscimo, que aparece antes de você finalizar.",
+  },
+  {
+    q: "Meu vídeo será publicado nas redes sociais?",
+    a: "Só com a sua autorização. No checkout você responde se autoriza ou não a publicação no Instagram e TikTok da BELYEVE — e pode comprar normalmente mesmo sem autorizar.",
   },
 ];

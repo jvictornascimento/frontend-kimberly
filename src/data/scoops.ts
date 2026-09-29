@@ -112,16 +112,16 @@ export const JEWELRY_CATEGORIES = [
   "Semijoias banhadas a ouro",
   "Semijoias banhadas a prata",
   "Prata 925",
-  "Inox",
+  "Peças em inox",
 ];
 
 export const GIFT_CATEGORIES = [
   "Skincare",
   "Maquiagem",
   "Cosméticos",
-  "Cuidados das unhas",
+  "Cuidados para as unhas",
   "Chaveiros",
-  "E muito mais",
+  "Outros mimos",
 ];
 
 export function guaranteeFor(quantity: number) {
