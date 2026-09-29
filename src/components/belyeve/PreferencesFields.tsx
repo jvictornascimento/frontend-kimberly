@@ -2,6 +2,13 @@ import { cn } from "@/lib/utils";
 import { METAL_CATEGORIES, RING_SIZES } from "@/data/scoops";
 import type { ScoopPreferences } from "@/features/checkout/types";
 import { ChoiceRadio } from "./ChoiceRadio";
+import flowerGold from "@/assets/flower-gold.png";
+import flowerSilver from "@/assets/flower-silver.png";
+
+const METAL_FLOWERS: Record<string, string> = {
+  dourado: flowerGold,
+  prata: flowerSilver,
+};
 
 interface PreferencesFieldsProps {
   value: ScoopPreferences;
