@@ -4,6 +4,7 @@ import { Section } from "./Section";
 import { LaunchCountdown } from "./LaunchCountdown";
 import { PreferencesFields } from "./PreferencesFields";
 import { cn } from "@/lib/utils";
+import { track } from "@/lib/analytics";
 import { SCOOP_OPTIONS, formatPrice, guaranteeFor, pricingFor, type ScoopOption } from "@/data/scoops";
 import { findPackage } from "@/features/checkout/domain/pricing";
 import { preferencesError } from "@/features/checkout/domain/validation";
@@ -20,6 +21,7 @@ export function ScoopSelector() {
   // Trocar a quantidade preserva tudo o que já foi preenchido.
   function choose(option: ScoopOption) {
     updateSelection({ quantity: option.quantity });
+    track("select_scoop", { quantity: option.quantity });
     setPicked(true);
     requestAnimationFrame(() => detailsRef.current?.scrollIntoView({ behavior: "smooth", block: "start" }));
   }
@@ -32,6 +34,7 @@ export function ScoopSelector() {
   function goToCheckout() {
     setTried(true);
     if (error) return;
+    track("begin_checkout", { quantity: selection.quantity });
     setCheckout({ step: "customer" });
     navigate({ to: "/checkout" });
   }

@@ -9,9 +9,11 @@ import { Fishing } from "@/components/belyeve/Fishing";
 import { Faq } from "@/components/belyeve/Faq";
 import { InsideScoop } from "@/components/belyeve/InsideScoop";
 import { FinalCta } from "@/components/belyeve/FinalCta";
+import { VideoShowcase } from "@/components/belyeve/VideoShowcase";
+import { MobileStickyCta } from "@/components/belyeve/MobileStickyCta";
 import { SiteFooter } from "@/components/belyeve/SiteFooter";
 
-const title = "BELYEVE — Scoop Surpresa";
+const title = "BELYEVE — Scoop Surpresa de joias e brindes";
 const description =
   "Cada Scoop da BELYEVE garante no mínimo 2 joias e 3 brindes surpresa. Escolha 1, 2 ou 3 Scoops e descubra o que a pesca revela.";
 
@@ -38,10 +40,12 @@ function Index() {
       <Guarantee />
       <HowItWorks />
       <Fishing />
-      <Faq />
       <InsideScoop />
+      <VideoShowcase />
+      <Faq />
       <FinalCta />
       <SiteFooter />
+      <MobileStickyCta />
     </main>
   );
 }

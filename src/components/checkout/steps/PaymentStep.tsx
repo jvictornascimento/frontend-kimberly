@@ -1,3 +1,4 @@
+import { track } from "@/lib/analytics";
 import { useEffect, useState } from "react";
 import { ChoiceRadio } from "@/components/belyeve/ChoiceRadio";
 import { MAX_INSTALLMENTS } from "@/features/checkout/config";
@@ -42,7 +43,10 @@ export function PaymentStep({ state, totalCents }: { state: CheckoutState; total
               key={m.value}
               name="payment-method"
               checked={paymentMethod === m.value}
-              onSelect={() => setCheckout({ paymentMethod: m.value })}
+              onSelect={() => {
+                setCheckout({ paymentMethod: m.value });
+                track("select_payment_method", { method: m.value });
+              }}
               title={m.label}
               description={m.description}
             />
