@@ -1,29 +1,32 @@
 /** Conteúdo editorial da landing. Texto real da marca entra aqui. */
 
-export const HOW_IT_WORKS_STEPS = [
-  {
-    title: "Você escolhe quantos Scoops quer",
-    body: "1, 2 ou 3 Scoops. Cada Scoop é uma experiência completa.",
-  },
-  {
-    title: "Você escolhe a categoria",
-    body: "Dourado ou Prata, além das informações sobre o uso de anéis.",
-  },
-  {
-    title: "Kimberly faz a sua pesca",
-    body: "A pesca acontece com os pacotes surpresa e define o que vem no seu Scoop.",
-  },
-  {
-    title: "Seu Scoop vai para você",
-    body: "Tudo o que foi pescado é seu, incluindo os itens extras.",
-  },
-];
+export interface JourneyStep {
+  title: string;
+  body: string;
+  detail?: string;
+  note?: string;
+}
 
-export const FISHING_POINTS = [
-  "A pesca é feita por Kimberly com os pacotes surpresa.",
-  "O mínimo garantido está sempre assegurado, independente da pesca.",
-  "A pesca pode resultar em pacotes extras.",
-  "Se vierem itens extras, eles também são seus.",
+export const HOW_IT_WORKS_STEPS: JourneyStep[] = [
+  {
+    title: "Escolha seu Scoop",
+    body: "Você escolhe 1, 2 ou 3 Scoops e informa os dados necessários para o pedido.",
+  },
+  {
+    title: "Fazemos a pesca",
+    body: "A Kimberly faz a pesca do seu Scoop e grava tudo, da pesca até a contagem dos pacotinhos encontrados.",
+  },
+  {
+    title: "Você recebe seu vídeo",
+    body: "O vídeo chega pelo WhatsApp informado no pedido.",
+    detail: "de 2 a 5 dias úteis",
+  },
+  {
+    title: "Sua caixinha vai até você",
+    body: "Depois do vídeo e da confirmação pelo WhatsApp, preparamos seu pedido e enviamos o código de rastreamento.",
+    detail: "Despacho em até 7 dias após a confirmação pelo WhatsApp",
+    note: "Entrega grátis em Pedreira/SP, combinada pelo WhatsApp. Para outras cidades, o frete é calculado pelo CEP.",
+  },
 ];
 
 export const FAQ_ITEMS = [
