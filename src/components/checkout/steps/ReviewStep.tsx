@@ -8,7 +8,15 @@ import { ConsentField } from "../ConsentField";
 import { installmentLabel, metalLabel, priceOr, ringsLabel } from "../format";
 import { Notice, PrimaryButton, StepHeader, TextButton } from "../ui";
 
-function Block({ title, step, children }: { title: string; step: CheckoutStep; children: ReactNode }) {
+function Block({
+  title,
+  step,
+  children,
+}: {
+  title: string;
+  step: CheckoutStep;
+  children: ReactNode;
+}) {
   return (
     <section className="border-b border-border py-4">
       <div className="flex items-center justify-between">
@@ -23,7 +31,8 @@ function Block({ title, step, children }: { title: string; step: CheckoutStep; c
 }
 
 export function ReviewStep({ state, totals }: { state: CheckoutState; totals: OrderTotals }) {
-  const { selection, customer, address, shipping, paymentMethod, installment, socialMediaConsent } = state;
+  const { selection, customer, address, shipping, paymentMethod, installment, socialMediaConsent } =
+    state;
   const [tried, setTried] = useState(false);
   const { status, submit } = useSubmitOrder();
   const pending = status === "pending";
@@ -37,13 +46,17 @@ export function ReviewStep({ state, totals }: { state: CheckoutState; totals: Or
 
       <div className="mt-4">
         <Block title="Seu Scoop" step="scoop">
-          <p>{findPackage(selection.quantity).label} · {metalLabel(selection.metal)}</p>
+          <p>
+            {findPackage(selection.quantity).label} · {metalLabel(selection.metal)}
+          </p>
           <p>Anéis: {ringsLabel(selection)}</p>
           {selection.avoidNote.trim() && <p>Observação: {selection.avoidNote.trim()}</p>}
         </Block>
         <Block title="Seus dados" step="customer">
           <p>{customer.fullName}</p>
-          <p>{customer.whatsapp} · {customer.email}</p>
+          <p>
+            {customer.whatsapp} · {customer.email}
+          </p>
           <p>CPF {customer.cpf}</p>
         </Block>
         <Block title="Entrega" step="delivery">
@@ -51,10 +64,14 @@ export function ReviewStep({ state, totals }: { state: CheckoutState; totals: Or
             {address.street}, {address.number}
             {address.complement && ` · ${address.complement}`}
           </p>
-          <p>{address.district} · {address.city}/{address.state} · {address.zipCode}</p>
+          <p>
+            {address.district} · {address.city}/{address.state} · {address.zipCode}
+          </p>
           {shipping && (
             <p className="text-foreground">
-              {shipping.kind === "local_delivery" ? "Entrega grátis em Pedreira 💚" : `${shipping.carrier} ${shipping.service} · ${formatDeliveryEstimate(shipping)}`}
+              {shipping.kind === "local_delivery"
+                ? "Entrega grátis em Pedreira 💚"
+                : `${shipping.carrier} ${shipping.service} · ${formatDeliveryEstimate(shipping)}`}
             </p>
           )}
         </Block>
@@ -62,21 +79,40 @@ export function ReviewStep({ state, totals }: { state: CheckoutState; totals: Or
           <p>{paymentMethod === "pix" ? "PIX" : "Cartão de crédito"}</p>
           {paymentMethod === "credit_card" && installment && (
             <p>
-              {installmentLabel(installment)} · total {priceOr(installment.totalWithFeesCents, "a confirmar")}
+              {installmentLabel(installment)} · total{" "}
+              {priceOr(installment.totalWithFeesCents, "a confirmar")}
             </p>
           )}
         </Block>
       </div>
 
       <dl className="mt-4 space-y-1 text-sm">
-        <div className="flex justify-between"><dt>Subtotal</dt><dd>{priceOr(totals.subtotalCents, "Valor em breve")}</dd></div>
+        <div className="flex justify-between">
+          <dt>Subtotal</dt>
+          <dd>{priceOr(totals.subtotalCents, "Valor em breve")}</dd>
+        </div>
         {totals.discountCents != null && (
-          <div className="flex justify-between"><dt>Desconto</dt><dd>− {priceOr(totals.discountCents, "")}</dd></div>
+          <div className="flex justify-between">
+            <dt>Desconto</dt>
+            <dd>− {priceOr(totals.discountCents, "")}</dd>
+          </div>
         )}
-        <div className="flex justify-between"><dt>Frete</dt><dd>{shipping?.priceCents === 0 ? "Grátis" : priceOr(totals.shippingCents, "A calcular")}</dd></div>
+        <div className="flex justify-between">
+          <dt>Frete</dt>
+          <dd>
+            {shipping?.priceCents === 0 ? "Grátis" : priceOr(totals.shippingCents, "A calcular")}
+          </dd>
+        </div>
         <div className="flex justify-between border-t border-border pt-2 text-base font-semibold">
           <dt>Total</dt>
-          <dd>{priceOr(paymentMethod === "credit_card" ? (installment?.totalWithFeesCents ?? null) : totals.totalCents, "A confirmar")}</dd>
+          <dd>
+            {priceOr(
+              paymentMethod === "credit_card"
+                ? (installment?.totalWithFeesCents ?? null)
+                : totals.totalCents,
+              "A confirmar",
+            )}
+          </dd>
         </div>
       </dl>
 
@@ -85,7 +121,8 @@ export function ReviewStep({ state, totals }: { state: CheckoutState; totals: Or
       {status === "error" && (
         <div className="mt-6">
           <Notice tone="error" role="alert">
-            Não conseguimos registrar seu pedido agora. Seus dados foram mantidos — tente novamente em instantes.
+            Não conseguimos registrar seu pedido agora. Seus dados foram mantidos — tente novamente
+            em instantes.
           </Notice>
         </div>
       )}

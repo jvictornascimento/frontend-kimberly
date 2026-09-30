@@ -48,7 +48,7 @@ export const FAQ_ITEMS = [
   },
   {
     q: "Posso informar alguma peça que não uso?",
-    a: "Sim. No pedido tem um espaço opcional para isso, por exemplo: \"Não uso pulseiras.\"",
+    a: 'Sim. No pedido tem um espaço opcional para isso, por exemplo: "Não uso pulseiras."',
   },
   {
     q: "Quando recebo meu vídeo?",

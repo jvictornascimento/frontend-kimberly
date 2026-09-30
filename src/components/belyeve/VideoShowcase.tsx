@@ -20,7 +20,9 @@ export function VideoShowcase() {
               preload="none"
               className="aspect-[9/16] w-full rounded-sm bg-sand object-cover"
             />
-            {v.caption && <figcaption className="mt-2 text-xs text-muted-foreground">{v.caption}</figcaption>}
+            {v.caption && (
+              <figcaption className="mt-2 text-xs text-muted-foreground">{v.caption}</figcaption>
+            )}
           </figure>
         ))}
       </div>

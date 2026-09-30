@@ -16,7 +16,9 @@ export function MobileStickyCta() {
     );
     const inView = new Set<string>();
     const observer = new IntersectionObserver((entries) => {
-      entries.forEach((e) => (e.isIntersecting ? inView.add(e.target.id) : inView.delete(e.target.id)));
+      entries.forEach((e) =>
+        e.isIntersecting ? inView.add(e.target.id) : inView.delete(e.target.id),
+      );
       setVisible(inView.size === 0);
     });
     targets.forEach((t) => observer.observe(t));

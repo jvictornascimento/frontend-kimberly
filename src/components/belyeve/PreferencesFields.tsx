@@ -54,7 +54,9 @@ export function PreferencesFields({ value, onChange }: PreferencesFieldsProps) {
               key={opt.label}
               name="rings"
               checked={value.wearsRings === opt.flag}
-              onSelect={() => onChange({ wearsRings: opt.flag, ringSize: opt.flag ? value.ringSize : null })}
+              onSelect={() =>
+                onChange({ wearsRings: opt.flag, ringSize: opt.flag ? value.ringSize : null })
+              }
               title={opt.label}
               center
             />
@@ -73,7 +75,11 @@ export function PreferencesFields({ value, onChange }: PreferencesFieldsProps) {
               Qual o tamanho do seu anel?
             </p>
             {RING_SIZES.length > 0 ? (
-              <div className="mt-3 flex flex-wrap gap-2" role="radiogroup" aria-labelledby="ring-size-label">
+              <div
+                className="mt-3 flex flex-wrap gap-2"
+                role="radiogroup"
+                aria-labelledby="ring-size-label"
+              >
                 {RING_SIZES.map((size) => (
                   <button
                     key={size}
@@ -84,7 +90,9 @@ export function PreferencesFields({ value, onChange }: PreferencesFieldsProps) {
                     onClick={() => onChange({ ringSize: size })}
                     className={cn(
                       "h-11 min-w-11 rounded-sm border px-3 text-sm transition-colors",
-                      value.ringSize === size ? "border-gold bg-secondary/60 font-semibold" : "border-border",
+                      value.ringSize === size
+                        ? "border-gold bg-secondary/60 font-semibold"
+                        : "border-border",
                     )}
                   >
                     {size}

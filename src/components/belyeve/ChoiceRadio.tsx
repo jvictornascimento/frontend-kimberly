@@ -13,7 +13,16 @@ interface ChoiceRadioProps {
 }
 
 /** Native radio styled as a tappable option. */
-export function ChoiceRadio({ name, checked, onSelect, title, description, aside, center, describedBy }: ChoiceRadioProps) {
+export function ChoiceRadio({
+  name,
+  checked,
+  onSelect,
+  title,
+  description,
+  aside,
+  center,
+  describedBy,
+}: ChoiceRadioProps) {
   return (
     <label
       className={cn(
@@ -42,7 +51,9 @@ export function ChoiceRadio({ name, checked, onSelect, title, description, aside
       </span>
       <span className="min-w-0 flex-1">
         <span className="block text-sm font-semibold tracking-[0.12em] uppercase">{title}</span>
-        {description && <span className="mt-1 block text-xs text-muted-foreground">{description}</span>}
+        {description && (
+          <span className="mt-1 block text-xs text-muted-foreground">{description}</span>
+        )}
       </span>
       {aside && <span className="shrink-0 text-sm font-semibold tabular-nums">{aside}</span>}
     </label>

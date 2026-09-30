@@ -31,10 +31,49 @@ export function CardForm({ placed }: { placed: PlacedOrder }) {
     >
       <h2 className="text-sm font-semibold">Dados do cartão</h2>
       <div className="mt-4 grid grid-cols-2 gap-4">
-        <TextField id="cc-number" className="col-span-2" label="Número do cartão" value={card.number} onChange={(v) => set({ number: maskCardNumber(v) })} onBlur={() => touch("number")} error={err("number")} inputMode="numeric" autoComplete="cc-number" />
-        <TextField id="cc-name" className="col-span-2" label="Nome impresso no cartão" value={card.holderName} onChange={(v) => set({ holderName: v })} onBlur={() => touch("holderName")} error={err("holderName")} autoComplete="cc-name" maxLength={60} />
-        <TextField id="cc-exp" label="Validade" value={card.expiry} onChange={(v) => set({ expiry: maskExpiry(v) })} onBlur={() => touch("expiry")} error={err("expiry")} inputMode="numeric" autoComplete="cc-exp" placeholder="MM/AA" />
-        <TextField id="cc-csc" label="CVV" value={card.cvv} onChange={(v) => set({ cvv: onlyDigits(v).slice(0, 4) })} onBlur={() => touch("cvv")} error={err("cvv")} inputMode="numeric" autoComplete="cc-csc" />
+        <TextField
+          id="cc-number"
+          className="col-span-2"
+          label="Número do cartão"
+          value={card.number}
+          onChange={(v) => set({ number: maskCardNumber(v) })}
+          onBlur={() => touch("number")}
+          error={err("number")}
+          inputMode="numeric"
+          autoComplete="cc-number"
+        />
+        <TextField
+          id="cc-name"
+          className="col-span-2"
+          label="Nome impresso no cartão"
+          value={card.holderName}
+          onChange={(v) => set({ holderName: v })}
+          onBlur={() => touch("holderName")}
+          error={err("holderName")}
+          autoComplete="cc-name"
+          maxLength={60}
+        />
+        <TextField
+          id="cc-exp"
+          label="Validade"
+          value={card.expiry}
+          onChange={(v) => set({ expiry: maskExpiry(v) })}
+          onBlur={() => touch("expiry")}
+          error={err("expiry")}
+          inputMode="numeric"
+          autoComplete="cc-exp"
+          placeholder="MM/AA"
+        />
+        <TextField
+          id="cc-csc"
+          label="CVV"
+          value={card.cvv}
+          onChange={(v) => set({ cvv: onlyDigits(v).slice(0, 4) })}
+          onBlur={() => touch("cvv")}
+          error={err("cvv")}
+          inputMode="numeric"
+          autoComplete="cc-csc"
+        />
       </div>
       {status === "error" && (
         <div className="mt-4">

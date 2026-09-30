@@ -14,7 +14,11 @@ export const LOCAL_DELIVERY_OPTION: ShippingOption = {
 };
 
 const normalize = (value: string) =>
-  value.normalize("NFD").replace(/[\u0300-\u036f]/g, "").trim().toLowerCase();
+  value
+    .normalize("NFD")
+    .replace(/[\u0300-\u036f]/g, "")
+    .trim()
+    .toLowerCase();
 
 export function isPedreiraSP(city: string, state: string) {
   return normalize(city) === "pedreira" && state.toUpperCase() === "SP";

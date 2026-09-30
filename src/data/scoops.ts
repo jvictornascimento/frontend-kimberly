@@ -72,7 +72,9 @@ export const SCOOP_OPTIONS: ScoopOption[] = [
 export function pricingFor(option: ScoopOption) {
   const total = option.promoPriceCents ?? option.priceCents;
   const previous =
-    option.promoPriceCents != null && option.priceCents != null && option.priceCents > option.promoPriceCents
+    option.promoPriceCents != null &&
+    option.priceCents != null &&
+    option.priceCents > option.promoPriceCents
       ? option.priceCents
       : null;
   return {

@@ -9,11 +9,25 @@ import { Notice, PrimaryButton, StepHeader, TextButton } from "../ui";
 import { installmentLabel, priceOr } from "../format";
 
 const METHODS: { value: PaymentMethod; label: string; description: string }[] = [
-  { value: "pix", label: "PIX", description: "Aprovação rápida. O código é gerado ao finalizar o pedido." },
-  { value: "credit_card", label: "Cartão de crédito", description: `Em até ${MAX_INSTALLMENTS}x. Os dados do cartão são pedidos ao finalizar.` },
+  {
+    value: "pix",
+    label: "PIX",
+    description: "Aprovação rápida. O código é gerado ao finalizar o pedido.",
+  },
+  {
+    value: "credit_card",
+    label: "Cartão de crédito",
+    description: `Em até ${MAX_INSTALLMENTS}x. Os dados do cartão são pedidos ao finalizar.`,
+  },
 ];
 
-export function PaymentStep({ state, totalCents }: { state: CheckoutState; totalCents: number | null }) {
+export function PaymentStep({
+  state,
+  totalCents,
+}: {
+  state: CheckoutState;
+  totalCents: number | null;
+}) {
   const { paymentMethod, installment } = state;
   const [tried, setTried] = useState(false);
   const isCard = paymentMethod === "credit_card";
@@ -22,7 +36,10 @@ export function PaymentStep({ state, totalCents }: { state: CheckoutState; total
   // Refresh the stored option when values change (e.g. shipping changed the total).
   useEffect(() => {
     if (installments.status !== "success") return;
-    const fresh = installments.data.find((o) => o.installments === installment?.installments) ?? installments.data[0] ?? null;
+    const fresh =
+      installments.data.find((o) => o.installments === installment?.installments) ??
+      installments.data[0] ??
+      null;
     if (JSON.stringify(fresh) !== JSON.stringify(installment)) setCheckout({ installment: fresh });
   }, [installments, installment]);
 
@@ -58,8 +75,18 @@ export function PaymentStep({ state, totalCents }: { state: CheckoutState; total
         <fieldset className="mt-8" aria-busy={installments.status === "loading"}>
           <legend className="text-sm font-semibold">Parcelamento</legend>
           <div className="mt-3 grid gap-3">
-            {installments.status === "loading" && <div className="h-14 animate-pulse rounded-sm bg-muted" role="status" aria-label="Carregando parcelas" />}
-            {installments.status === "error" && <Notice tone="error" role="alert">{installments.message} Tente novamente em instantes.</Notice>}
+            {installments.status === "loading" && (
+              <div
+                className="h-14 animate-pulse rounded-sm bg-muted"
+                role="status"
+                aria-label="Carregando parcelas"
+              />
+            )}
+            {installments.status === "error" && (
+              <Notice tone="error" role="alert">
+                {installments.message} Tente novamente em instantes.
+              </Notice>
+            )}
             {installments.status === "success" &&
               installments.data.map((o) => (
                 <ChoiceRadio
@@ -73,7 +100,8 @@ export function PaymentStep({ state, totalCents }: { state: CheckoutState; total
               ))}
           </div>
           <p className="mt-2 text-xs text-muted-foreground">
-            O parcelamento pode ter taxa. Valor da parcela e total final aparecem antes da confirmação.
+            O parcelamento pode ter taxa. Valor da parcela e total final aparecem antes da
+            confirmação.
           </p>
         </fieldset>
       )}

@@ -21,7 +21,10 @@ export function CustomerStep({ customer }: { customer: Customer }) {
     >
       <TextButton onClick={() => goToStep("scoop")}>← Voltar</TextButton>
       <div className="mt-4">
-        <StepHeader title="Seus dados" description="Sem cadastro e sem senha. Só o necessário para o seu pedido." />
+        <StepHeader
+          title="Seus dados"
+          description="Sem cadastro e sem senha. Só o necessário para o seu pedido."
+        />
       </div>
       <div className="mt-6 grid gap-4">
         <TextField

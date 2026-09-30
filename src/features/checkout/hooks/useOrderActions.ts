@@ -19,8 +19,13 @@ export function useSubmitOrder() {
     setStatus("pending");
     try {
       const order = await createOrder(input);
-      const payment = input.paymentMethod === "pix" ? await createPayment({ orderId: order.id, method: "pix" }) : null;
-      setCheckout({ placedOrder: { order: payment ? { ...order, status: payment.status } : order, payment } });
+      const payment =
+        input.paymentMethod === "pix"
+          ? await createPayment({ orderId: order.id, method: "pix" })
+          : null;
+      setCheckout({
+        placedOrder: { order: payment ? { ...order, status: payment.status } : order, payment },
+      });
     } catch {
       lock.current = false;
       setStatus("error");
@@ -71,7 +76,10 @@ export function usePaymentStatusPolling(placed: PlacedOrder) {
         .then((status) => {
           const current = placedRef.current;
           if (!current.payment || status === current.order.status) return;
-          updatePlacedOrder({ order: { ...current.order, status }, payment: { ...current.payment, status } });
+          updatePlacedOrder({
+            order: { ...current.order, status },
+            payment: { ...current.payment, status },
+          });
         })
         .catch(() => undefined); // transient failure: next tick retries
     }, PAYMENT_STATUS_POLL_MS);

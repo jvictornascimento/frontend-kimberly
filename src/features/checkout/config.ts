@@ -2,7 +2,7 @@
  * Central checkout configuration.
  * Set VITE_API_BASE_URL to the BELYEVE backend URL to leave mock mode.
  */
-const rawBaseUrl: unknown = import.meta.env['VITE_API_BASE_URL'];
+const rawBaseUrl: unknown = import.meta.env["VITE_API_BASE_URL"];
 
 export const API_BASE_URL = typeof rawBaseUrl === "string" ? rawBaseUrl.replace(/\/+$/, "") : "";
 

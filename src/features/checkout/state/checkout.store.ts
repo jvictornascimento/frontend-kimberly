@@ -6,12 +6,27 @@
 import { useSyncExternalStore } from "react";
 import { EMPTY_ORDER } from "@/data/scoops";
 import { CHECKOUT_STORAGE_KEY } from "../config";
-import type { Address, CheckoutState, CheckoutStep, Customer, PlacedOrder, ScoopSelection } from "../types";
+import type {
+  Address,
+  CheckoutState,
+  CheckoutStep,
+  Customer,
+  PlacedOrder,
+  ScoopSelection,
+} from "../types";
 
 const INITIAL_STATE: CheckoutState = {
   selection: EMPTY_ORDER,
   customer: { fullName: "", whatsapp: "", email: "", cpf: "" },
-  address: { zipCode: "", street: "", number: "", complement: "", district: "", city: "", state: "" },
+  address: {
+    zipCode: "",
+    street: "",
+    number: "",
+    complement: "",
+    district: "",
+    city: "",
+    state: "",
+  },
   shipping: null,
   paymentMethod: null,
   installment: null,
@@ -24,7 +39,9 @@ function load(): CheckoutState {
   if (typeof window === "undefined") return INITIAL_STATE;
   try {
     const raw = window.sessionStorage.getItem(CHECKOUT_STORAGE_KEY);
-    return raw ? { ...INITIAL_STATE, ...(JSON.parse(raw) as Partial<CheckoutState>) } : INITIAL_STATE;
+    return raw
+      ? { ...INITIAL_STATE, ...(JSON.parse(raw) as Partial<CheckoutState>) }
+      : INITIAL_STATE;
   } catch {
     return INITIAL_STATE;
   }
@@ -50,9 +67,11 @@ export function setCheckout(patch: Partial<CheckoutState>) {
 export const updateSelection = (patch: Partial<ScoopSelection>) =>
   setCheckout({ selection: { ...state.selection, ...patch } });
 
-export const updateCustomer = (patch: Partial<Customer>) => setCheckout({ customer: { ...state.customer, ...patch } });
+export const updateCustomer = (patch: Partial<Customer>) =>
+  setCheckout({ customer: { ...state.customer, ...patch } });
 
-export const updateAddress = (patch: Partial<Address>) => setCheckout({ address: { ...state.address, ...patch } });
+export const updateAddress = (patch: Partial<Address>) =>
+  setCheckout({ address: { ...state.address, ...patch } });
 
 export function goToStep(step: CheckoutStep) {
   setCheckout({ step });
@@ -73,5 +92,9 @@ const subscribe = (listener: () => void) => {
 };
 
 export function useCheckout(): CheckoutState {
-  return useSyncExternalStore(subscribe, () => state, () => INITIAL_STATE);
+  return useSyncExternalStore(
+    subscribe,
+    () => state,
+    () => INITIAL_STATE,
+  );
 }

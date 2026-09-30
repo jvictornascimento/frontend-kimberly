@@ -5,7 +5,8 @@ import type { CheckoutState, CreateOrderInput } from "../types";
 
 /** Builds the backend order payload from checkout state. Returns null if incomplete. */
 export function toCreateOrderInput(state: CheckoutState): CreateOrderInput | null {
-  const { selection, customer, address, shipping, paymentMethod, installment, socialMediaConsent } = state;
+  const { selection, customer, address, shipping, paymentMethod, installment, socialMediaConsent } =
+    state;
   if (!shipping || !paymentMethod || socialMediaConsent === null) return null;
   const pkg = findPackage(selection.quantity);
   const { quantity, ...preferences } = selection;

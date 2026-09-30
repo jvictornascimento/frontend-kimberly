@@ -30,7 +30,9 @@ export function Faq() {
                 </button>
               </h3>
               <div id={panelId} role="region" aria-labelledby={buttonId} hidden={!expanded}>
-                <p className="max-w-xl pb-5 text-sm leading-relaxed text-muted-foreground">{item.a}</p>
+                <p className="max-w-xl pb-5 text-sm leading-relaxed text-muted-foreground">
+                  {item.a}
+                </p>
               </div>
             </div>
           );

@@ -29,7 +29,11 @@ export function HowItWorks() {
                       {step.detail}
                     </p>
                   )}
-                  {step.note && <p className="mt-3 text-xs leading-relaxed text-muted-foreground">{step.note}</p>}
+                  {step.note && (
+                    <p className="mt-3 text-xs leading-relaxed text-muted-foreground">
+                      {step.note}
+                    </p>
+                  )}
                 </Reveal>
               </li>
             ))}

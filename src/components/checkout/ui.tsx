@@ -1,7 +1,10 @@
 import type { ButtonHTMLAttributes, InputHTMLAttributes, ReactNode } from "react";
 import { cn } from "@/lib/utils";
 
-interface TextFieldProps extends Omit<InputHTMLAttributes<HTMLInputElement>, "value" | "onChange" | "id"> {
+interface TextFieldProps extends Omit<
+  InputHTMLAttributes<HTMLInputElement>,
+  "value" | "onChange" | "id"
+> {
   id: string;
   label: string;
   value: string;
@@ -11,8 +14,19 @@ interface TextFieldProps extends Omit<InputHTMLAttributes<HTMLInputElement>, "va
   optional?: boolean | undefined;
 }
 
-export function TextField({ id, label, value, onChange, error, hint, optional, className, ...rest }: TextFieldProps) {
-  const describedBy = [error && `${id}-error`, hint && `${id}-hint`].filter(Boolean).join(" ") || undefined;
+export function TextField({
+  id,
+  label,
+  value,
+  onChange,
+  error,
+  hint,
+  optional,
+  className,
+  ...rest
+}: TextFieldProps) {
+  const describedBy =
+    [error && `${id}-error`, hint && `${id}-hint`].filter(Boolean).join(" ") || undefined;
   return (
     <div className={className}>
       <label htmlFor={id} className="text-xs font-medium text-foreground">
@@ -45,7 +59,11 @@ export function TextField({ id, label, value, onChange, error, hint, optional, c
   );
 }
 
-export function PrimaryButton({ className, children, ...rest }: ButtonHTMLAttributes<HTMLButtonElement>) {
+export function PrimaryButton({
+  className,
+  children,
+  ...rest
+}: ButtonHTMLAttributes<HTMLButtonElement>) {
   return (
     <button
       type="button"
@@ -60,12 +78,19 @@ export function PrimaryButton({ className, children, ...rest }: ButtonHTMLAttrib
   );
 }
 
-export function TextButton({ className, children, ...rest }: ButtonHTMLAttributes<HTMLButtonElement>) {
+export function TextButton({
+  className,
+  children,
+  ...rest
+}: ButtonHTMLAttributes<HTMLButtonElement>) {
   return (
     <button
       type="button"
       {...rest}
-      className={cn("text-xs font-medium underline underline-offset-4 hover:text-sage-deep", className)}
+      className={cn(
+        "text-xs font-medium underline underline-offset-4 hover:text-sage-deep",
+        className,
+      )}
     >
       {children}
     </button>
@@ -81,7 +106,15 @@ export function StepHeader({ title, description }: { title: string; description?
   );
 }
 
-export function Notice({ tone = "neutral", children, role }: { tone?: "neutral" | "success" | "error"; children: ReactNode; role?: "status" | "alert" }) {
+export function Notice({
+  tone = "neutral",
+  children,
+  role,
+}: {
+  tone?: "neutral" | "success" | "error";
+  children: ReactNode;
+  role?: "status" | "alert";
+}) {
   return (
     <div
       role={role}

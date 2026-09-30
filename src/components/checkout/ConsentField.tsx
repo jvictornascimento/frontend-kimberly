@@ -5,7 +5,9 @@ import { setCheckout } from "@/features/checkout/state/checkout.store";
 export function ConsentField({ value, showError }: { value: boolean | null; showError: boolean }) {
   return (
     <fieldset className="mt-8" aria-describedby={showError ? "consent-error" : undefined}>
-      <legend className="text-sm font-semibold">Podemos publicar o vídeo do seu Scoop nas redes sociais da BELYEVE?</legend>
+      <legend className="text-sm font-semibold">
+        Podemos publicar o vídeo do seu Scoop nas redes sociais da BELYEVE?
+      </legend>
       <div className="mt-3 grid gap-3">
         <ChoiceRadio
           name="social-consent"
