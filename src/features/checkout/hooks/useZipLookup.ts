@@ -6,7 +6,11 @@ import type { AddressLookup } from "../types";
 export type ZipLookupStatus = "idle" | "loading" | "found" | "not_found" | "error";
 
 /** Looks up the address once the CEP is complete. `skipInitial` avoids refilling a restored address. */
-export function useZipLookup(zipCode: string, onFound: (address: AddressLookup) => void, skipInitial: boolean) {
+export function useZipLookup(
+  zipCode: string,
+  onFound: (address: AddressLookup) => void,
+  skipInitial: boolean,
+) {
   const [status, setStatus] = useState<ZipLookupStatus>("idle");
   const lastZip = useRef<string | null>(skipInitial ? onlyDigits(zipCode) : null);
   const onFoundRef = useRef(onFound);

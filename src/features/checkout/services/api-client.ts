@@ -32,6 +32,7 @@ export async function apiRequest<T>(
   };
   if (init.body !== undefined) request.body = JSON.stringify(init.body);
   const response = await fetch(`${API_BASE_URL}${path}`, request);
-  if (!response.ok) throw new ApiError(response.status, `Request failed with status ${response.status}`);
+  if (!response.ok)
+    throw new ApiError(response.status, `Request failed with status ${response.status}`);
   return (await response.json()) as T;
 }

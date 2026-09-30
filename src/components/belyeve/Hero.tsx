@@ -11,7 +11,10 @@ const total = GUARANTEE_PER_SCOOP.jewelry + GUARANTEE_PER_SCOOP.gifts;
 
 export function Hero() {
   return (
-    <section id="top" className="relative overflow-hidden px-5 pt-8 pb-12 sm:px-8 md:pt-16 md:pb-20">
+    <section
+      id="top"
+      className="relative overflow-hidden px-5 pt-8 pb-12 sm:px-8 md:pt-16 md:pb-20"
+    >
       <div
         aria-hidden
         className="pointer-events-none absolute inset-0 opacity-[0.07]"
@@ -36,7 +39,8 @@ export function Hero() {
                 <strong className="font-semibold">{GUARANTEE_PER_SCOOP.jewelry} joias</strong>
               </span>
               <span>
-                + <strong className="font-semibold">{GUARANTEE_PER_SCOOP.gifts} brindes</strong> surpresa
+                + <strong className="font-semibold">{GUARANTEE_PER_SCOOP.gifts} brindes</strong>{" "}
+                surpresa
               </span>
             </div>
           </div>
@@ -90,7 +94,9 @@ function HeroMedia() {
                 />
               </span>
               <p className="font-display mt-5 text-2xl">Vídeo do Scoop</p>
-              <p className="mt-2 text-xs text-muted-foreground">Em breve, um Scoop real feito pela Kimberly.</p>
+              <p className="mt-2 text-xs text-muted-foreground">
+                Em breve, um Scoop real feito pela Kimberly.
+              </p>
             </div>
           </>
         )}

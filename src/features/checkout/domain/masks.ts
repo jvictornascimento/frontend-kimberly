@@ -23,7 +23,9 @@ export function maskCep(value: string) {
 }
 
 export function maskCardNumber(value: string) {
-  return onlyDigits(value).slice(0, 19).replace(/(\d{4})(?=\d)/g, "$1 ");
+  return onlyDigits(value)
+    .slice(0, 19)
+    .replace(/(\d{4})(?=\d)/g, "$1 ");
 }
 
 export function maskExpiry(value: string) {

@@ -10,7 +10,9 @@ export function useShippingQuote(input: ShippingQuoteInput) {
   const [attempt, setAttempt] = useState(0);
   const zip = onlyDigits(input.zipCode);
   const ready = zip.length === 8 && input.city.trim() !== "" && input.state !== "";
-  const key = ready ? `${zip}|${input.city.trim().toLowerCase()}|${input.state}|${input.quantity}` : "";
+  const key = ready
+    ? `${zip}|${input.city.trim().toLowerCase()}|${input.state}|${input.quantity}`
+    : "";
   const inputRef = useRef(input);
   inputRef.current = { ...input, zipCode: zip };
 
@@ -24,11 +26,15 @@ export function useShippingQuote(input: ShippingQuoteInput) {
     const timer = setTimeout(() => {
       calculateShipping(inputRef.current)
         .then((options) => {
-          if (active) setState(options.length ? { status: "success", data: options } : { status: "empty" });
+          if (active)
+            setState(options.length ? { status: "success", data: options } : { status: "empty" });
         })
         .catch(() => {
           if (active)
-            setState({ status: "error", message: "Não conseguimos calcular o frete agora. Tente novamente em instantes." });
+            setState({
+              status: "error",
+              message: "Não conseguimos calcular o frete agora. Tente novamente em instantes.",
+            });
         });
     }, DEBOUNCE_MS);
     return () => {

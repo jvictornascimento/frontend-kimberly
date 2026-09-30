@@ -81,11 +81,58 @@ export function DeliveryStep({ state }: { state: CheckoutState }) {
           autoComplete="postal-code"
           placeholder="00000-000"
         />
-        <TextField id="street" className="col-span-6" label="Rua" value={address.street} onChange={(v) => updateAddress({ street: v })} onBlur={() => touch("street")} error={err("street")} autoComplete="address-line1" maxLength={120} />
-        <TextField id="number" className="col-span-2" label="Número" value={address.number} onChange={(v) => updateAddress({ number: v })} onBlur={() => touch("number")} error={err("number")} maxLength={10} />
-        <TextField id="complement" className="col-span-4" label="Complemento" optional value={address.complement} onChange={(v) => updateAddress({ complement: v })} autoComplete="address-line2" maxLength={60} />
-        <TextField id="district" className="col-span-6" label="Bairro" value={address.district} onChange={(v) => updateAddress({ district: v })} onBlur={() => touch("district")} error={err("district")} maxLength={80} />
-        <TextField id="city" className="col-span-4" label="Cidade" value={address.city} onChange={(v) => updateAddress({ city: v })} onBlur={() => touch("city")} error={err("city")} autoComplete="address-level2" maxLength={80} />
+        <TextField
+          id="street"
+          className="col-span-6"
+          label="Rua"
+          value={address.street}
+          onChange={(v) => updateAddress({ street: v })}
+          onBlur={() => touch("street")}
+          error={err("street")}
+          autoComplete="address-line1"
+          maxLength={120}
+        />
+        <TextField
+          id="number"
+          className="col-span-2"
+          label="Número"
+          value={address.number}
+          onChange={(v) => updateAddress({ number: v })}
+          onBlur={() => touch("number")}
+          error={err("number")}
+          maxLength={10}
+        />
+        <TextField
+          id="complement"
+          className="col-span-4"
+          label="Complemento"
+          optional
+          value={address.complement}
+          onChange={(v) => updateAddress({ complement: v })}
+          autoComplete="address-line2"
+          maxLength={60}
+        />
+        <TextField
+          id="district"
+          className="col-span-6"
+          label="Bairro"
+          value={address.district}
+          onChange={(v) => updateAddress({ district: v })}
+          onBlur={() => touch("district")}
+          error={err("district")}
+          maxLength={80}
+        />
+        <TextField
+          id="city"
+          className="col-span-4"
+          label="Cidade"
+          value={address.city}
+          onChange={(v) => updateAddress({ city: v })}
+          onBlur={() => touch("city")}
+          error={err("city")}
+          autoComplete="address-level2"
+          maxLength={80}
+        />
         <div className="col-span-2">
           <label htmlFor="state" className="text-xs font-medium">
             Estado
@@ -123,7 +170,11 @@ export function DeliveryStep({ state }: { state: CheckoutState }) {
         selectedId={shipping?.id ?? null}
         onSelect={(option) => setCheckout({ shipping: option })}
         onRetry={quote.retry}
-        error={visible("shipping") && !shipping && quote.state.status === "success" ? "Escolha uma forma de entrega." : undefined}
+        error={
+          visible("shipping") && !shipping && quote.state.status === "success"
+            ? "Escolha uma forma de entrega."
+            : undefined
+        }
       />
 
       <PrimaryButton type="submit" className="mt-8" onClick={() => touch("shipping")}>

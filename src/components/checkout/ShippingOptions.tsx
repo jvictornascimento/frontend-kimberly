@@ -12,15 +12,27 @@ interface ShippingOptionsProps {
   error?: string | undefined;
 }
 
-export function ShippingOptions({ state, selectedId, onSelect, onRetry, error }: ShippingOptionsProps) {
+export function ShippingOptions({
+  state,
+  selectedId,
+  onSelect,
+  onRetry,
+  error,
+}: ShippingOptionsProps) {
   return (
-    <section aria-labelledby="shipping-title" aria-busy={state.status === "loading"} className="mt-8">
+    <section
+      aria-labelledby="shipping-title"
+      aria-busy={state.status === "loading"}
+      className="mt-8"
+    >
       <h3 id="shipping-title" className="text-sm font-semibold">
         Forma de entrega
       </h3>
       <div className="mt-3 min-h-16">
         {state.status === "idle" && (
-          <p className="text-sm text-muted-foreground">Informe o CEP e a cidade para ver as opções de entrega.</p>
+          <p className="text-sm text-muted-foreground">
+            Informe o CEP e a cidade para ver as opções de entrega.
+          </p>
         )}
         {state.status === "loading" && (
           <div role="status" className="space-y-2">
@@ -31,7 +43,8 @@ export function ShippingOptions({ state, selectedId, onSelect, onRetry, error }:
         )}
         {state.status === "empty" && (
           <Notice role="alert">
-            Não encontramos opções de entrega para este CEP. Confira o CEP informado ou tente outro endereço.
+            Não encontramos opções de entrega para este CEP. Confira o CEP informado ou tente outro
+            endereço.
           </Notice>
         )}
         {state.status === "error" && (
@@ -46,7 +59,8 @@ export function ShippingOptions({ state, selectedId, onSelect, onRetry, error }:
                 <Notice key={option.id} tone="success" role="status">
                   <p className="font-semibold">Entrega grátis em Pedreira 💚</p>
                   <p className="mt-1 text-xs">
-                    A entrega é feita pela própria BELYEVE. Depois do pedido, combinamos os detalhes pelo WhatsApp.
+                    A entrega é feita pela própria BELYEVE. Depois do pedido, combinamos os detalhes
+                    pelo WhatsApp.
                   </p>
                 </Notice>
               ) : (

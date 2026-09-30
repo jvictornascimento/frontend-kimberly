@@ -17,13 +17,19 @@ export function Guarantee() {
 
           <div className="mt-8 flex items-end gap-4 sm:gap-6">
             <div>
-              <p className="font-display text-6xl leading-none sm:text-7xl">{GUARANTEE_PER_SCOOP.jewelry}</p>
+              <p className="font-display text-6xl leading-none sm:text-7xl">
+                {GUARANTEE_PER_SCOOP.jewelry}
+              </p>
               <p className="mt-2 text-xs font-semibold tracking-[0.18em] uppercase">Joias</p>
             </div>
             <span className="font-display pb-7 text-4xl text-gold">+</span>
             <div>
-              <p className="font-display text-6xl leading-none sm:text-7xl">{GUARANTEE_PER_SCOOP.gifts}</p>
-              <p className="mt-2 text-xs font-semibold tracking-[0.18em] uppercase">Brindes surpresa</p>
+              <p className="font-display text-6xl leading-none sm:text-7xl">
+                {GUARANTEE_PER_SCOOP.gifts}
+              </p>
+              <p className="mt-2 text-xs font-semibold tracking-[0.18em] uppercase">
+                Brindes surpresa
+              </p>
             </div>
           </div>
 
@@ -37,7 +43,8 @@ export function Guarantee() {
           </dl>
 
           <p className="mt-8 text-sm leading-relaxed text-cream/85">
-            {total} itens é o mínimo. Se a pesca trouxer pacotinhos a mais, eles também vão para você.
+            {total} itens é o mínimo. Se a pesca trouxer pacotinhos a mais, eles também vão para
+            você.
           </p>
           <p className="font-display mt-2 text-2xl text-gold">Encontrou mais? É seu. ✨</p>
         </Reveal>

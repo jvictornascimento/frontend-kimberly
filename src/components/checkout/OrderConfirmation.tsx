@@ -7,14 +7,41 @@ import { PixPanel } from "./PixPanel";
 import { Notice } from "./ui";
 import { priceOr } from "./format";
 
-const STATUS_COPY: Record<OrderStatus, { title: string; text: string; tone: "neutral" | "success" | "error" }> = {
-  DRAFT: { title: "Pedido recebido 💚", text: "Estamos aguardando a confirmação do pagamento.", tone: "neutral" },
+const STATUS_COPY: Record<
+  OrderStatus,
+  { title: string; text: string; tone: "neutral" | "success" | "error" }
+> = {
+  DRAFT: {
+    title: "Pedido recebido 💚",
+    text: "Estamos aguardando a confirmação do pagamento.",
+    tone: "neutral",
+  },
   CREATING_ORDER: { title: "Registrando seu pedido…", text: "Só um instante.", tone: "neutral" },
-  AWAITING_PAYMENT: { title: "Pedido recebido 💚", text: "Estamos aguardando a confirmação do pagamento.", tone: "neutral" },
-  PAYMENT_PROCESSING: { title: "Pedido recebido 💚", text: "Seu pagamento está em análise. Avisamos assim que for confirmado.", tone: "neutral" },
-  PAID: { title: "Pagamento confirmado!", text: "Agora é com a gente: vamos preparar o seu Scoop.", tone: "success" },
-  PAYMENT_FAILED: { title: "Pagamento não confirmado", text: "Não conseguimos confirmar o pagamento. Tente novamente ou fale com a gente pelo WhatsApp.", tone: "error" },
-  CANCELLED: { title: "Pedido cancelado", text: "Este pedido foi cancelado. Se foi um engano, faça um novo pedido.", tone: "error" },
+  AWAITING_PAYMENT: {
+    title: "Pedido recebido 💚",
+    text: "Estamos aguardando a confirmação do pagamento.",
+    tone: "neutral",
+  },
+  PAYMENT_PROCESSING: {
+    title: "Pedido recebido 💚",
+    text: "Seu pagamento está em análise. Avisamos assim que for confirmado.",
+    tone: "neutral",
+  },
+  PAID: {
+    title: "Pagamento confirmado!",
+    text: "Agora é com a gente: vamos preparar o seu Scoop.",
+    tone: "success",
+  },
+  PAYMENT_FAILED: {
+    title: "Pagamento não confirmado",
+    text: "Não conseguimos confirmar o pagamento. Tente novamente ou fale com a gente pelo WhatsApp.",
+    tone: "error",
+  },
+  CANCELLED: {
+    title: "Pedido cancelado",
+    text: "Este pedido foi cancelado. Se foi um engano, faça um novo pedido.",
+    tone: "error",
+  },
 };
 
 export function OrderConfirmation({ placed }: { placed: PlacedOrder }) {
@@ -34,11 +61,14 @@ export function OrderConfirmation({ placed }: { placed: PlacedOrder }) {
         {priceOr(order.totals.totalCents, "a confirmar")}
       </p>
       <p className="mt-2 text-sm text-muted-foreground">
-        Depois da confirmação, você recebe uma mensagem no WhatsApp {order.customer.whatsapp && "informado"} com os próximos passos
+        Depois da confirmação, você recebe uma mensagem no WhatsApp{" "}
+        {order.customer.whatsapp && "informado"} com os próximos passos
         {order.shipping.kind === "local_delivery" && " e para combinarmos a entrega em Pedreira"}.
       </p>
 
-      {payment?.method === "pix" && order.status === "AWAITING_PAYMENT" && <PixPanel payment={payment} />}
+      {payment?.method === "pix" && order.status === "AWAITING_PAYMENT" && (
+        <PixPanel payment={payment} />
+      )}
       {needsCard && <CardForm placed={placed} />}
 
       <Link

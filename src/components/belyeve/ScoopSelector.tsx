@@ -5,10 +5,20 @@ import { LaunchCountdown } from "./LaunchCountdown";
 import { PreferencesFields } from "./PreferencesFields";
 import { cn } from "@/lib/utils";
 import { track } from "@/lib/analytics";
-import { SCOOP_OPTIONS, formatPrice, guaranteeFor, pricingFor, type ScoopOption } from "@/data/scoops";
+import {
+  SCOOP_OPTIONS,
+  formatPrice,
+  guaranteeFor,
+  pricingFor,
+  type ScoopOption,
+} from "@/data/scoops";
 import { findPackage } from "@/features/checkout/domain/pricing";
 import { preferencesError } from "@/features/checkout/domain/validation";
-import { setCheckout, updateSelection, useCheckout } from "@/features/checkout/state/checkout.store";
+import {
+  setCheckout,
+  updateSelection,
+  useCheckout,
+} from "@/features/checkout/state/checkout.store";
 
 export function ScoopSelector() {
   const { selection } = useCheckout();
@@ -23,7 +33,9 @@ export function ScoopSelector() {
     updateSelection({ quantity: option.quantity });
     track("select_scoop", { quantity: option.quantity });
     setPicked(true);
-    requestAnimationFrame(() => detailsRef.current?.scrollIntoView({ behavior: "smooth", block: "start" }));
+    requestAnimationFrame(() =>
+      detailsRef.current?.scrollIntoView({ behavior: "smooth", block: "start" }),
+    );
   }
 
   const guarantee = guaranteeFor(selection.quantity);
@@ -64,10 +76,14 @@ export function ScoopSelector() {
         <div ref={detailsRef} className="mt-12 scroll-mt-20 border-t border-border pt-8">
           <div className="flex items-center justify-between gap-4 border border-gold/60 bg-secondary/40 px-4 py-3">
             <div>
-              <p className="text-[10px] tracking-[0.18em] text-muted-foreground uppercase">Seu Scoop</p>
+              <p className="text-[10px] tracking-[0.18em] text-muted-foreground uppercase">
+                Seu Scoop
+              </p>
               <p className="font-display text-2xl leading-tight">
                 {selected.label}
-                {selectedTotal && <span className="ml-2 font-sans text-sm font-medium">{selectedTotal}</span>}
+                {selectedTotal && (
+                  <span className="ml-2 font-sans text-sm font-medium">{selectedTotal}</span>
+                )}
               </p>
               <p className="text-xs text-muted-foreground">
                 Mínimo de {guarantee.jewelry} joias + {guarantee.gifts} brindes surpresa
@@ -75,7 +91,9 @@ export function ScoopSelector() {
             </div>
             <button
               type="button"
-              onClick={() => cardsRef.current?.scrollIntoView({ behavior: "smooth", block: "start" })}
+              onClick={() =>
+                cardsRef.current?.scrollIntoView({ behavior: "smooth", block: "start" })
+              }
               className="shrink-0 text-xs font-medium underline underline-offset-4"
             >
               Alterar
@@ -83,7 +101,9 @@ export function ScoopSelector() {
           </div>
 
           <div className="animate-in fade-in duration-300">
-            <h3 className="font-display mt-8 text-3xl leading-tight">Conte um pouquinho sobre você</h3>
+            <h3 className="font-display mt-8 text-3xl leading-tight">
+              Conte um pouquinho sobre você
+            </h3>
             <p className="mt-2 text-sm text-muted-foreground">
               Assim preparamos o seu Scoop com carinho. O conteúdo continua sendo surpresa.
             </p>
@@ -109,14 +129,26 @@ export function ScoopSelector() {
   );
 }
 
-function ScoopCard({ option, active, onChoose }: { option: ScoopOption; active: boolean; onChoose: () => void }) {
+function ScoopCard({
+  option,
+  active,
+  onChoose,
+}: {
+  option: ScoopOption;
+  active: boolean;
+  onChoose: () => void;
+}) {
   const p = pricingFor(option);
   const g = guaranteeFor(option.quantity);
   return (
     <div
       className={cn(
         "relative flex flex-col rounded-sm border bg-background px-5 pt-6 pb-5",
-        active ? "border-gold ring-1 ring-gold" : option.highlighted ? "border-sage" : "border-border",
+        active
+          ? "border-gold ring-1 ring-gold"
+          : option.highlighted
+            ? "border-sage"
+            : "border-border",
       )}
     >
       {option.badge && (
@@ -141,7 +173,9 @@ function ScoopCard({ option, active, onChoose }: { option: ScoopOption; active: 
         ) : (
           <>
             {p.previous != null && (
-              <p className="text-xs text-muted-foreground line-through">de {formatPrice(p.previous)}</p>
+              <p className="text-xs text-muted-foreground line-through">
+                de {formatPrice(p.previous)}
+              </p>
             )}
             <p className="text-2xl font-semibold tabular-nums">{formatPrice(p.total)}</p>
             {p.installment && (
@@ -155,7 +189,9 @@ function ScoopCard({ option, active, onChoose }: { option: ScoopOption; active: 
 
       {(p.perScoop != null || p.savings != null) && (
         <p className="mt-2 flex flex-wrap gap-x-3 text-xs">
-          {option.quantity > 1 && p.perScoop != null && <span>{formatPrice(p.perScoop)} por Scoop</span>}
+          {option.quantity > 1 && p.perScoop != null && (
+            <span>{formatPrice(p.perScoop)} por Scoop</span>
+          )}
           {p.savings != null && p.savings > 0 && (
             <span className="font-semibold text-sage-deep">Economize {formatPrice(p.savings)}</span>
           )}

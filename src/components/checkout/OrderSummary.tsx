@@ -26,10 +26,18 @@ function SummaryBody({ state, totals }: SummaryProps) {
       {selection.avoidNote.trim() && <Row label="Observação" value={selection.avoidNote.trim()} />}
       <div className="my-2 border-t border-border" />
       <Row label="Subtotal" value={priceOr(totals.subtotalCents, "Valor em breve")} />
-      {totals.discountCents != null && <Row label="Desconto" value={`− ${priceOr(totals.discountCents, "")}`} />}
+      {totals.discountCents != null && (
+        <Row label="Desconto" value={`− ${priceOr(totals.discountCents, "")}`} />
+      )}
       <Row
         label="Frete"
-        value={shipping ? (shipping.priceCents === 0 ? "Grátis" : priceOr(shipping.priceCents, "")) : "A calcular"}
+        value={
+          shipping
+            ? shipping.priceCents === 0
+              ? "Grátis"
+              : priceOr(shipping.priceCents, "")
+            : "A calcular"
+        }
       />
       <div className="my-2 border-t border-border" />
       <Row label="Total" value={priceOr(totals.totalCents, "A confirmar")} strong />
@@ -57,12 +65,16 @@ export function OrderSummaryMobile(props: SummaryProps) {
       <summary className="flex cursor-pointer list-none items-center justify-between gap-4 px-4 py-3 text-sm [&::-webkit-details-marker]:hidden">
         <span>
           <span className="font-medium">Resumo do pedido</span>
-          <span className="ml-2 text-xs text-muted-foreground underline underline-offset-4 group-open:hidden">ver</span>
+          <span className="ml-2 text-xs text-muted-foreground underline underline-offset-4 group-open:hidden">
+            ver
+          </span>
           <span className="ml-2 hidden text-xs text-muted-foreground underline underline-offset-4 group-open:inline">
             ocultar
           </span>
         </span>
-        <span className="font-semibold tabular-nums">{priceOr(props.totals.totalCents, "A confirmar")}</span>
+        <span className="font-semibold tabular-nums">
+          {priceOr(props.totals.totalCents, "A confirmar")}
+        </span>
       </summary>
       <div className="border-t border-border px-4 py-3">
         <SummaryBody {...props} />

@@ -69,11 +69,7 @@ export interface OrderTotals {
 export type PaymentMethod = "pix" | "credit_card";
 
 export type PaymentStatus =
-  | "AWAITING_PAYMENT"
-  | "PAYMENT_PROCESSING"
-  | "PAID"
-  | "PAYMENT_FAILED"
-  | "CANCELLED";
+  "AWAITING_PAYMENT" | "PAYMENT_PROCESSING" | "PAID" | "PAYMENT_FAILED" | "CANCELLED";
 
 export type OrderStatus = "DRAFT" | "CREATING_ORDER" | PaymentStatus;
 

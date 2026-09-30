@@ -10,8 +10,16 @@ export function useInstallments(totalCents: number | null, enabled: boolean) {
     let active = true;
     setState({ status: "loading" });
     getInstallmentOptions(totalCents)
-      .then((options) => active && setState(options.length ? { status: "success", data: options } : { status: "empty" }))
-      .catch(() => active && setState({ status: "error", message: "Não conseguimos carregar o parcelamento." }));
+      .then(
+        (options) =>
+          active &&
+          setState(options.length ? { status: "success", data: options } : { status: "empty" }),
+      )
+      .catch(
+        () =>
+          active &&
+          setState({ status: "error", message: "Não conseguimos carregar o parcelamento." }),
+      );
     return () => {
       active = false;
     };

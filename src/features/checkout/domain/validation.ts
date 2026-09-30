@@ -4,8 +4,33 @@ import { onlyDigits } from "./masks";
 export type FieldErrors<T> = Partial<Record<keyof T, string>>;
 
 export const BR_STATES = [
-  "AC", "AL", "AP", "AM", "BA", "CE", "DF", "ES", "GO", "MA", "MT", "MS", "MG", "PA",
-  "PB", "PR", "PE", "PI", "RJ", "RN", "RS", "RO", "RR", "SC", "SP", "SE", "TO",
+  "AC",
+  "AL",
+  "AP",
+  "AM",
+  "BA",
+  "CE",
+  "DF",
+  "ES",
+  "GO",
+  "MA",
+  "MT",
+  "MS",
+  "MG",
+  "PA",
+  "PB",
+  "PR",
+  "PE",
+  "PI",
+  "RJ",
+  "RN",
+  "RS",
+  "RO",
+  "RR",
+  "SC",
+  "SP",
+  "SE",
+  "TO",
 ] as const;
 
 export function isValidCpf(value: string) {
@@ -33,14 +58,16 @@ export const isValidCep = (value: string) => onlyDigits(value).length === 8;
 export function preferencesError(selection: ScoopSelection): string | null {
   if (selection.metal === null) return "Escolha a categoria para continuar.";
   if (selection.wearsRings === null) return "Conte se você usa anéis para continuar.";
-  if (selection.wearsRings && !selection.ringSize?.trim()) return "Informe o tamanho do seu anel para continuar.";
+  if (selection.wearsRings && !selection.ringSize?.trim())
+    return "Informe o tamanho do seu anel para continuar.";
   return null;
 }
 
 export function validateCustomer(c: Customer): FieldErrors<Customer> {
   const errors: FieldErrors<Customer> = {};
   if (c.fullName.trim().split(/\s+/).length < 2) errors.fullName = "Informe seu nome e sobrenome.";
-  if (!isValidPhone(c.whatsapp)) errors.whatsapp = "Informe um WhatsApp com DDD, ex.: (19) 99999-9999.";
+  if (!isValidPhone(c.whatsapp))
+    errors.whatsapp = "Informe um WhatsApp com DDD, ex.: (19) 99999-9999.";
   if (!isValidEmail(c.email)) errors.email = "Confira o e-mail, ex.: nome@email.com.";
   if (!isValidCpf(c.cpf)) errors.cpf = "CPF inválido. Confira os números.";
   return errors;
@@ -77,9 +104,10 @@ export function validateCard(card: CardFormData, now = new Date()): FieldErrors<
   if (card.holderName.trim().length < 3) errors.holderName = "Informe o nome como está no cartão.";
   const [mm, yy] = card.expiry.split("/").map(Number);
   const expiresAt = mm && yy ? new Date(2000 + yy, mm, 1) : null;
-  if (!expiresAt || !mm || mm > 12 || expiresAt <= now) errors.expiry = "Validade inválida (MM/AA).";
+  if (!expiresAt || !mm || mm > 12 || expiresAt <= now)
+    errors.expiry = "Validade inválida (MM/AA).";
   if (!/^\d{3,4}$/.test(card.cvv)) errors.cvv = "O CVV tem 3 ou 4 números.";
   return errors;
 }
 
-export const hasErrors = <T,>(errors: FieldErrors<T>) => Object.keys(errors).length > 0;
+export const hasErrors = <T>(errors: FieldErrors<T>) => Object.keys(errors).length > 0;

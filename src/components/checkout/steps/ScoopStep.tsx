@@ -14,7 +14,10 @@ export function ScoopStep({ selection }: { selection: ScoopSelection }) {
 
   return (
     <div>
-      <StepHeader title="Seu Scoop" description="Confira o pacote e suas preferências. O conteúdo continua sendo surpresa." />
+      <StepHeader
+        title="Seu Scoop"
+        description="Confira o pacote e suas preferências. O conteúdo continua sendo surpresa."
+      />
       <fieldset className="mt-6">
         <legend className="text-sm font-semibold">Quantidade</legend>
         <div className="mt-3 grid gap-3">

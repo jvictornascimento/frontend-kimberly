@@ -54,10 +54,15 @@ export async function calculateShipping(input: ShippingQuoteInput): Promise<Ship
   return MOCK_SHIPPING_OPTIONS;
 }
 
-export async function getInstallmentOptions(totalCents: number | null): Promise<InstallmentOption[]> {
+export async function getInstallmentOptions(
+  totalCents: number | null,
+): Promise<InstallmentOption[]> {
   if (!USE_MOCKS) {
     // TODO: Retrieve installment values and fees from backend payment endpoint
-    return apiRequest<InstallmentOption[]>(ENDPOINTS.installments, { method: "POST", body: { totalCents } });
+    return apiRequest<InstallmentOption[]>(ENDPOINTS.installments, {
+      method: "POST",
+      body: { totalCents },
+    });
   }
   await mockDelay(300);
   return mockInstallmentOptions(totalCents, MAX_INSTALLMENTS);
@@ -71,7 +76,8 @@ export async function createOrder(input: CreateOrderInput): Promise<Order> {
   await mockDelay(900);
   const { shippingOptionId, ...rest } = input;
   const shipping =
-    [LOCAL_DELIVERY_OPTION, ...MOCK_SHIPPING_OPTIONS].find((o) => o.id === shippingOptionId) ?? LOCAL_DELIVERY_OPTION;
+    [LOCAL_DELIVERY_OPTION, ...MOCK_SHIPPING_OPTIONS].find((o) => o.id === shippingOptionId) ??
+    LOCAL_DELIVERY_OPTION;
   return {
     ...rest,
     id: mockOrderId(),

@@ -6,7 +6,10 @@ export function findPackage(quantity: ScoopQuantity): ScoopPackage {
 }
 
 /** Display-only totals. The backend recalculates and is the source of truth. */
-export function computeTotals(quantity: ScoopQuantity, shipping: ShippingOption | null): OrderTotals {
+export function computeTotals(
+  quantity: ScoopQuantity,
+  shipping: ShippingOption | null,
+): OrderTotals {
   const p = pricingFor(findPackage(quantity));
   const shippingCents = shipping?.priceCents ?? null;
   return {

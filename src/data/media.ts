@@ -17,10 +17,34 @@ export interface MediaItem {
 }
 
 export const MEDIA = {
-  scoop: { src: scoopPearls, alt: "Scoop dourado com pérolas, bolinhas e florzinhas douradas", width: 1024, height: 1280, mock: true },
-  packets: { src: packets, alt: "Pacotinhos dourados e prateados com pérolas e florzinhas", width: 1280, height: 1024, mock: true },
-  box: { src: box, alt: "Caixinha de apresentação com papel verde e laço dourado", width: 1024, height: 1280, mock: true },
-  gifts: { src: gifts, alt: "Itens de beleza neutros e chaveiro delicado", width: 1024, height: 1024, mock: true },
+  scoop: {
+    src: scoopPearls,
+    alt: "Scoop dourado com pérolas, bolinhas e florzinhas douradas",
+    width: 1024,
+    height: 1280,
+    mock: true,
+  },
+  packets: {
+    src: packets,
+    alt: "Pacotinhos dourados e prateados com pérolas e florzinhas",
+    width: 1280,
+    height: 1024,
+    mock: true,
+  },
+  box: {
+    src: box,
+    alt: "Caixinha de apresentação com papel verde e laço dourado",
+    width: 1024,
+    height: 1280,
+    mock: true,
+  },
+  gifts: {
+    src: gifts,
+    alt: "Itens de beleza neutros e chaveiro delicado",
+    width: 1024,
+    height: 1024,
+    mock: true,
+  },
 } satisfies Record<string, MediaItem>;
 
 /** Vídeos reais das pescas (vertical 9:16). Vazio = seção oculta. */

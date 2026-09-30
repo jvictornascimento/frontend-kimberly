@@ -2,7 +2,8 @@ import { createFileRoute } from "@tanstack/react-router";
 import { CheckoutPage } from "@/components/checkout/CheckoutPage";
 
 const title = "Finalizar pedido — BELYEVE Scoop Surpresa";
-const description = "Finalize seu Scoop Surpresa BELYEVE: seus dados, entrega, pagamento por PIX ou cartão e revisão do pedido.";
+const description =
+  "Finalize seu Scoop Surpresa BELYEVE: seus dados, entrega, pagamento por PIX ou cartão e revisão do pedido.";
 
 export const Route = createFileRoute("/checkout")({
   head: () => ({

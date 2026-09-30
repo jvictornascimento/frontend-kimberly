@@ -1,7 +1,7 @@
 import { cn } from "@/lib/utils";
 import type { CheckoutStep } from "@/features/checkout/types";
 
-export const CHECKOUT_STEPS: { id: CheckoutStep; label: string }[] = [
+const CHECKOUT_STEPS: { id: CheckoutStep; label: string }[] = [
   { id: "scoop", label: "Seu Scoop" },
   { id: "customer", label: "Seus dados" },
   { id: "delivery", label: "Entrega" },
@@ -9,7 +9,13 @@ export const CHECKOUT_STEPS: { id: CheckoutStep; label: string }[] = [
   { id: "review", label: "Revisão" },
 ];
 
-export function CheckoutProgress({ current, onSelect }: { current: CheckoutStep; onSelect: (s: CheckoutStep) => void }) {
+export function CheckoutProgress({
+  current,
+  onSelect,
+}: {
+  current: CheckoutStep;
+  onSelect: (s: CheckoutStep) => void;
+}) {
   const currentIndex = CHECKOUT_STEPS.findIndex((s) => s.id === current);
   return (
     <nav aria-label="Etapas do checkout">
