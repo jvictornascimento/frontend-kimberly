@@ -28,8 +28,8 @@ This repository includes `bun.lock`, so Bun is the preferred package manager for
 ## Installation
 
 ```sh
-git clone https://github.com/jvictornascimento/backend-kimberly.git
-cd backend-kimberly
+git clone https://github.com/jvictornascimento/frontend-kimberly.git
+cd frontend-kimberly
 bun install
 ```
 
