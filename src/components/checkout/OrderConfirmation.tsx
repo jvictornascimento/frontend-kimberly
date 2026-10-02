@@ -29,7 +29,7 @@ const STATUS_COPY: Record<
   },
   PAID: {
     title: "Pagamento confirmado!",
-    text: "Agora é com a gente: vamos preparar o seu Scoop.",
+    text: "Vamos falar com você pelo WhatsApp, gravar seu Scoop e enviar o vídeo. O preparo começa depois da sua confirmação por lá.",
     tone: "success",
   },
   PAYMENT_FAILED: {
@@ -61,8 +61,8 @@ export function OrderConfirmation({ placed }: { placed: PlacedOrder }) {
         {priceOr(order.totals.totalCents, "a confirmar")}
       </p>
       <p className="mt-2 text-sm text-muted-foreground">
-        Depois da confirmação, você recebe uma mensagem no WhatsApp{" "}
-        {order.customer.whatsapp && "informado"} com os próximos passos
+        Você recebe uma mensagem no WhatsApp {order.customer.whatsapp && "informado"} com os
+        próximos passos
         {order.shipping.kind === "local_delivery" && " e para combinarmos a entrega em Pedreira"}.
       </p>
 
