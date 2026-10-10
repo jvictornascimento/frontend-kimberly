@@ -34,23 +34,44 @@ public class PurchaseEmailService {
     @TransactionalEventListener(phase = TransactionPhase.AFTER_COMMIT)
     public void sendPaidOrderEmail(PaidOrderEvent event) {
         AppProperties.PurchaseEmail config = properties.purchaseEmail();
-        if (!config.enabled()) {
+        if (!config.enabled() && !config.customerEnabled()) {
             return;
         }
-        if (isBlank(config.from()) || isBlank(config.to())) {
-            throw new IllegalStateException("Purchase email sender and recipient must be configured");
+        if (isBlank(config.from())) {
+            throw new IllegalStateException("Purchase email sender must be configured");
         }
 
         OrderEntity order = orderRepository.findById(event.orderId()).orElseThrow(OrderNotFoundException::new);
+        if (config.enabled()) {
+            sendInternalEmail(config, order);
+        }
+        if (config.customerEnabled()) {
+            sendCustomerEmail(config, order);
+        }
+    }
+
+    private void sendInternalEmail(AppProperties.PurchaseEmail config, OrderEntity order) {
+        if (isBlank(config.to())) {
+            throw new IllegalStateException("Purchase email recipient must be configured");
+        }
         SimpleMailMessage message = new SimpleMailMessage();
         message.setFrom(config.from());
         message.setTo(config.to());
         message.setSubject("Compra confirmada BELYEVE - " + order.getFullName());
-        message.setText(body(order));
+        message.setText(internalBody(order));
         mailSender.send(message);
     }
 
-    private String body(OrderEntity order) {
+    private void sendCustomerEmail(AppProperties.PurchaseEmail config, OrderEntity order) {
+        SimpleMailMessage message = new SimpleMailMessage();
+        message.setFrom(config.from());
+        message.setTo(order.getEmail());
+        message.setSubject("Pagamento confirmado - BELYEVE Scoop");
+        message.setText(customerBody(order));
+        mailSender.send(message);
+    }
+
+    private String internalBody(OrderEntity order) {
         return """
                 Compra confirmada na BELYEVE.
 
@@ -97,6 +118,32 @@ public class PurchaseEmailService {
                 order.getCity(),
                 order.getState(),
                 order.getZipCode()
+        );
+    }
+
+    private String customerBody(OrderEntity order) {
+        return """
+                Oi, %s!
+
+                Seu pagamento do BELYEVE Scoop foi confirmado.
+
+                Pedido: %s
+                Quantidade: %d Scoop(s)
+                Total: %s
+
+                Próximos passos:
+                - A BELYEVE entrará em contato pelo WhatsApp.
+                - A Kimberly vai gravar o processo do seu Scoop.
+                - O vídeo será enviado pelo WhatsApp em 2 a 5 dias úteis.
+                - Depois do vídeo e da sua confirmação pelo WhatsApp, começa o prazo de preparação e despacho.
+                - O despacho pode levar até 7 dias após essa confirmação pelo WhatsApp.
+
+                Obrigada por viver essa surpresa com a BELYEVE.
+                """.formatted(
+                order.getFullName(),
+                order.getId(),
+                order.getScoopQuantity(),
+                money(order.getTotalCents())
         );
     }
 
