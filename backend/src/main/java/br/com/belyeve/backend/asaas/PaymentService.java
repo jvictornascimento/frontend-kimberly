@@ -39,6 +39,9 @@ public class PaymentService {
             throw new BusinessException("Order is already paid");
         }
         if (order.getAsaasPaymentId() != null) {
+            if (order.getPaymentMethod() != PaymentMethod.PIX) {
+                throw new BusinessException("Order already has another payment method");
+            }
             return PixPaymentResponse.from(order);
         }
 
@@ -55,6 +58,41 @@ public class PaymentService {
         order.setPixQrCodeBase64(qrCode.encodedImage());
         order.setPixExpirationAt(parseExpiration(qrCode.expirationDate()));
         return PixPaymentResponse.from(order);
+    }
+
+    @Transactional
+    public CardPaymentResponse createCreditCard(
+            UUID orderId,
+            CreatePaymentRequest.CardRequest card,
+            int installments,
+            String remoteIp
+    ) {
+        OrderEntity order = orderRepository.findById(orderId).orElseThrow(OrderNotFoundException::new);
+        if (order.getPaymentStatus() == PaymentStatus.PAID) {
+            throw new BusinessException("Order is already paid");
+        }
+        if (order.getAsaasPaymentId() != null) {
+            if (order.getPaymentMethod() != PaymentMethod.CREDIT_CARD) {
+                throw new BusinessException("Order already has another payment method");
+            }
+            return CardPaymentResponse.from(order, installments);
+        }
+
+        AsaasClient.CustomerResponse customer = asaasClient.createCustomer(order);
+        AsaasClient.PaymentResponse payment = asaasClient.createCreditCardPayment(
+                order,
+                customer.id(),
+                card,
+                installments,
+                remoteIp
+        );
+
+        order.setAsaasCustomerId(customer.id());
+        order.setAsaasPaymentId(payment.id());
+        order.setPaymentMethod(PaymentMethod.CREDIT_CARD);
+        order.setStatus(OrderStatus.AWAITING_PAYMENT);
+        order.setPaymentStatus(PaymentStatus.PAYMENT_PROCESSING);
+        return CardPaymentResponse.from(order, installments);
     }
 
     @Transactional
