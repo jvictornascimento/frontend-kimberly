@@ -44,6 +44,13 @@ public class OrderEntity {
 
     private boolean usesRings;
     private String ringSize;
+    private boolean allowsMalePieces;
+
+    @Enumerated(EnumType.STRING)
+    private JewelryCategory maleJewelryCategory;
+
+    private boolean allowsPiercing;
+    private String piercingLocations;
     private String restrictions;
     private boolean socialMediaConsent;
     private String fullName;
@@ -184,6 +191,38 @@ public class OrderEntity {
 
     public void setRingSize(String ringSize) {
         this.ringSize = ringSize;
+    }
+
+    public boolean isAllowsMalePieces() {
+        return allowsMalePieces;
+    }
+
+    public void setAllowsMalePieces(boolean allowsMalePieces) {
+        this.allowsMalePieces = allowsMalePieces;
+    }
+
+    public JewelryCategory getMaleJewelryCategory() {
+        return maleJewelryCategory;
+    }
+
+    public void setMaleJewelryCategory(JewelryCategory maleJewelryCategory) {
+        this.maleJewelryCategory = maleJewelryCategory;
+    }
+
+    public boolean isAllowsPiercing() {
+        return allowsPiercing;
+    }
+
+    public void setAllowsPiercing(boolean allowsPiercing) {
+        this.allowsPiercing = allowsPiercing;
+    }
+
+    public String getPiercingLocations() {
+        return piercingLocations;
+    }
+
+    public void setPiercingLocations(String piercingLocations) {
+        this.piercingLocations = piercingLocations;
     }
 
     public String getRestrictions() {

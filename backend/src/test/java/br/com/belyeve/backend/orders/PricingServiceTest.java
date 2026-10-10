@@ -9,7 +9,8 @@ class PricingServiceTest {
     private final PricingService service = new PricingService(new AppProperties(
             "http://localhost:3000",
             new AppProperties.Pricing(10000, 19000, 27000, 2500),
-            new AppProperties.Asaas("https://api-sandbox.asaas.com/v3", "key", "webhook-token")
+            new AppProperties.Asaas("https://api-sandbox.asaas.com/v3", "key", "webhook-token"),
+            new AppProperties.PurchaseEmail(false, null, null)
     ));
 
     @Test
@@ -39,6 +40,10 @@ class PricingServiceTest {
         return new CreateOrderRequest(
                 quantity,
                 JewelryCategory.GOLD,
+                false,
+                null,
+                false,
+                null,
                 false,
                 null,
                 null,

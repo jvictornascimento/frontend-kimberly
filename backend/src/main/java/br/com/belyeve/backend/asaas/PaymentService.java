@@ -7,6 +7,8 @@ import br.com.belyeve.backend.orders.OrderRepository;
 import br.com.belyeve.backend.orders.OrderStatus;
 import br.com.belyeve.backend.orders.PaymentMethod;
 import br.com.belyeve.backend.orders.PaymentStatus;
+import br.com.belyeve.backend.notifications.PaidOrderEvent;
+import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -18,10 +20,16 @@ import java.util.UUID;
 public class PaymentService {
     private final OrderRepository orderRepository;
     private final AsaasClient asaasClient;
+    private final ApplicationEventPublisher eventPublisher;
 
-    public PaymentService(OrderRepository orderRepository, AsaasClient asaasClient) {
+    public PaymentService(
+            OrderRepository orderRepository,
+            AsaasClient asaasClient,
+            ApplicationEventPublisher eventPublisher
+    ) {
         this.orderRepository = orderRepository;
         this.asaasClient = asaasClient;
+        this.eventPublisher = eventPublisher;
     }
 
     @Transactional
@@ -52,10 +60,14 @@ public class PaymentService {
     @Transactional
     public void markFromAsaas(String paymentId, String eventType) {
         orderRepository.findByAsaasPaymentId(paymentId).ifPresent(order -> {
+            PaymentStatus previousStatus = order.getPaymentStatus();
             PaymentStatus paymentStatus = mapPaymentStatus(eventType);
             order.setPaymentStatus(paymentStatus);
             if (paymentStatus == PaymentStatus.PAID) {
                 order.setStatus(OrderStatus.PAID);
+                if (previousStatus != PaymentStatus.PAID) {
+                    eventPublisher.publishEvent(new PaidOrderEvent(order.getId()));
+                }
             } else if (paymentStatus == PaymentStatus.PAYMENT_FAILED) {
                 order.setStatus(OrderStatus.PAYMENT_FAILED);
             } else if (paymentStatus == PaymentStatus.CANCELLED) {

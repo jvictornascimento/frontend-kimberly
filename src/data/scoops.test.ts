@@ -23,7 +23,7 @@ describe("scoop rules", () => {
     expect(SCOOP_OPTIONS.map((option) => option.id)).toEqual(["scoop-1", "scoop-2", "scoop-3"]);
   });
 
-  it("keeps Dourado and Prata as the selectable metal categories", () => {
+  it("keeps the selectable metal categories", () => {
     expect(METAL_CATEGORIES).toEqual([
       {
         value: "dourado",
@@ -32,8 +32,13 @@ describe("scoop rules", () => {
       },
       {
         value: "prata",
-        label: "Prata",
+        label: "Prata/inox",
         description: "Semijoias banhadas a prata, Prata 925 e inox",
+      },
+      {
+        value: "misto",
+        label: "Misto",
+        description: "Pode conter peças douradas e prata/inox",
       },
     ]);
   });

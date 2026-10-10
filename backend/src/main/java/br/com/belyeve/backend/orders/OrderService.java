@@ -23,6 +23,10 @@ public class OrderService {
         order.setJewelryCategory(request.jewelryCategory());
         order.setUsesRings(request.usesRings());
         order.setRingSize(trimToNull(request.ringSize()));
+        order.setAllowsMalePieces(request.allowsMalePieces());
+        order.setMaleJewelryCategory(request.allowsMalePieces() ? request.maleJewelryCategory() : null);
+        order.setAllowsPiercing(request.allowsPiercing());
+        order.setPiercingLocations(request.allowsPiercing() ? trimToNull(request.piercingLocations()) : null);
         order.setRestrictions(trimToNull(request.restrictions()));
         order.setSocialMediaConsent(request.socialMediaConsent());
         order.setFullName(request.customer().fullName().trim());
