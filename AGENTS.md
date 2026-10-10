@@ -44,58 +44,58 @@
 
 ## Stack definida
 - Frontend: TanStack Start, React e TypeScript.
-- Backend: Cloudflare Workers, TypeScript e Hono.
-- Validação obrigatória de entradas externas: Zod.
+- Backend: Spring Boot, Java 21 e PostgreSQL.
+- Validação obrigatória de entradas externas: Jakarta Bean Validation no backend, com validações de domínio em serviços/use cases.
 - Banco de dados: PostgreSQL.
-- Não apresentar Spring Boot, Java ou outro runtime como backend planejado.
-- Não apresentar Hono como opção em avaliação; Hono está definido.
+- Não apresentar Cloudflare Workers, Hono ou TypeScript como backend planejado.
 - Não apresentar o banco como alternativa entre D1 e PostgreSQL; PostgreSQL está definido.
 
-## Backend e Hono
-- Hono será utilizado principalmente como fronteira HTTP da aplicação.
-- Hono não deve concentrar regras de negócio.
-- Arquitetura conceitual: HTTP -> Hono Routes / Middleware -> Input Validation -> Application / Use Cases -> Domain -> Repositories / Integrations.
-- Evitar lógica de negócio complexa diretamente dentro das routes.
-- Routes devem permanecer pequenas e focadas em responsabilidades HTTP.
+## Backend Spring Boot
+- O backend Spring Boot será utilizado como API HTTP da BELYEVE e autoridade para pedidos, preços, frete, totais e estado de pagamento.
+- Controllers não devem concentrar regras de negócio.
+- Arquitetura conceitual: HTTP -> Controllers / Filters -> Input Validation -> Application / Use Cases -> Domain -> Repositories / Integrations.
+- Evitar lógica de negócio complexa diretamente dentro dos controllers.
+- Controllers devem permanecer pequenos e focados em responsabilidades HTTP.
+- O backend será implantado em VPS com Docker, junto com PostgreSQL.
+- Manter a solução simples, sem painel administrativo, login, JWT ou microsserviços enquanto o objetivo for somente armazenar vendas e suportar o checkout.
 
 ## PostgreSQL
 - PostgreSQL é a decisão definitiva de banco de dados.
-- A hospedagem permanece em aberto: VPS própria ou serviço gerenciado de PostgreSQL.
-- A integração entre Cloudflare Workers e PostgreSQL deverá considerar Cloudflare Hyperdrive para gerenciamento de conexões.
-- A implementação deve preservar a possibilidade de mudar de provedor de hospedagem sem reescrever regras de negócio.
+- A hospedagem atual planejada é VPS própria via Docker Compose, podendo migrar futuramente para serviço gerenciado de PostgreSQL.
+- A implementação deve preservar a possibilidade de mudar a hospedagem sem reescrever regras de negócio.
 - Não provisionar infraestrutura sem tarefa explícita.
 - O volume inicialmente esperado é inferior a 100 novos registros por mês.
 - Priorizar simplicidade operacional, segurança, backups, migrations e manutenção.
 - Não introduzir infraestrutura desnecessária, microsserviços ou soluções complexas de escalabilidade.
 - Não confundir baixo volume de gravações com ausência de consultas ou eventos de webhook.
 - A futura implementação deve considerar migrations versionadas, integridade referencial, constraints no banco, transações para operações críticas, valores monetários com representação exata, idempotência de eventos de pagamento, índices justificados pelas consultas reais, backups e estratégia de restauração.
-- A escolha entre Drizzle, Kysely ou outra ferramenta compatível com Workers será feita durante a implementação.
-- Não selecionar nem instalar ORM sem tarefa explícita.
+- Usar migrations versionadas com Flyway.
+- JPA/Hibernate pode ser usado de forma simples quando não espalhar regras de negócio em entidades ou controllers.
 - Usar consultas parametrizadas ou mecanismos seguros equivalentes.
 - Nunca colocar credenciais do PostgreSQL no frontend ou no repositório.
 - A conexão de produção deve utilizar transporte seguro, autenticação adequada e privilégios mínimos.
 
 ## Validação nas fronteiras
 - Toda entrada externa deve ser considerada não confiável.
-- Zod deve ser utilizado para validação nas fronteiras da aplicação.
+- No backend Spring Boot, Jakarta Bean Validation deve ser utilizado para validação estrutural nas fronteiras da aplicação.
 - Validar, quando aplicável: request body, query parameters, path parameters, headers relevantes, cookies, dados recebidos por webhook, dados vindos de APIs externas, payloads de integrações e valores enviados pelo frontend.
 - Não considerar uma entrada segura apenas porque veio do frontend BELYEVE, porque TypeScript possui um tipo para ela, porque o formulário frontend já valida, ou porque a requisição veio de uma integração conhecida.
 - TypeScript não substitui runtime validation.
 - Frontend validation não substitui backend validation.
-- Schemas externos devem ser restritivos.
-- Quando apropriado, usar `.strict()`, limites de tamanho, enums, formatos, ranges, normalização segura, rejeição de propriedades inesperadas e rejeição de valores inválidos.
+- DTOs externos devem ser restritivos.
+- Quando apropriado, usar limites de tamanho, enums, formatos, ranges, normalização segura, rejeição de propriedades inesperadas e rejeição de valores inválidos.
 - Não aceitar entradas simplesmente porque podem ser convertidas para o tipo esperado.
 - Se esperamos `scoopQuantity = 1 | 2 | 3`, não aceitar arbitrariamente qualquer inteiro positivo.
 - Se esperamos `jewelryCategory = GOLD | SILVER`, não aceitar strings arbitrárias.
 - Toda entrada textual controlada pelo usuário deve possuir limites adequados quando possível: nome, email, telefone, CPF, CEP, endereço, complemento, observações, restrições e identificadores recebidos em URLs.
 - Os limites definitivos serão estabelecidos durante a implementação de cada contrato.
 
-## Zod, domínio e integrações
-- Zod responde: "A entrada possui uma estrutura e formato aceitáveis?"
+## Validação, domínio e integrações
+- Bean Validation responde: "A entrada possui uma estrutura e formato aceitáveis?"
 - Application/Domain responde: "Essa operação é válida segundo as regras da BELYEVE?"
 - Infrastructure/Integration responde: "O resultado ou evento externo é autêntico, esperado e pode ser processado?"
-- Não colocar todas as regras de negócio dentro de schemas Zod.
-- Não utilizar Zod como substituto do domínio.
+- Não colocar todas as regras de negócio dentro de DTOs/anotações de validação.
+- Não utilizar validação estrutural como substituto do domínio.
 - Respostas e eventos de Asaas, Melhor Envio, WhatsApp e futuras integrações também cruzam fronteira externa e devem ser tratados defensivamente.
 - Fluxo esperado para providers: External Provider -> validation/parsing -> provider adapter -> BELYEVE domain model.
 - Não espalhar objetos específicos de providers pelo domínio.
@@ -220,10 +220,10 @@
 ## Sequência de desenvolvimento
 - Prompts 1-6: Lovable - frontend, design e UX.
 - Prompt 7: Codex - inspeção do repositório e planejamento.
-- Próxima etapa: estabilização do frontend e criação da infraestrutura inicial de testes.
-- Backend posterior: Cloudflare Workers + TypeScript + Hono + Zod.
+- Próxima etapa: backend MVP Spring Boot para armazenar vendas e suportar o checkout.
+- Backend: Spring Boot + Java 21 + PostgreSQL + Docker em VPS.
 - Banco: PostgreSQL.
-- Hospedagem do PostgreSQL: a decidir em decisão arquitetural futura.
+- Hospedagem do PostgreSQL: VPS via Docker Compose inicialmente.
 - Integrações reais serão implementadas incrementalmente.
 - Não tratar Prompt 7 como permissão para grande rewrite.
-- Não implementar backend, banco, provider real ou infraestrutura sem tarefa explícita.
+- Não implementar provider real ou infraestrutura fora do escopo da Issue atual.

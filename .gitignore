@@ -11,6 +11,8 @@ node_modules
 dist
 dist-ssr
 .output
+target
+backend/target
 .vinxi
 .tanstack/**
 .nitro

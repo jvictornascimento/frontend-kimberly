@@ -2,7 +2,7 @@
 
 Mobile-first sales experience for BELYEVE Scoop, focused on customers coming from Instagram and TikTok.
 
-The current repository contains the frontend landing page and checkout flow. Backend integrations are planned for a later phase and are not implemented here yet.
+The current repository contains the BELYEVE frontend and the backend MVP used to store sales and support checkout.
 
 ## Stack
 
@@ -15,8 +15,13 @@ The current repository contains the frontend landing page and checkout flow. Bac
 - React Hook Form
 - Zod
 - Vitest
+- Spring Boot
+- Java 21
+- PostgreSQL
+- Flyway
+- Docker
 
-Planned backend architecture, documented in `AGENTS.md`, is Cloudflare Workers with TypeScript, Hono, Zod, and PostgreSQL. This backend is not implemented in this repository yet.
+The backend architecture is Spring Boot with PostgreSQL, deployed with Docker Compose on a VPS.
 
 ## Requirements
 
@@ -45,6 +50,13 @@ bun run dev
 bun run build
 ```
 
+Backend:
+
+```sh
+cd backend
+mvn -B package
+```
+
 ## Lint
 
 ```sh
@@ -63,6 +75,13 @@ For watch mode during development:
 bun run test:watch
 ```
 
+Backend:
+
+```sh
+cd backend
+mvn -B test
+```
+
 ## Environment
 
 The frontend reads:
@@ -73,6 +92,8 @@ When `VITE_API_BASE_URL` is empty, checkout services use local mocks.
 
 Do not commit secrets, API keys, access tokens, webhook secrets, or production credentials.
 
+The backend reads database, pricing, CORS and Asaas settings from environment variables. Use `.env.example` as a starting point and keep real values outside git.
+
 ## Project Structure
 
 - `src/components/belyeve/`: landing page sections.
@@ -81,6 +102,7 @@ Do not commit secrets, API keys, access tokens, webhook secrets, or production c
 - `src/data/`: editable business/content data used by the frontend.
 - `src/routes/`: TanStack Start routes.
 - `src/test/`: test setup and future frontend tests.
+- `backend/`: Spring Boot backend API, migrations, integrations, and backend tests.
 
 ## Development Workflow
 
