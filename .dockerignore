@@ -1,0 +1,14 @@
+.git
+.github
+node_modules
+.output
+.vinxi
+.nitro
+.tanstack
+.wrangler
+dist
+dist-ssr
+backend
+target
+*.log
+*.local
