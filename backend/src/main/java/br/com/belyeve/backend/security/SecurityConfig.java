@@ -46,6 +46,11 @@ public class SecurityConfig {
                         .requestMatchers(HttpMethod.POST, "/api/orders").permitAll()
                         .requestMatchers(HttpMethod.POST, "/api/orders/*/payments/pix").permitAll()
                         .requestMatchers(HttpMethod.GET, "/api/orders/*/status").permitAll()
+                        .requestMatchers(HttpMethod.POST, "/api/payments").permitAll()
+                        .requestMatchers(HttpMethod.GET, "/api/payments/*/status").permitAll()
+                        .requestMatchers(HttpMethod.POST, "/api/payments/installments").permitAll()
+                        .requestMatchers(HttpMethod.POST, "/api/shipping/quote").permitAll()
+                        .requestMatchers(HttpMethod.GET, "/api/addresses/*").permitAll()
                         .requestMatchers(HttpMethod.POST, "/api/webhooks/asaas").permitAll()
                         .requestMatchers("/error").permitAll()
                         .anyRequest().denyAll());

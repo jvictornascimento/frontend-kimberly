@@ -64,6 +64,13 @@ public class PaymentService {
         });
     }
 
+    @Transactional(readOnly = true)
+    public PaymentStatus statusByPaymentId(String paymentId) {
+        return orderRepository.findByAsaasPaymentId(paymentId)
+                .map(OrderEntity::getPaymentStatus)
+                .orElse(PaymentStatus.PAYMENT_PROCESSING);
+    }
+
     private PaymentStatus mapPaymentStatus(String eventType) {
         return switch (eventType) {
             case "PAYMENT_RECEIVED", "PAYMENT_CONFIRMED" -> PaymentStatus.PAID;

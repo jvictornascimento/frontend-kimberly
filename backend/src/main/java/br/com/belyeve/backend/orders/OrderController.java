@@ -23,8 +23,8 @@ public class OrderController {
 
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
-    public OrderResponse create(@Valid @RequestBody CreateOrderRequest request) {
-        return OrderResponse.from(service.create(request));
+    public CheckoutOrderResponse create(@Valid @RequestBody CheckoutOrderRequest request) {
+        return CheckoutOrderResponse.from(service.create(request.toCreateOrderRequest()));
     }
 
     @GetMapping("/{id}/status")
