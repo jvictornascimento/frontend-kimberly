@@ -4,7 +4,8 @@
  * Preços, estoque e checkout virão de um backend próprio futuramente.
  */
 
-export type MetalCategory = "dourado" | "prata";
+export type MetalCategory = "dourado" | "prata" | "misto";
+export type PiercingLocation = "nariz" | "helix";
 
 export interface ScoopOption {
   /** Quantidade de Scoops do pacote */
@@ -105,8 +106,13 @@ export const METAL_CATEGORIES: { value: MetalCategory; label: string; descriptio
   },
   {
     value: "prata",
-    label: "Prata",
+    label: "Prata/inox",
     description: "Semijoias banhadas a prata, Prata 925 e inox",
+  },
+  {
+    value: "misto",
+    label: "Misto",
+    description: "Pode conter peças douradas e prata/inox",
   },
 ];
 
@@ -147,6 +153,10 @@ export interface ScoopOrderDraft {
   metal: MetalCategory | null;
   wearsRings: boolean | null;
   ringSize: string | null;
+  allowsMalePieces: boolean | null;
+  maleMetal: MetalCategory | null;
+  allowsPiercing: boolean | null;
+  piercingLocations: PiercingLocation[];
   /** Observação opcional: tipo de peça que a cliente não usa. */
   avoidNote: string;
 }
@@ -156,6 +166,10 @@ export const EMPTY_ORDER: ScoopOrderDraft = {
   metal: null,
   wearsRings: null,
   ringSize: null,
+  allowsMalePieces: null,
+  maleMetal: null,
+  allowsPiercing: null,
+  piercingLocations: [],
   avoidNote: "",
 };
 

@@ -1,6 +1,8 @@
 package br.com.belyeve.backend.orders;
 
 import java.time.Instant;
+import java.util.Arrays;
+import java.util.List;
 import java.util.UUID;
 
 public record CheckoutOrderResponse(
@@ -18,9 +20,13 @@ public record CheckoutOrderResponse(
 ) {
     public static CheckoutOrderResponse from(OrderEntity order) {
         CheckoutOrderRequest.Preferences preferences = new CheckoutOrderRequest.Preferences(
-                order.getJewelryCategory() == JewelryCategory.GOLD ? "dourado" : "prata",
+                toMetalValue(order.getJewelryCategory()),
                 order.isUsesRings(),
                 order.getRingSize(),
+                order.isAllowsMalePieces(),
+                order.getMaleJewelryCategory() == null ? null : toMetalValue(order.getMaleJewelryCategory()),
+                order.isAllowsPiercing(),
+                splitPiercingLocations(order.getPiercingLocations()),
                 order.getRestrictions()
         );
         CheckoutOrderRequest.Item item = new CheckoutOrderRequest.Item(
@@ -56,5 +62,20 @@ public record CheckoutOrderResponse(
                 ),
                 order.getCreatedAt()
         );
+    }
+
+    private static String toMetalValue(JewelryCategory category) {
+        return switch (category) {
+            case GOLD -> "dourado";
+            case SILVER -> "prata";
+            case MIXED -> "misto";
+        };
+    }
+
+    private static List<String> splitPiercingLocations(String value) {
+        if (value == null || value.isBlank()) {
+            return List.of();
+        }
+        return Arrays.stream(value.split(",")).filter(item -> !item.isBlank()).toList();
     }
 }

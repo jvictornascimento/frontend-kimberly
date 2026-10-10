@@ -6,6 +6,8 @@ import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Pattern;
 import jakarta.validation.constraints.Size;
 
+import java.util.List;
+
 public record CheckoutOrderRequest(
         @Valid @NotNull Item item,
         @Valid @NotNull CreateOrderRequest.CustomerRequest customer,
@@ -21,6 +23,10 @@ public record CheckoutOrderRequest(
                 item.preferences().jewelryCategory(),
                 item.preferences().wearsRings(),
                 item.preferences().ringSize(),
+                item.preferences().allowsMalePieces(),
+                item.preferences().maleJewelryCategory(),
+                item.preferences().allowsPiercing(),
+                item.preferences().joinedPiercingLocations(),
                 item.preferences().avoidNote(),
                 socialMediaConsent,
                 customer,
@@ -37,13 +43,37 @@ public record CheckoutOrderRequest(
     }
 
     public record Preferences(
-            @NotBlank @Pattern(regexp = "dourado|prata") String metal,
+            @NotBlank @Pattern(regexp = "dourado|prata|misto") String metal,
             @NotNull Boolean wearsRings,
             @Size(max = 20) String ringSize,
+            @NotNull Boolean allowsMalePieces,
+            @Pattern(regexp = "dourado|prata|misto") String maleMetal,
+            @NotNull Boolean allowsPiercing,
+            @Size(max = 2) List<@Pattern(regexp = "nariz|helix") String> piercingLocations,
             @Size(max = 500) String avoidNote
     ) {
         JewelryCategory jewelryCategory() {
-            return "dourado".equals(metal) ? JewelryCategory.GOLD : JewelryCategory.SILVER;
+            return toJewelryCategory(metal);
+        }
+
+        JewelryCategory maleJewelryCategory() {
+            return maleMetal == null ? null : toJewelryCategory(maleMetal);
+        }
+
+        String joinedPiercingLocations() {
+            if (piercingLocations == null || piercingLocations.isEmpty()) {
+                return null;
+            }
+            return String.join(",", piercingLocations);
+        }
+
+        private JewelryCategory toJewelryCategory(String value) {
+            return switch (value) {
+                case "dourado" -> JewelryCategory.GOLD;
+                case "prata" -> JewelryCategory.SILVER;
+                case "misto" -> JewelryCategory.MIXED;
+                default -> throw new IllegalArgumentException("Invalid jewelry category");
+            };
         }
     }
 }

@@ -13,6 +13,10 @@ public record CreateOrderRequest(
         @NotNull JewelryCategory jewelryCategory,
         @NotNull Boolean usesRings,
         @Size(max = 20) String ringSize,
+        @NotNull Boolean allowsMalePieces,
+        JewelryCategory maleJewelryCategory,
+        @NotNull Boolean allowsPiercing,
+        @Size(max = 80) String piercingLocations,
         @Size(max = 500) String restrictions,
         @NotNull Boolean socialMediaConsent,
         @Valid @NotNull CustomerRequest customer,
@@ -28,6 +32,20 @@ public record CreateOrderRequest(
         if (usesRings == null) return true;
         if (!usesRings) return ringSize == null || ringSize.isBlank();
         return ringSize != null && !ringSize.isBlank();
+    }
+
+    @AssertTrue(message = "maleJewelryCategory is required when male pieces are enabled")
+    boolean isValidMaleJewelryCategory() {
+        if (allowsMalePieces == null) return true;
+        if (!allowsMalePieces) return maleJewelryCategory == null;
+        return maleJewelryCategory != null;
+    }
+
+    @AssertTrue(message = "piercingLocations is required when piercing is enabled")
+    boolean isValidPiercingLocations() {
+        if (allowsPiercing == null) return true;
+        if (!allowsPiercing) return piercingLocations == null || piercingLocations.isBlank();
+        return piercingLocations != null && !piercingLocations.isBlank();
     }
 
     public record CustomerRequest(

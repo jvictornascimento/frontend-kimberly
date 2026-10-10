@@ -16,6 +16,10 @@ const selection = (overrides: Partial<ScoopSelection> = {}): ScoopSelection => (
   metal: "dourado",
   wearsRings: false,
   ringSize: null,
+  allowsMalePieces: false,
+  maleMetal: null,
+  allowsPiercing: false,
+  piercingLocations: [],
   avoidNote: "",
   ...overrides,
 });
@@ -29,7 +33,7 @@ describe("checkout preference validation", () => {
 
   it("requires an answer about ring usage", () => {
     expect(preferencesError(selection({ wearsRings: null }))).toBe(
-      "Conte se você usa anéis para continuar.",
+      "Conte se você gosta de anéis para continuar.",
     );
   });
 
@@ -47,6 +51,28 @@ describe("checkout preference validation", () => {
   it("keeps jewelry restrictions optional", () => {
     expect(preferencesError(selection({ avoidNote: "" }))).toBeNull();
     expect(preferencesError(selection({ avoidNote: "Não uso pulseiras." }))).toBeNull();
+  });
+
+  it("requires male jewelry category when male pieces are enabled", () => {
+    expect(preferencesError(selection({ allowsMalePieces: null }))).toBe(
+      "Conte se pode conter peças masculinas para continuar.",
+    );
+    expect(preferencesError(selection({ allowsMalePieces: true, maleMetal: null }))).toBe(
+      "Escolha a categoria das peças masculinas para continuar.",
+    );
+    expect(preferencesError(selection({ allowsMalePieces: true, maleMetal: "misto" }))).toBeNull();
+  });
+
+  it("requires a piercing location when piercing is enabled", () => {
+    expect(preferencesError(selection({ allowsPiercing: null }))).toBe(
+      "Conte se pode conter piercing de furo para continuar.",
+    );
+    expect(preferencesError(selection({ allowsPiercing: true, piercingLocations: [] }))).toBe(
+      "Escolha onde pode conter piercing de furo para continuar.",
+    );
+    expect(
+      preferencesError(selection({ allowsPiercing: true, piercingLocations: ["nariz"] })),
+    ).toBeNull();
   });
 });
 

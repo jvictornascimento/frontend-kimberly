@@ -57,9 +57,17 @@ export const isValidCep = (value: string) => onlyDigits(value).length === 8;
 
 export function preferencesError(selection: ScoopSelection): string | null {
   if (selection.metal === null) return "Escolha a categoria para continuar.";
-  if (selection.wearsRings === null) return "Conte se você usa anéis para continuar.";
+  if (selection.wearsRings === null) return "Conte se você gosta de anéis para continuar.";
   if (selection.wearsRings && !selection.ringSize?.trim())
     return "Informe o tamanho do seu anel para continuar.";
+  if (selection.allowsMalePieces === null)
+    return "Conte se pode conter peças masculinas para continuar.";
+  if (selection.allowsMalePieces && selection.maleMetal === null)
+    return "Escolha a categoria das peças masculinas para continuar.";
+  if (selection.allowsPiercing === null)
+    return "Conte se pode conter piercing de furo para continuar.";
+  if (selection.allowsPiercing && selection.piercingLocations.length === 0)
+    return "Escolha onde pode conter piercing de furo para continuar.";
   return null;
 }
 
