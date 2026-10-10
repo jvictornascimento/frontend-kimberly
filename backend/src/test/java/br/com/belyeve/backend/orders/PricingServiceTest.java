@@ -11,7 +11,7 @@ class PricingServiceTest {
             new AppProperties.Pricing(10000, 19000, 27000, 2500),
             new AppProperties.Asaas("sandbox", "https://api-sandbox.asaas.com/v3",
                     "https://api.asaas.com/v3", "sandbox-key", "production-key", "webhook-token"),
-            new AppProperties.PurchaseEmail(false, null, null)
+            new AppProperties.PurchaseEmail(false, null, null, false)
     ));
 
     @Test

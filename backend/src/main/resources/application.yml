@@ -55,3 +55,4 @@ app:
     enabled: ${PURCHASE_EMAIL_ENABLED:false}
     from: ${PURCHASE_EMAIL_FROM:}
     to: ${PURCHASE_EMAIL_TO:}
+    customer-enabled: ${PURCHASE_CUSTOMER_EMAIL_ENABLED:false}

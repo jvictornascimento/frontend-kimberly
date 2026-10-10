@@ -71,7 +71,8 @@ public record AppProperties(
     public record PurchaseEmail(
             boolean enabled,
             String from,
-            String to
+            String to,
+            boolean customerEnabled
     ) {
     }
 }
