@@ -44,6 +44,17 @@ bun install
 bun run dev
 ```
 
+## Docker
+
+Start frontend, backend, and PostgreSQL together:
+
+```sh
+docker compose up -d --build
+```
+
+The frontend is exposed on `FRONTEND_PORT` and the backend on `BACKEND_PORT`.
+Set `FRONTEND_API_BASE_URL` to the public backend URL that the customer's browser can reach.
+
 ## Build
 
 ```sh
