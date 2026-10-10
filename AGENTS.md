@@ -128,15 +128,18 @@
 - O processo pode resultar em pacotes adicionais, mas pacotes extras nunca são garantidos.
 - Não inventar probabilidades.
 - Não usar linguagem de jogo, aposta, cassino ou gambling.
-- A cliente escolhe exatamente uma categoria de joia: Dourado ou Prata.
+- A cliente escolhe exatamente uma preferência de joia: Dourado, Prata/inox ou Misto.
 - Dourado contém semijoias banhadas a ouro.
 - Prata pode conter semijoias banhadas a prata, Prata 925 e peças em inox.
+- Misto pode conter peças douradas e Prata/inox.
 - A cliente não escolhe o modelo exato da joia.
 - Não usar textos como "personalize seu Scoop", "monte seu Scoop", "Scoop do seu jeito" ou "escolha suas peças".
 - O campo opcional de restrições representa peças que a cliente não usa; ele não transforma o Scoop em produto configurável.
 - Se `usesRings = false`, não solicitar tamanho de anel.
 - Se `usesRings = true`, tamanho de anel é obrigatório.
 - Tamanhos de anel devem vir de configuração/dados.
+- O checkout também pode perguntar se o Scoop pode conter peças masculinas e, quando sim, qual preferência usar: Dourado, Prata/inox ou Misto.
+- O checkout também pode perguntar se pode conter piercing de furo Prata 925 e, quando sim, quais locais são aceitos: nariz e/ou orelha (hélix).
 - Categorias possíveis de brindes incluem skincare, maquiagem, cosméticos, cuidados para unhas, chaveiros e outros produtos.
 - A comunicação pode incluir "e muito mais".
 - Não fixar o domínio em uma lista fechada de brindes sem necessidade.
@@ -186,6 +189,8 @@
 - Estados conceituais devem distinguir draft, awaiting payment, processing, paid, failed, cancelled/refunded quando aplicável.
 - Não acoplar o domínio diretamente a nomes de eventos do Asaas.
 - Eventos do provider devem ser traduzidos para estados do domínio BELYEVE.
+- Notificações internas de compra confirmada devem ser disparadas pelo backend após confirmação autoritativa de pagamento, não por ação do navegador.
+- O envio de email de compra confirmada deve usar configuração de ambiente para remetente/destinatário e nunca commitar credenciais SMTP.
 - Um pedido deve preservar informações suficientes para reconstruir o que a cliente comprou naquele momento.
 - Valores comerciais importantes devem ser snapshotados no pedido quando apropriado.
 - Não referenciar cegamente preços mutáveis atuais quando dados históricos precisam permanecer estáveis.

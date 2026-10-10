@@ -2,6 +2,8 @@ package br.com.belyeve.backend.orders;
 
 import br.com.belyeve.backend.asaas.AsaasClient;
 import br.com.belyeve.backend.asaas.PaymentService;
+import br.com.belyeve.backend.notifications.PaidOrderEvent;
+import org.springframework.context.ApplicationEventPublisher;
 import org.junit.jupiter.api.Test;
 
 import java.util.Optional;
@@ -17,7 +19,8 @@ class PaymentServiceTest {
     void mapsConfirmedAsaasEventToPaidOrder() {
         OrderRepository repository = mock(OrderRepository.class);
         AsaasClient asaasClient = mock(AsaasClient.class);
-        PaymentService service = new PaymentService(repository, asaasClient);
+        ApplicationEventPublisher eventPublisher = mock(ApplicationEventPublisher.class);
+        PaymentService service = new PaymentService(repository, asaasClient, eventPublisher);
         OrderEntity order = new OrderEntity(UUID.randomUUID());
         order.setAsaasPaymentId("pay_123");
         order.setStatus(OrderStatus.AWAITING_PAYMENT);
@@ -29,5 +32,6 @@ class PaymentServiceTest {
         assertThat(order.getStatus()).isEqualTo(OrderStatus.PAID);
         assertThat(order.getPaymentStatus()).isEqualTo(PaymentStatus.PAID);
         verify(repository).findByAsaasPaymentId("pay_123");
+        verify(eventPublisher).publishEvent(new PaidOrderEvent(order.getId()));
     }
 }
