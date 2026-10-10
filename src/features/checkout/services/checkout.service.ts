@@ -23,10 +23,12 @@ import type {
   AddressLookup,
   CreateOrderInput,
   CreatePaymentInput,
+  CardPayment,
   InstallmentOption,
   Order,
   Payment,
   PaymentStatus,
+  PixPayment,
   ShippingOption,
   ShippingQuoteInput,
 } from "../types";
@@ -90,14 +92,75 @@ export async function createOrder(input: CreateOrderInput): Promise<Order> {
 
 export async function createPayment(input: CreatePaymentInput): Promise<Payment> {
   if (!USE_MOCKS) {
-    // TODO: Replace payment mock with backend payment endpoint (card data must follow the gateway's secure flow)
-    return apiRequest<Payment>(ENDPOINTS.payments, { method: "POST", body: input });
+    if (input.method === "pix") {
+      const result = await apiRequest<BackendPixPaymentResponse>(ENDPOINTS.payments, {
+        method: "POST",
+        body: input,
+      });
+      return toPixPayment(result);
+    }
+    const result = await apiRequest<BackendCardPaymentResponse>(ENDPOINTS.payments, {
+      method: "POST",
+      body: {
+        orderId: input.orderId,
+        method: input.method,
+        installments: input.installments,
+        card: {
+          ...input.card,
+          number: input.card.number.replace(/\D/g, ""),
+          cvv: input.card.cvv.replace(/\D/g, ""),
+        },
+      },
+    });
+    return toCardPayment(result);
   }
   await mockDelay(900);
   if (input.method === "pix") return mockPixPayment(input.orderId);
   const options = mockInstallmentOptions(null, MAX_INSTALLMENTS);
   const installment = options.find((o) => o.installments === input.installments) ?? options[0]!;
   return mockCardPayment(input.orderId, installment);
+}
+
+interface BackendPixPaymentResponse {
+  paymentId: string;
+  paymentStatus: PaymentStatus;
+  qrCodeImageBase64: string | null;
+  copyPasteCode: string;
+  expiresAt: string;
+}
+
+interface BackendCardPaymentResponse {
+  paymentId: string;
+  paymentStatus: PaymentStatus;
+  installments: number;
+  installmentValueCents: number;
+  totalWithFeesCents: number;
+}
+
+function toPixPayment(response: BackendPixPaymentResponse): PixPayment {
+  return {
+    method: "pix",
+    paymentId: response.paymentId,
+    status: response.paymentStatus,
+    qrCodeImageUrl: response.qrCodeImageBase64
+      ? `data:image/png;base64,${response.qrCodeImageBase64}`
+      : null,
+    copyPasteCode: response.copyPasteCode,
+    expiresAt: response.expiresAt,
+  };
+}
+
+function toCardPayment(response: BackendCardPaymentResponse): CardPayment {
+  return {
+    method: "credit_card",
+    paymentId: response.paymentId,
+    status: response.paymentStatus,
+    installment: {
+      installments: response.installments,
+      installmentValueCents: response.installmentValueCents,
+      totalWithFeesCents: response.totalWithFeesCents,
+    },
+  };
 }
 
 export async function getPaymentStatus(paymentId: string): Promise<PaymentStatus> {

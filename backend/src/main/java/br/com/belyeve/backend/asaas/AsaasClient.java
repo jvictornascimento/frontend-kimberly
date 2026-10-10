@@ -63,6 +63,52 @@ public class AsaasClient {
         }
     }
 
+    public PaymentResponse createCreditCardPayment(
+            OrderEntity order,
+            String customerId,
+            CreatePaymentRequest.CardRequest card,
+            int installments,
+            String remoteIp
+    ) {
+        CardExpiry expiry = CardExpiry.parse(card.expiry());
+        BigDecimal totalValue = centsToValue(order.getTotalCents());
+        try {
+            return restClient.post()
+                    .uri("/payments")
+                    .body(new CreditCardPaymentRequest(
+                            customerId,
+                            "CREDIT_CARD",
+                            totalValue,
+                            LocalDate.now(),
+                            order.getId().toString(),
+                            "BELYEVE Scoop",
+                            installments > 1 ? installments : null,
+                            installments > 1 ? totalValue : null,
+                            new CreditCard(
+                                    card.number(),
+                                    card.holderName(),
+                                    expiry.month(),
+                                    expiry.year(),
+                                    card.cvv()
+                            ),
+                            new CreditCardHolderInfo(
+                                    card.holderName(),
+                                    order.getEmail(),
+                                    order.getCpf(),
+                                    order.getZipCode(),
+                                    order.getAddressNumber(),
+                                    order.getWhatsapp(),
+                                    order.getWhatsapp()
+                            ),
+                            remoteIp
+                    ))
+                    .retrieve()
+                    .body(PaymentResponse.class);
+        } catch (RestClientException error) {
+            throw new BusinessException("Could not create credit card payment");
+        }
+    }
+
     public PixQrCodeResponse getPixQrCode(String paymentId) {
         try {
             return restClient.get()
@@ -105,5 +151,47 @@ public class AsaasClient {
     }
 
     public record PixQrCodeResponse(String encodedImage, String payload, String expirationDate) {
+    }
+
+    record CreditCardPaymentRequest(
+            String customer,
+            String billingType,
+            BigDecimal value,
+            LocalDate dueDate,
+            String externalReference,
+            String description,
+            Integer installmentCount,
+            BigDecimal totalValue,
+            CreditCard creditCard,
+            CreditCardHolderInfo creditCardHolderInfo,
+            String remoteIp
+    ) {
+    }
+
+    record CreditCard(
+            String number,
+            String holderName,
+            String expiryMonth,
+            String expiryYear,
+            String ccv
+    ) {
+    }
+
+    record CreditCardHolderInfo(
+            String name,
+            String email,
+            String cpfCnpj,
+            String postalCode,
+            String addressNumber,
+            String phone,
+            String mobilePhone
+    ) {
+    }
+
+    record CardExpiry(String month, String year) {
+        static CardExpiry parse(String expiry) {
+            String[] parts = expiry.split("/");
+            return new CardExpiry(parts[0], "20" + parts[1]);
+        }
     }
 }
