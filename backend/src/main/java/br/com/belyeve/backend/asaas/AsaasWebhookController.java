@@ -44,7 +44,15 @@ public class AsaasWebhookController {
             throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "Invalid webhook token");
         }
 
-        JsonNode root = objectMapper.readTree(payload);
+        JsonNode root;
+        try {
+            root = objectMapper.readTree(payload);
+        } catch (tools.jackson.core.JacksonException error) {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Invalid webhook payload");
+        }
+        if (root == null || !root.isObject()) {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Invalid webhook payload");
+        }
         String eventType = requiredText(root, "event");
         JsonNode payment = root.path("payment");
         String paymentId = requiredText(payment, "id");

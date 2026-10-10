@@ -14,12 +14,19 @@ import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.servlet.resource.NoResourceFoundException;
+import org.springframework.web.server.ResponseStatusException;
 
 import java.time.Instant;
 
 @ControllerAdvice
 public class ControllerExceptionHandler {
     private static final Logger log = LoggerFactory.getLogger(ControllerExceptionHandler.class);
+
+    @ExceptionHandler(ResponseStatusException.class)
+    ResponseEntity<StandardError> responseStatusError(ResponseStatusException error, HttpServletRequest request) {
+        HttpStatus status = HttpStatus.valueOf(error.getStatusCode().value());
+        return response(status, status.getReasonPhrase(), request);
+    }
 
     @ExceptionHandler(Exception.class)
     ResponseEntity<StandardError> internalServerError(Exception error, HttpServletRequest request) {
