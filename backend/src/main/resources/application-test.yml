@@ -1,0 +1,23 @@
+spring:
+  datasource:
+    url: jdbc:h2:mem:belyeve;MODE=PostgreSQL;DATABASE_TO_LOWER=TRUE;DEFAULT_NULL_ORDERING=HIGH
+    username: sa
+    password:
+    driver-class-name: org.h2.Driver
+  flyway:
+    enabled: false
+  jpa:
+    hibernate:
+      ddl-auto: create-drop
+
+app:
+  cors-origin: http://localhost:3000
+  pricing:
+    scoop-one-price-cents: 10000
+    scoop-two-price-cents: 19000
+    scoop-three-price-cents: 27000
+    non-local-shipping-cents: 2500
+  asaas:
+    base-url: https://api-sandbox.asaas.com/v3
+    api-key: test-key
+    webhook-token: test-webhook-token-with-more-than-32-chars

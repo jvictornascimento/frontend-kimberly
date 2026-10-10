@@ -1,0 +1,38 @@
+server:
+  port: ${SERVER_PORT:8081}
+
+spring:
+  application:
+    name: belyeve-backend
+  jackson:
+    deserialization:
+      fail-on-unknown-properties: true
+  datasource:
+    url: ${SPRING_DATASOURCE_URL:jdbc:postgresql://localhost:5432/belyeve}
+    username: ${SPRING_DATASOURCE_USERNAME:belyeve}
+    password: ${SPRING_DATASOURCE_PASSWORD:belyeve}
+    driver-class-name: org.postgresql.Driver
+  flyway:
+    enabled: true
+  jpa:
+    hibernate:
+      ddl-auto: validate
+    open-in-view: false
+
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health,info
+
+app:
+  cors-origin: ${CORS_ORIGIN:http://localhost:3000}
+  pricing:
+    scoop-one-price-cents: ${SCOOP_ONE_PRICE_CENTS}
+    scoop-two-price-cents: ${SCOOP_TWO_PRICE_CENTS}
+    scoop-three-price-cents: ${SCOOP_THREE_PRICE_CENTS}
+    non-local-shipping-cents: ${NON_LOCAL_SHIPPING_CENTS}
+  asaas:
+    base-url: ${ASAAS_BASE_URL:https://api-sandbox.asaas.com/v3}
+    api-key: ${ASAAS_API_KEY}
+    webhook-token: ${ASAAS_WEBHOOK_TOKEN}
