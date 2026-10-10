@@ -1,8 +1,8 @@
 package br.com.belyeve.backend.asaas;
 
 import br.com.belyeve.backend.config.AppProperties;
-import com.fasterxml.jackson.databind.JsonNode;
-import com.fasterxml.jackson.databind.ObjectMapper;
+import tools.jackson.databind.JsonNode;
+import tools.jackson.databind.json.JsonMapper;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -20,13 +20,13 @@ public class AsaasWebhookController {
     private final AppProperties properties;
     private final PaymentWebhookEventRepository eventRepository;
     private final PaymentService paymentService;
-    private final ObjectMapper objectMapper;
+    private final JsonMapper objectMapper;
 
     public AsaasWebhookController(
             AppProperties properties,
             PaymentWebhookEventRepository eventRepository,
             PaymentService paymentService,
-            ObjectMapper objectMapper
+            JsonMapper objectMapper
     ) {
         this.properties = properties;
         this.eventRepository = eventRepository;
