@@ -50,7 +50,7 @@ describe("checkout order adapter", () => {
       item: {
         packageId: "scoop-2",
         quantity: 2,
-        unitPriceCents: null,
+        unitPriceCents: 15995,
         preferences: {
           metal: "prata",
           wearsRings: false,

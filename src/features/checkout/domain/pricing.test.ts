@@ -11,13 +11,13 @@ describe("checkout display pricing", () => {
     expect(findPackage(3)).toBe(SCOOP_OPTIONS[2]);
   });
 
-  it("keeps totals empty while package prices are not configured", () => {
+  it("calculates the configured package total with free local delivery", () => {
     expect(computeTotals(2, LOCAL_DELIVERY_OPTION)).toEqual({
-      subtotalCents: null,
+      subtotalCents: 31990,
       discountCents: null,
-      itemsTotalCents: null,
+      itemsTotalCents: 31990,
       shippingCents: 0,
-      totalCents: null,
+      totalCents: 31990,
     });
   });
 
@@ -32,17 +32,17 @@ describe("checkout display pricing", () => {
     };
 
     expect(computeTotals(1, shipping)).toMatchObject({
-      itemsTotalCents: null,
+      itemsTotalCents: 17990,
       shippingCents: 2490,
-      totalCents: null,
+      totalCents: 20480,
     });
   });
 
-  it("does not treat browser totals as backend authority", () => {
+  it("leaves the final total unknown until shipping is selected", () => {
     expect(computeTotals(3, null)).toEqual({
-      subtotalCents: null,
+      subtotalCents: 48490,
       discountCents: null,
-      itemsTotalCents: null,
+      itemsTotalCents: 48490,
       shippingCents: null,
       totalCents: null,
     });

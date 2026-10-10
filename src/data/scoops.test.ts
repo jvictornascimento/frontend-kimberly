@@ -48,7 +48,7 @@ describe("scoop rules", () => {
   });
 
   it("derives display pricing from package configuration", () => {
-    const noPrice = pricingFor(SCOOP_OPTIONS[0]!);
+    const noPrice = pricingFor({ ...SCOOP_OPTIONS[0]!, priceCents: null });
     expect(noPrice).toEqual({
       total: null,
       previous: null,
