@@ -18,9 +18,9 @@ import tools.jackson.databind.json.JsonMapper;
 import java.math.BigDecimal;
 import java.math.RoundingMode;
 import java.time.LocalDate;
-import java.util.UUID;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.UUID;
 
 @Component
 public class AsaasClient {
@@ -114,7 +114,7 @@ public class AsaasClient {
                 String description = item.path("description").asText("");
                 if (!description.isBlank()) {
                     description = description.replaceAll("(?i)[A-Z0-9._%+-]+@[A-Z0-9.-]+\\.[A-Z]{2,}", "[email]")
-                            .replaceAll("\\b\\d{11,14}\\b", "[document]")
+                            .replaceAll("(?<!\\d)(?:\\+?\\d[\\s().-]*){10,14}(?!\\d)", "[phone/document]")
                             .replaceAll("[\\r\\n\\t]", " ");
                 }
                 String summary = code.isBlank() ? description : code + (description.isBlank() ? "" : ": " + description);
