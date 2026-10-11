@@ -45,8 +45,11 @@ app:
     scoop-three-price-cents: ${SCOOP_THREE_PRICE_CENTS}
     non-local-shipping-cents: ${NON_LOCAL_SHIPPING_CENTS}
   asaas:
-    base-url: ${ASAAS_BASE_URL:https://api-sandbox.asaas.com/v3}
-    api-key: ${ASAAS_API_KEY}
+    environment: ${ASAAS_ENVIRONMENT:sandbox}
+    sandbox-base-url: ${ASAAS_SANDBOX_BASE_URL:https://api-sandbox.asaas.com/v3}
+    production-base-url: ${ASAAS_PRODUCTION_BASE_URL:https://api.asaas.com/v3}
+    sandbox-api-key: ${ASAAS_SANDBOX_API_KEY:}
+    production-api-key: ${ASAAS_PRODUCTION_API_KEY:}
     webhook-token: ${ASAAS_WEBHOOK_TOKEN}
   purchase-email:
     enabled: ${PURCHASE_EMAIL_ENABLED:false}

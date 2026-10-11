@@ -12,7 +12,13 @@ import java.net.http.HttpResponse;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
-@SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
+@SpringBootTest(
+        webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT,
+        properties = {
+                "ASAAS_SANDBOX_API_KEY=test-sandbox-key",
+                "ASAAS_WEBHOOK_TOKEN=test-webhook-token-with-more-than-32-chars"
+        }
+)
 @ActiveProfiles("test")
 class WebhookHttpTest {
     @LocalServerPort
