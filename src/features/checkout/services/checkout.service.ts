@@ -47,7 +47,12 @@ export async function calculateShipping(input: ShippingQuoteInput): Promise<Ship
     // TODO: Replace mock shipping service with BELYEVE API (backend quotes Melhor Envio + Pedreira rule)
     return apiRequest<ShippingOption[]>(ENDPOINTS.shippingQuote, {
       method: "POST",
-      body: { ...input, state: input.state.trim().toUpperCase() },
+      body: {
+        zipCode: input.zipCode,
+        city: input.city,
+        state: input.state.trim().toUpperCase(),
+        quantity: input.quantity,
+      },
     });
   }
   await mockDelay();
