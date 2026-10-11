@@ -8,7 +8,10 @@ import org.springframework.test.context.ActiveProfiles;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
-@SpringBootTest
+@SpringBootTest(properties = {
+        "ASAAS_SANDBOX_API_KEY=test-sandbox-key",
+        "ASAAS_WEBHOOK_TOKEN=test-webhook-token-with-more-than-32-chars"
+})
 @ActiveProfiles("test")
 class ApplicationStartupTest {
     @Autowired
