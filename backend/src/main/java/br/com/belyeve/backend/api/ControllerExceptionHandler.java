@@ -17,6 +17,7 @@ import org.springframework.web.servlet.resource.NoResourceFoundException;
 import org.springframework.web.server.ResponseStatusException;
 
 import java.time.Instant;
+import java.util.Comparator;
 
 @ControllerAdvice
 public class ControllerExceptionHandler {
@@ -36,15 +37,22 @@ public class ControllerExceptionHandler {
 
     @ExceptionHandler(MethodArgumentNotValidException.class)
     ResponseEntity<StandardError> validationError(MethodArgumentNotValidException error, HttpServletRequest request) {
-        String message = error.getBindingResult().getFieldErrors().stream()
-                .findFirst()
-                .map(FieldError::getDefaultMessage)
-                .orElse("Validation error");
+        FieldError fieldError = error.getBindingResult().getFieldErrors().stream()
+                .min(Comparator.comparing(FieldError::getField))
+                .orElse(null);
+        String message = fieldError == null ? "Validation error" : fieldError.getDefaultMessage();
+        log.warn("Request validation failed: correlationId={} method={} path={} field={} reason={}",
+                request.getHeader("X-Correlation-ID"), request.getMethod(), request.getRequestURI(),
+                fieldError == null ? "request" : fieldError.getField(), message);
         return response(HttpStatus.BAD_REQUEST, message, request);
     }
 
     @ExceptionHandler(HttpMessageNotReadableException.class)
     ResponseEntity<StandardError> invalidRequestBody(HttpMessageNotReadableException error, HttpServletRequest request) {
+        Throwable cause = error.getMostSpecificCause();
+        log.warn("Request body could not be parsed: correlationId={} method={} path={} cause={}",
+                request.getHeader("X-Correlation-ID"), request.getMethod(), request.getRequestURI(),
+                cause.getClass().getSimpleName());
         return response(HttpStatus.BAD_REQUEST, "Invalid request body", request);
     }
 
