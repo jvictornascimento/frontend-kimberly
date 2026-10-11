@@ -1,5 +1,8 @@
 import { Link } from "@tanstack/react-router";
-import { usePaymentStatusPolling } from "@/features/checkout/hooks/useOrderActions";
+import {
+  usePaymentStatusPolling,
+  useRecoverPixPayment,
+} from "@/features/checkout/hooks/useOrderActions";
 import { resetCheckout } from "@/features/checkout/state/checkout.store";
 import type { OrderStatus, PlacedOrder } from "@/features/checkout/types";
 import { CardForm } from "./CardForm";
@@ -45,9 +48,10 @@ const STATUS_COPY: Record<
 };
 
 export function OrderConfirmation({ placed }: { placed: PlacedOrder }) {
+  useRecoverPixPayment(placed);
   usePaymentStatusPolling(placed);
   const { order, payment } = placed;
-  const copy = STATUS_COPY[order.status];
+  const copy = STATUS_COPY[order.status] ?? STATUS_COPY.DRAFT;
   const needsCard = order.paymentMethod === "credit_card" && payment === null;
 
   return (

@@ -13,11 +13,15 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.Instant;
+import java.time.LocalDateTime;
 import java.time.OffsetDateTime;
+import java.time.ZoneId;
+import java.util.Optional;
 import java.util.UUID;
 
 @Service
 public class PaymentService {
+    private static final ZoneId ASAAS_LOCAL_TIME_ZONE = ZoneId.of("America/Sao_Paulo");
     private final OrderRepository orderRepository;
     private final AsaasClient asaasClient;
     private final ApplicationEventPublisher eventPublisher;
@@ -42,8 +46,20 @@ public class PaymentService {
             return PixPaymentResponse.from(order);
         }
 
-        AsaasClient.CustomerResponse customer = asaasClient.createCustomer(order);
-        AsaasClient.PaymentResponse payment = asaasClient.createPixPayment(order, customer.id());
+        Optional<AsaasClient.PaymentResponse> existingPayment =
+                asaasClient.findPixPaymentByExternalReference(order.getId());
+        AsaasClient.CustomerResponse customer;
+        AsaasClient.PaymentResponse payment;
+        if (existingPayment.isPresent()) {
+            payment = existingPayment.get();
+            if (payment.customer() == null || payment.customer().isBlank()) {
+                throw new BusinessException("Existing PIX payment has no customer reference");
+            }
+            customer = new AsaasClient.CustomerResponse(payment.customer());
+        } else {
+            customer = asaasClient.createCustomer(order);
+            payment = asaasClient.createPixPayment(order, customer.id());
+        }
         AsaasClient.PixQrCodeResponse qrCode = asaasClient.getPixQrCode(payment.id());
 
         order.setAsaasCustomerId(customer.id());
@@ -94,6 +110,13 @@ public class PaymentService {
 
     private Instant parseExpiration(String expirationDate) {
         if (expirationDate == null || expirationDate.isBlank()) return null;
-        return OffsetDateTime.parse(expirationDate).toInstant();
+        try {
+            return OffsetDateTime.parse(expirationDate).toInstant();
+        } catch (java.time.format.DateTimeParseException ignored) {
+            // Asaas also returns local date-times such as "2027-10-12 23:59:59".
+            return LocalDateTime.parse(expirationDate.replace(' ', 'T'))
+                    .atZone(ASAAS_LOCAL_TIME_ZONE)
+                    .toInstant();
+        }
     }
 }

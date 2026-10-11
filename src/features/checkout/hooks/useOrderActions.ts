@@ -3,7 +3,14 @@ import { PAYMENT_STATUS_POLL_MS } from "../config";
 import { toCreateOrderInput } from "../adapters/order.adapter";
 import { createOrder, createPayment, getPaymentStatus } from "../services/checkout.service";
 import { setCheckout, updatePlacedOrder } from "../state/checkout.store";
-import type { CardFormData, CheckoutState, OrderStatus, PlacedOrder } from "../types";
+import type {
+  CardFormData,
+  CheckoutState,
+  Order,
+  OrderStatus,
+  PaymentStatus,
+  PlacedOrder,
+} from "../types";
 
 type ActionStatus = "idle" | "pending" | "error";
 
@@ -11,6 +18,7 @@ type ActionStatus = "idle" | "pending" | "error";
 export function useSubmitOrder() {
   const [status, setStatus] = useState<ActionStatus>("idle");
   const lock = useRef(false);
+  const pendingOrder = useRef<Order | null>(null);
 
   async function submit(state: CheckoutState) {
     const input = toCreateOrderInput(state);
@@ -18,11 +26,13 @@ export function useSubmitOrder() {
     lock.current = true;
     setStatus("pending");
     try {
-      const order = await createOrder(input);
+      const order = pendingOrder.current ?? (await createOrder(input));
+      pendingOrder.current = order;
       const payment =
         input.paymentMethod === "pix"
           ? await createPayment({ orderId: order.id, method: "pix" })
           : null;
+      pendingOrder.current = null;
       setCheckout({
         placedOrder: { order: payment ? { ...order, status: payment.status } : order, payment },
       });
@@ -61,6 +71,34 @@ export function usePayWithCard(placed: PlacedOrder) {
 }
 
 const FINAL_STATUSES: OrderStatus[] = ["PAID", "PAYMENT_FAILED", "CANCELLED"];
+const PAYMENT_STATUSES: PaymentStatus[] = [
+  "AWAITING_PAYMENT",
+  "PAYMENT_PROCESSING",
+  "PAID",
+  "PAYMENT_FAILED",
+  "CANCELLED",
+];
+
+/** Repairs checkout state saved by an older client that stored the raw API response. */
+export function useRecoverPixPayment(placed: PlacedOrder) {
+  const attemptedOrderId = useRef<string | null>(null);
+  const { order, payment } = placed;
+  const validPayment =
+    payment?.method === "pix" && PAYMENT_STATUSES.includes(payment.status);
+
+  useEffect(() => {
+    if (order.paymentMethod !== "pix" || validPayment || attemptedOrderId.current === order.id) return;
+    attemptedOrderId.current = order.id;
+    createPayment({ orderId: order.id, method: "pix" })
+      .then((recoveredPayment) => {
+        updatePlacedOrder({
+          order: { ...order, status: recoveredPayment.status },
+          payment: recoveredPayment,
+        });
+      })
+      .catch(() => undefined);
+  }, [order, validPayment]);
+}
 
 /** Polls the backend for the real payment status. */
 export function usePaymentStatusPolling(placed: PlacedOrder) {

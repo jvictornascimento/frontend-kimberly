@@ -3,6 +3,7 @@
  * Each operation answers with mocks while USE_MOCKS is true.
  */
 import { MAX_INSTALLMENTS, USE_MOCKS } from "../config";
+import { fromPixPaymentResponse } from "../adapters/payment.adapter";
 import { computeTotals } from "../domain/pricing";
 import { LOCAL_DELIVERY_OPTION, isPedreiraSP } from "../domain/shipping-rules";
 import {
@@ -98,8 +99,14 @@ export async function createOrder(input: CreateOrderInput): Promise<Order> {
 
 export async function createPayment(input: CreatePaymentInput): Promise<Payment> {
   if (!USE_MOCKS) {
-    // TODO: Replace payment mock with backend payment endpoint (card data must follow the gateway's secure flow)
-    return apiRequest<Payment>(ENDPOINTS.payments, { method: "POST", body: input });
+    if (input.method !== "pix") {
+      throw new Error("Credit card payments are not available yet");
+    }
+    const response = await apiRequest<Parameters<typeof fromPixPaymentResponse>[0]>(
+      ENDPOINTS.payments,
+      { method: "POST", body: input },
+    );
+    return fromPixPaymentResponse(response);
   }
   await mockDelay(900);
   if (input.method === "pix") return mockPixPayment(input.orderId);

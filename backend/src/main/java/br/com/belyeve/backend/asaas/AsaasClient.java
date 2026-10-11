@@ -20,6 +20,7 @@ import java.math.RoundingMode;
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 import java.util.UUID;
 
 @Component
@@ -74,6 +75,26 @@ public class AsaasClient {
         } catch (RestClientException error) {
             logProviderFailure("PIX payment creation", order, error);
             throw new BusinessException("Could not create PIX payment");
+        }
+    }
+
+    public Optional<PaymentResponse> findPixPaymentByExternalReference(UUID orderId) {
+        try {
+            PaymentListResponse response = restClient.get()
+                    .uri(uriBuilder -> uriBuilder.path("/payments")
+                            .queryParam("externalReference", orderId)
+                            .queryParam("limit", 10)
+                            .build())
+                    .retrieve()
+                    .body(PaymentListResponse.class);
+            if (response == null || response.data() == null) return Optional.empty();
+            return response.data().stream()
+                    .filter(payment -> "PIX".equals(payment.billingType()))
+                    .findFirst();
+        } catch (RestClientException error) {
+            log.warn("Asaas payment lookup failed: orderId={} cause={}", orderId,
+                    error.getClass().getSimpleName());
+            throw new BusinessException("Could not verify existing PIX payment");
         }
     }
 
@@ -153,7 +174,10 @@ public class AsaasClient {
     ) {
     }
 
-    public record PaymentResponse(String id, String status) {
+    public record PaymentResponse(String id, String status, String customer, String billingType) {
+    }
+
+    record PaymentListResponse(List<PaymentResponse> data) {
     }
 
     public record PixQrCodeResponse(String encodedImage, String payload, String expirationDate) {
