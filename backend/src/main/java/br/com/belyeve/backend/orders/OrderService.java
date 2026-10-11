@@ -33,7 +33,7 @@ public class OrderService {
         order.setWhatsapp(request.customer().whatsapp());
         order.setEmail(request.customer().email().trim().toLowerCase());
         order.setCpf(request.customer().cpf());
-        order.setZipCode(request.address().zipCode());
+        order.setZipCode(request.address().zipCode().replace("-", ""));
         order.setStreet(request.address().street().trim());
         order.setAddressNumber(request.address().number().trim());
         order.setComplement(trimToNull(request.address().complement()));

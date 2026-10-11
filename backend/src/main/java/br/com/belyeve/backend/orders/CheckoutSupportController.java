@@ -45,8 +45,8 @@ public class CheckoutSupportController {
     }
 
     @GetMapping("/addresses/{zipCode}")
-    public AddressLookupResponse address(@PathVariable @Pattern(regexp = "\\d{8}") String zipCode) {
-        if (zipCode.startsWith("13920")) {
+    public AddressLookupResponse address(@PathVariable @Pattern(regexp = "\\d{5}-?\\d{3}") String zipCode) {
+        if (zipCode.replace("-", "").startsWith("13920")) {
             return new AddressLookupResponse("", "", "Pedreira", "SP");
         }
         return null;
@@ -63,7 +63,7 @@ public class CheckoutSupportController {
     }
 
     public record ShippingQuoteRequest(
-            @NotBlank @Pattern(regexp = "\\d{8}") String zipCode,
+            @NotBlank @Pattern(regexp = "\\d{5}-?\\d{3}") String zipCode,
             @NotBlank String city,
             @NotBlank @Pattern(regexp = "[A-Z]{2}") String state,
             @NotNull @Min(1) Integer quantity

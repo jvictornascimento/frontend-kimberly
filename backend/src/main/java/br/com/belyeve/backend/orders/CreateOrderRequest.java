@@ -57,7 +57,7 @@ public record CreateOrderRequest(
     }
 
     public record AddressRequest(
-            @NotBlank @Pattern(regexp = "\\d{8}", message = "zipCode must contain 8 digits") String zipCode,
+            @NotBlank @Pattern(regexp = "\\d{5}-?\\d{3}", message = "zipCode must contain 8 digits, optionally formatted as 00000-000") String zipCode,
             @NotBlank @Size(max = 160) String street,
             @NotBlank @Size(max = 40) String number,
             @Size(max = 120) String complement,

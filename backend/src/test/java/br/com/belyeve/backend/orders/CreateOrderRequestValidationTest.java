@@ -15,6 +15,36 @@ class CreateOrderRequestValidationTest {
     }
 
     @Test
+    void acceptsMaskedBrazilianZipCode() {
+        CreateOrderRequest request = validRequest(true);
+        CreateOrderRequest.AddressRequest address = request.address();
+        CreateOrderRequest maskedZipRequest = new CreateOrderRequest(
+                request.scoopQuantity(),
+                request.jewelryCategory(),
+                request.usesRings(),
+                request.ringSize(),
+                request.allowsMalePieces(),
+                request.maleJewelryCategory(),
+                request.allowsPiercing(),
+                request.piercingLocations(),
+                request.restrictions(),
+                request.socialMediaConsent(),
+                request.customer(),
+                new CreateOrderRequest.AddressRequest(
+                        "13920-000",
+                        address.street(),
+                        address.number(),
+                        address.complement(),
+                        address.district(),
+                        address.city(),
+                        address.state()
+                )
+        );
+
+        assertThat(validator.validate(maskedZipRequest)).isEmpty();
+    }
+
+    @Test
     void rejectsMissingRingSizeWhenRingsAreEnabled() {
         CreateOrderRequest request = new CreateOrderRequest(
                 1,
