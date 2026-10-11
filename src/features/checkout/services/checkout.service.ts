@@ -45,7 +45,10 @@ export async function getAddressByZipCode(zipCode: string): Promise<AddressLooku
 export async function calculateShipping(input: ShippingQuoteInput): Promise<ShippingOption[]> {
   if (!USE_MOCKS) {
     // TODO: Replace mock shipping service with BELYEVE API (backend quotes Melhor Envio + Pedreira rule)
-    return apiRequest<ShippingOption[]>(ENDPOINTS.shippingQuote, { method: "POST", body: input });
+    return apiRequest<ShippingOption[]>(ENDPOINTS.shippingQuote, {
+      method: "POST",
+      body: { ...input, state: input.state.trim().toUpperCase() },
+    });
   }
   await mockDelay();
   if (input.zipCode === MOCK_ZIP_SHIPPING_ERROR) throw new Error("Mock shipping failure");

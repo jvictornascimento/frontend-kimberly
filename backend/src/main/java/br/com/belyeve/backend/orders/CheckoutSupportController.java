@@ -65,7 +65,7 @@ public class CheckoutSupportController {
     public record ShippingQuoteRequest(
             @NotBlank @Pattern(regexp = "\\d{5}-?\\d{3}") String zipCode,
             @NotBlank String city,
-            @NotBlank @Pattern(regexp = "[A-Z]{2}") String state,
+            @NotBlank @Pattern(regexp = "(?i)[A-Z]{2}") String state,
             @NotNull @Min(1) Integer quantity
     ) {
     }
