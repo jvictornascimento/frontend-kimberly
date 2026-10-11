@@ -74,6 +74,60 @@ public class PaymentService {
     }
 
     @Transactional
+    public CardPaymentResponse createCard(UUID orderId, CreatePaymentRequest.Card card, int installments, String remoteIp) {
+        OrderEntity order = orderRepository.findById(orderId).orElseThrow(OrderNotFoundException::new);
+        if (order.getPaymentStatus() == PaymentStatus.PAID) {
+            throw new BusinessException("Order is already paid");
+        }
+        if (order.getPaymentMethod() != PaymentMethod.CREDIT_CARD) {
+            throw new BusinessException("Order is not set for credit card payment");
+        }
+        if (installments < 1 || installments > 3) {
+            throw new BusinessException("Invalid installment count");
+        }
+        if (order.getAsaasPaymentId() != null
+                && order.getPaymentStatus() != PaymentStatus.PAYMENT_FAILED
+                && order.getPaymentStatus() != PaymentStatus.CANCELLED) {
+            return new CardPaymentResponse(order.getAsaasPaymentId(), order.getPaymentStatus(),
+                    order.getInstallments() == null ? installments : order.getInstallments());
+        }
+
+        Optional<AsaasClient.PaymentResponse> existingPayment =
+                asaasClient.findPaymentByExternalReference(order.getId(), "CREDIT_CARD");
+        if (existingPayment.isPresent()
+                && !"REFUSED".equals(existingPayment.get().status())
+                && !"OVERDUE".equals(existingPayment.get().status())
+                && !"DELETED".equals(existingPayment.get().status())
+                && !"REFUNDED".equals(existingPayment.get().status())) {
+            AsaasClient.PaymentResponse payment = existingPayment.get();
+            PaymentStatus status = mapAsaasPaymentStatus(payment.status());
+            order.setAsaasCustomerId(payment.customer());
+            order.setAsaasPaymentId(payment.id());
+            order.setPaymentStatus(status);
+            order.setStatus(status == PaymentStatus.PAID ? OrderStatus.PAID : OrderStatus.AWAITING_PAYMENT);
+            if (status == PaymentStatus.PAID) eventPublisher.publishEvent(new PaidOrderEvent(order.getId()));
+            return new CardPaymentResponse(payment.id(), status, installments);
+        }
+
+        AsaasClient.CustomerResponse customer = asaasClient.findCustomerByExternalReference(order.getId())
+                .orElseGet(() -> asaasClient.createCustomer(order));
+        AsaasClient.PaymentResponse payment = asaasClient.createCardPayment(
+                order, customer.id(), card, installments, remoteIp
+        );
+        PaymentStatus status = mapAsaasPaymentStatus(payment.status());
+        order.setAsaasCustomerId(customer.id());
+        order.setAsaasPaymentId(payment.id());
+        order.setPaymentMethod(PaymentMethod.CREDIT_CARD);
+        order.setPaymentStatus(status);
+        order.setStatus(status == PaymentStatus.PAID ? OrderStatus.PAID
+                : status == PaymentStatus.PAYMENT_FAILED ? OrderStatus.PAYMENT_FAILED
+                : status == PaymentStatus.CANCELLED ? OrderStatus.CANCELLED
+                : OrderStatus.AWAITING_PAYMENT);
+        if (status == PaymentStatus.PAID) eventPublisher.publishEvent(new PaidOrderEvent(order.getId()));
+        return new CardPaymentResponse(payment.id(), status, installments);
+    }
+
+    @Transactional
     public void markFromAsaas(String paymentId, String eventType) {
         orderRepository.findByAsaasPaymentId(paymentId).ifPresent(order -> {
             PaymentStatus previousStatus = order.getPaymentStatus();
@@ -104,6 +158,16 @@ public class PaymentService {
             case "PAYMENT_RECEIVED", "PAYMENT_CONFIRMED" -> PaymentStatus.PAID;
             case "PAYMENT_OVERDUE", "PAYMENT_DELETED" -> PaymentStatus.PAYMENT_FAILED;
             case "PAYMENT_REFUNDED", "PAYMENT_REFUND_DENIED", "PAYMENT_CHARGEBACK_REQUESTED" -> PaymentStatus.CANCELLED;
+            default -> PaymentStatus.PAYMENT_PROCESSING;
+        };
+    }
+
+    private PaymentStatus mapAsaasPaymentStatus(String status) {
+        return switch (status == null ? "" : status) {
+            case "CONFIRMED", "RECEIVED" -> PaymentStatus.PAID;
+            case "PENDING", "AWAITING_RISK_ANALYSIS" -> PaymentStatus.AWAITING_PAYMENT;
+            case "OVERDUE", "REFUSED", "CHARGEBACK" -> PaymentStatus.PAYMENT_FAILED;
+            case "REFUNDED", "DELETED" -> PaymentStatus.CANCELLED;
             default -> PaymentStatus.PAYMENT_PROCESSING;
         };
     }

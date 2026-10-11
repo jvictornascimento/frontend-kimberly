@@ -52,7 +52,9 @@ export function OrderConfirmation({ placed }: { placed: PlacedOrder }) {
   usePaymentStatusPolling(placed);
   const { order, payment } = placed;
   const copy = STATUS_COPY[order.status] ?? STATUS_COPY.DRAFT;
-  const needsCard = order.paymentMethod === "credit_card" && payment === null;
+  const needsCard =
+    order.paymentMethod === "credit_card" &&
+    (payment === null || order.status === "PAYMENT_FAILED" || order.status === "CANCELLED");
 
   return (
     <div className="mx-auto max-w-xl px-5 py-10">

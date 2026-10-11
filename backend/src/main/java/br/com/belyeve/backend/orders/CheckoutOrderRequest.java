@@ -5,6 +5,8 @@ import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Pattern;
 import jakarta.validation.constraints.Size;
+import jakarta.validation.constraints.Min;
+import jakarta.validation.constraints.Max;
 
 import java.util.List;
 
@@ -14,7 +16,7 @@ public record CheckoutOrderRequest(
         @Valid @NotNull CreateOrderRequest.AddressRequest address,
         @NotBlank @Size(max = 80) String shippingOptionId,
         @NotBlank @Pattern(regexp = "pix|credit_card") String paymentMethod,
-        Integer installments,
+        @Min(1) @Max(3) Integer installments,
         @NotNull Boolean socialMediaConsent
 ) {
     public CreateOrderRequest toCreateOrderRequest() {

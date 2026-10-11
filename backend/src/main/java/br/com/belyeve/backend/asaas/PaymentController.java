@@ -7,6 +7,7 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
+import jakarta.servlet.http.HttpServletRequest;
 
 import java.util.UUID;
 
@@ -25,7 +26,14 @@ public class PaymentController {
     }
 
     @PostMapping("/payments")
-    public PixPaymentResponse createPayment(@Valid @RequestBody CreatePaymentRequest request) {
+    public Object createPayment(@Valid @RequestBody CreatePaymentRequest request, HttpServletRequest httpRequest) {
+        if ("credit_card".equals(request.method())) {
+            if (request.card() == null || request.installments() == null) {
+                throw new br.com.belyeve.backend.orders.BusinessException("Card details are required");
+            }
+            return paymentService.createCard(request.orderId(), request.card(), request.installments(),
+                    httpRequest.getRemoteAddr());
+        }
         return paymentService.createPix(request.orderId());
     }
 

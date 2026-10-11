@@ -99,14 +99,29 @@ export async function createOrder(input: CreateOrderInput): Promise<Order> {
 
 export async function createPayment(input: CreatePaymentInput): Promise<Payment> {
   if (!USE_MOCKS) {
-    if (input.method !== "pix") {
-      throw new Error("Credit card payments are not available yet");
+    if (input.method === "pix") {
+      const response = await apiRequest<Parameters<typeof fromPixPaymentResponse>[0]>(
+        ENDPOINTS.payments,
+        { method: "POST", body: input },
+      );
+      return fromPixPaymentResponse(response);
     }
-    const response = await apiRequest<Parameters<typeof fromPixPaymentResponse>[0]>(
-      ENDPOINTS.payments,
-      { method: "POST", body: input },
-    );
-    return fromPixPaymentResponse(response);
+    const response = await apiRequest<{
+      paymentId: string;
+      paymentStatus: PaymentStatus;
+      installments: number;
+    }>(ENDPOINTS.payments, { method: "POST", body: input });
+    if (!response.paymentId) throw new Error("Invalid credit card payment response");
+    return {
+      method: "credit_card",
+      paymentId: response.paymentId,
+      status: response.paymentStatus,
+      installment: {
+        installments: response.installments,
+        installmentValueCents: null,
+        totalWithFeesCents: null,
+      },
+    };
   }
   await mockDelay(900);
   if (input.method === "pix") return mockPixPayment(input.orderId);

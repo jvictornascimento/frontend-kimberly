@@ -48,6 +48,18 @@ public class OrderService {
         return repository.save(order);
     }
 
+    @Transactional
+    public OrderEntity create(CheckoutOrderRequest request) {
+        if ("credit_card".equals(request.paymentMethod())
+                && (request.installments() == null || request.installments() < 1 || request.installments() > 3)) {
+            throw new BusinessException("Invalid installment count");
+        }
+        OrderEntity order = create(request.toCreateOrderRequest());
+        order.setPaymentMethod(PaymentMethod.valueOf(request.paymentMethod().toUpperCase()));
+        order.setInstallments(request.installments());
+        return order;
+    }
+
     @Transactional(readOnly = true)
     public OrderEntity find(UUID id) {
         return repository.findById(id).orElseThrow(OrderNotFoundException::new);

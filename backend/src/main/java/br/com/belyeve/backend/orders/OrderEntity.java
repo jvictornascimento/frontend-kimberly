@@ -27,6 +27,8 @@ public class OrderEntity {
     @Enumerated(EnumType.STRING)
     private PaymentMethod paymentMethod;
 
+    private Integer installments;
+
     private String asaasCustomerId;
     private String asaasPaymentId;
 
@@ -119,6 +121,14 @@ public class OrderEntity {
 
     public void setPaymentMethod(PaymentMethod paymentMethod) {
         this.paymentMethod = paymentMethod;
+    }
+
+    public Integer getInstallments() {
+        return installments;
+    }
+
+    public void setInstallments(Integer installments) {
+        this.installments = installments;
     }
 
     public String getAsaasCustomerId() {

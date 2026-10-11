@@ -24,7 +24,7 @@ public class OrderController {
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
     public CheckoutOrderResponse create(@Valid @RequestBody CheckoutOrderRequest request) {
-        return CheckoutOrderResponse.from(service.create(request.toCreateOrderRequest()));
+        return CheckoutOrderResponse.from(service.create(request));
     }
 
     @GetMapping("/{id}/status")

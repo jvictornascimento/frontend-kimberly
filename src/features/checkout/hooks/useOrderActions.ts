@@ -20,7 +20,7 @@ export function useSubmitOrder() {
   const lock = useRef(false);
   const pendingOrder = useRef<Order | null>(null);
 
-  async function submit(state: CheckoutState) {
+  async function submit(state: CheckoutState, card?: CardFormData) {
     const input = toCreateOrderInput(state);
     if (!input || lock.current) return;
     lock.current = true;
@@ -31,7 +31,14 @@ export function useSubmitOrder() {
       const payment =
         input.paymentMethod === "pix"
           ? await createPayment({ orderId: order.id, method: "pix" })
-          : null;
+          : card
+            ? await createPayment({
+                orderId: order.id,
+                method: "credit_card",
+                installments: order.installments ?? 1,
+                card,
+              })
+            : null;
       pendingOrder.current = null;
       setCheckout({
         placedOrder: { order: payment ? { ...order, status: payment.status } : order, payment },
@@ -83,11 +90,11 @@ const PAYMENT_STATUSES: PaymentStatus[] = [
 export function useRecoverPixPayment(placed: PlacedOrder) {
   const attemptedOrderId = useRef<string | null>(null);
   const { order, payment } = placed;
-  const validPayment =
-    payment?.method === "pix" && PAYMENT_STATUSES.includes(payment.status);
+  const validPayment = payment?.method === "pix" && PAYMENT_STATUSES.includes(payment.status);
 
   useEffect(() => {
-    if (order.paymentMethod !== "pix" || validPayment || attemptedOrderId.current === order.id) return;
+    if (order.paymentMethod !== "pix" || validPayment || attemptedOrderId.current === order.id)
+      return;
     attemptedOrderId.current = order.id;
     createPayment({ orderId: order.id, method: "pix" })
       .then((recoveredPayment) => {

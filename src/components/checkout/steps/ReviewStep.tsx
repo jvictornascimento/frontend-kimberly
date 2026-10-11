@@ -5,8 +5,13 @@ import { useSubmitOrder } from "@/features/checkout/hooks/useOrderActions";
 import { goToStep } from "@/features/checkout/state/checkout.store";
 import type { CheckoutState, CheckoutStep, OrderTotals } from "@/features/checkout/types";
 import { ConsentField } from "../ConsentField";
+import { CardFields } from "../CardFields";
 import { installmentLabel, metalLabel, priceOr, ringsLabel } from "../format";
 import { Notice, PrimaryButton, StepHeader, TextButton } from "../ui";
+import { hasErrors, validateCard } from "@/features/checkout/domain/validation";
+import type { CardFormData } from "@/features/checkout/types";
+
+const EMPTY_CARD: CardFormData = { number: "", holderName: "", expiry: "", cvv: "" };
 
 function Block({
   title,
@@ -34,8 +39,10 @@ export function ReviewStep({ state, totals }: { state: CheckoutState; totals: Or
   const { selection, customer, address, shipping, paymentMethod, installment, socialMediaConsent } =
     state;
   const [tried, setTried] = useState(false);
+  const [card, setCard] = useState<CardFormData>(EMPTY_CARD);
   const { status, submit } = useSubmitOrder();
   const pending = status === "pending";
+  const cardReady = paymentMethod !== "credit_card" || !hasErrors(validateCard(card));
 
   return (
     <div>
@@ -118,6 +125,22 @@ export function ReviewStep({ state, totals }: { state: CheckoutState; totals: Or
 
       <ConsentField value={socialMediaConsent} showError={tried && socialMediaConsent === null} />
 
+      {paymentMethod === "credit_card" && (
+        <section
+          className="mt-6 border border-border bg-card px-5 py-5"
+          aria-labelledby="card-title"
+        >
+          <h2 id="card-title" className="mb-4 text-sm font-semibold">
+            Dados do cartão
+          </h2>
+          <CardFields card={card} onChange={setCard} touched={tried} />
+          <p className="mt-3 text-xs text-muted-foreground">
+            Os dados são enviados com segurança para processar o pagamento e não ficam salvos no
+            pedido.
+          </p>
+        </section>
+      )}
+
       {status === "error" && (
         <div className="mt-6">
           <Notice tone="error" role="alert">
@@ -133,11 +156,22 @@ export function ReviewStep({ state, totals }: { state: CheckoutState; totals: Or
         aria-busy={pending}
         onClick={() => {
           setTried(true);
-          if (socialMediaConsent !== null) void submit(state);
+          if (socialMediaConsent !== null && cardReady) {
+            void submit(state, paymentMethod === "credit_card" ? card : undefined);
+          }
         }}
       >
-        {pending ? "Enviando pedido…" : "Finalizar pedido"}
+        {pending
+          ? "Enviando pedido…"
+          : paymentMethod === "credit_card"
+            ? "Pagar e finalizar pedido"
+            : "Finalizar pedido"}
       </PrimaryButton>
+      {tried && !cardReady && (
+        <p role="alert" className="mt-2 text-center text-xs text-destructive">
+          Confira os dados do cartão para continuar.
+        </p>
+      )}
     </div>
   );
 }

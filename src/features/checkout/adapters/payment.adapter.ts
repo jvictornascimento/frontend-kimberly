@@ -3,9 +3,9 @@ import type { PaymentStatus, PixPayment } from "../types";
 export interface PixPaymentApiResponse {
   paymentStatus: PaymentStatus;
   paymentId: string;
-  qrCodeImageBase64: string | null;
-  copyPasteCode: string;
-  expiresAt: string | null;
+  qrCodeImageBase64?: string | null;
+  copyPasteCode?: string | null;
+  expiresAt?: string | null;
 }
 
 const PAYMENT_STATUSES: PaymentStatus[] = [
@@ -31,7 +31,7 @@ export function fromPixPaymentResponse(response: PixPaymentApiResponse): PixPaym
         ? image
         : `data:image/png;base64,${image}`
       : null,
-    copyPasteCode: response.copyPasteCode,
+    copyPasteCode: response.copyPasteCode ?? "",
     expiresAt: response.expiresAt ?? "",
   };
 }

@@ -51,7 +51,7 @@ public record CheckoutOrderResponse(
                 ),
                 ShippingOptionResponse.from(order),
                 order.getPaymentMethod() == null ? null : order.getPaymentMethod().name().toLowerCase(),
-                null,
+                order.getInstallments(),
                 order.isSocialMediaConsent(),
                 new OrderResponse.Totals(
                         order.getUnitPriceCents(),

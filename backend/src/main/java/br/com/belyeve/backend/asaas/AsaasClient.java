@@ -18,6 +18,7 @@ import tools.jackson.databind.json.JsonMapper;
 import java.math.BigDecimal;
 import java.math.RoundingMode;
 import java.time.LocalDate;
+import java.time.YearMonth;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
@@ -58,6 +59,24 @@ public class AsaasClient {
         }
     }
 
+    public Optional<CustomerResponse> findCustomerByExternalReference(UUID orderId) {
+        try {
+            CustomerListResponse response = restClient.get()
+                    .uri(uriBuilder -> uriBuilder.path("/customers")
+                            .queryParam("externalReference", orderId)
+                            .queryParam("limit", 10)
+                            .build())
+                    .retrieve()
+                    .body(CustomerListResponse.class);
+            if (response == null || response.data() == null) return Optional.empty();
+            return response.data().stream().findFirst();
+        } catch (RestClientException error) {
+            log.warn("Asaas customer lookup failed: orderId={} cause={}", orderId,
+                    error.getClass().getSimpleName());
+            throw new BusinessException("Could not verify payment customer");
+        }
+    }
+
     public PaymentResponse createPixPayment(OrderEntity order, String customerId) {
         try {
             return restClient.post()
@@ -78,7 +97,39 @@ public class AsaasClient {
         }
     }
 
+    public PaymentResponse createCardPayment(
+            OrderEntity order, String customerId, CreatePaymentRequest.Card card, int installments, String remoteIp
+    ) {
+        try {
+            String[] expiry = card.expiry().split("/");
+            String year = expiry[1].length() == 2 ? "20" + expiry[1] : expiry[1];
+            YearMonth.parse(year + "-" + expiry[0]);
+            BigDecimal value = centsToValue(order.getTotalCents());
+            CardChargeRequest request = new CardChargeRequest(
+                    customerId, "CREDIT_CARD", installments > 1 ? null : value, LocalDate.now(), order.getId().toString(),
+                    "BELYEVE Scoop",
+                    installments > 1 ? installments : null,
+                    null,
+                    installments > 1 ? value : null,
+                    new CreditCard(card.holderName(), card.number().replaceAll("\\D", ""),
+                            expiry[0], year, card.cvv()),
+                    new CreditCardHolderInfo(order.getFullName(), order.getEmail(), order.getCpf(),
+                            order.getZipCode().replaceAll("\\D", ""), order.getStreet(), order.getAddressNumber(),
+                            order.getDistrict(), order.getWhatsapp(), order.getWhatsapp()),
+                    remoteIp
+            );
+            return restClient.post().uri("/payments").body(request).retrieve().body(PaymentResponse.class);
+        } catch (RestClientException error) {
+            logProviderFailure("credit card payment creation", order, error);
+            throw new BusinessException("Could not create credit card payment");
+        }
+    }
+
     public Optional<PaymentResponse> findPixPaymentByExternalReference(UUID orderId) {
+        return findPaymentByExternalReference(orderId, "PIX");
+    }
+
+    public Optional<PaymentResponse> findPaymentByExternalReference(UUID orderId, String billingType) {
         try {
             PaymentListResponse response = restClient.get()
                     .uri(uriBuilder -> uriBuilder.path("/payments")
@@ -89,12 +140,12 @@ public class AsaasClient {
                     .body(PaymentListResponse.class);
             if (response == null || response.data() == null) return Optional.empty();
             return response.data().stream()
-                    .filter(payment -> "PIX".equals(payment.billingType()))
+                    .filter(payment -> billingType.equals(payment.billingType()))
                     .findFirst();
         } catch (RestClientException error) {
-            log.warn("Asaas payment lookup failed: orderId={} cause={}", orderId,
+            log.warn("Asaas payment lookup failed: orderId={} billingType={} cause={}", orderId, billingType,
                     error.getClass().getSimpleName());
-            throw new BusinessException("Could not verify existing PIX payment");
+            throw new BusinessException("Could not verify existing payment");
         }
     }
 
@@ -164,6 +215,8 @@ public class AsaasClient {
     public record CustomerResponse(String id) {
     }
 
+    record CustomerListResponse(List<CustomerResponse> data) {}
+
     record PaymentRequest(
             String customer,
             String billingType,
@@ -173,6 +226,20 @@ public class AsaasClient {
             String description
     ) {
     }
+
+    record CardChargeRequest(
+            String customer, String billingType, BigDecimal value, LocalDate dueDate,
+            String externalReference, String description, Integer installmentCount,
+            BigDecimal installmentValue, BigDecimal totalValue, CreditCard creditCard,
+            CreditCardHolderInfo creditCardHolderInfo, String remoteIp
+    ) {}
+
+    record CreditCard(String holderName, String number, String expiryMonth, String expiryYear, String ccv) {}
+
+    record CreditCardHolderInfo(
+            String name, String email, String cpfCnpj, String postalCode, String address,
+            String addressNumber, String province, String phone, String mobilePhone
+    ) {}
 
     public record PaymentResponse(String id, String status, String customer, String billingType) {
     }
