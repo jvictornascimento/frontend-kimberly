@@ -21,7 +21,7 @@ public class PricingService {
         long subtotal = packagePrice(request.scoopQuantity());
         long unitPrice = Math.round((double) subtotal / request.scoopQuantity());
         long discount = 0;
-        long shipping = isPedreiraSP(request.address().city(), request.address().state())
+        long shipping = isPedreiraSP(request.address().zipCode(), request.address().city(), request.address().state())
                 ? 0
                 : properties.pricing().nonLocalShippingCents();
         long total = subtotal - discount + shipping;
@@ -41,8 +41,10 @@ public class PricingService {
         };
     }
 
-    private boolean isPedreiraSP(String city, String state) {
-        return normalize(city).equals("pedreira") && state.toUpperCase(Locale.ROOT).equals("SP");
+    private boolean isPedreiraSP(String zipCode, String city, String state) {
+        return zipCode.replace("-", "").startsWith("13920")
+                || (city != null && state != null
+                && normalize(city).equals("pedreira") && state.trim().equalsIgnoreCase("SP"));
     }
 
     private String normalize(String value) {

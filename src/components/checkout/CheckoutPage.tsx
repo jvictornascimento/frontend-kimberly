@@ -1,5 +1,4 @@
 import { Link } from "@tanstack/react-router";
-import logo from "@/assets/belyeve-logo.png.asset.json";
 import { computeTotals } from "@/features/checkout/domain/pricing";
 import { goToStep, useCheckout } from "@/features/checkout/state/checkout.store";
 import type { CheckoutState, OrderTotals } from "@/features/checkout/types";
@@ -36,7 +35,7 @@ export function CheckoutPage() {
       <header className="border-b border-border/60">
         <div className="mx-auto flex max-w-5xl items-center justify-between px-5 py-3">
           <Link to="/" aria-label="Voltar para a página inicial">
-            <img src={logo.url} alt="BELYEVE Joias e Semijoias" className="h-8 w-auto" />
+            <span className="font-display text-2xl font-semibold tracking-[0.18em] text-primary">BELYEVE</span>
           </Link>
           <span className="text-xs text-muted-foreground">Checkout</span>
         </div>

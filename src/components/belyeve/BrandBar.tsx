@@ -1,11 +1,9 @@
-import logo from "@/assets/belyeve-logo.png.asset.json";
-
 export function BrandBar() {
   return (
     <header className="sticky top-0 z-30 border-b border-border/60 bg-background/90 backdrop-blur">
       <div className="mx-auto grid max-w-3xl grid-cols-[minmax(0,1fr)_auto] items-center gap-4 px-5 py-3 sm:px-8">
         <a href="#top" className="flex min-w-0 items-center">
-          <img src={logo.url} alt="BELYEVE Joias e Semijoias" className="h-8 w-auto sm:h-9" />
+          <span className="font-display text-2xl font-semibold tracking-[0.18em] text-primary sm:text-3xl">BELYEVE</span>
         </a>
         <a
           href="#escolher"

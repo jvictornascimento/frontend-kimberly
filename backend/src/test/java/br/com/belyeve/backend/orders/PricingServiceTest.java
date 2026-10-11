@@ -32,6 +32,13 @@ class PricingServiceTest {
     }
 
     @Test
+    void grantsLocalDeliveryFromPedreiraZipEvenWhenStateWasTypedLowercase() {
+        PricingService.Totals totals = service.calculate(request(1, "", "sp"));
+
+        assertThat(totals.shippingCents()).isZero();
+    }
+
+    @Test
     void keepsMinimumGuaranteePerScoop() {
         assertThat(service.guarantee(3)).isEqualTo(new PricingService.Guarantee(6, 9));
     }
@@ -55,7 +62,7 @@ class PricingServiceTest {
                         "52998224725"
                 ),
                 new CreateOrderRequest.AddressRequest(
-                        "13920000",
+                        city.equalsIgnoreCase("Campinas") ? "13000000" : "13920000",
                         "Rua das Flores",
                         "123",
                         null,

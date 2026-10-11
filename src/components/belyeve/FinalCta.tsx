@@ -1,4 +1,3 @@
-import pattern from "@/assets/belyeve-pattern-gold.png.asset.json";
 
 export function FinalCta() {
   return (
@@ -6,7 +5,7 @@ export function FinalCta() {
       <div
         aria-hidden
         className="pointer-events-none absolute inset-0 opacity-[0.12]"
-        style={{ backgroundImage: `url(${pattern.url})`, backgroundSize: "220px" }}
+        style={{ backgroundImage: "radial-gradient(rgba(168,130,55,.35) 1px, transparent 1px)", backgroundSize: "22px 22px" }}
       />
       <div className="relative mx-auto max-w-3xl text-center">
         <p className="eyebrow">Sua vez</p>

@@ -1,4 +1,3 @@
-import pattern from "@/assets/belyeve-pattern-gold.png.asset.json";
 import { MEDIA } from "@/data/media";
 import { MediaImage } from "./MediaImage";
 import { Reveal } from "./Reveal";
@@ -42,7 +41,7 @@ export function Fishing() {
       <div
         aria-hidden
         className="pointer-events-none absolute inset-0 opacity-[0.06]"
-        style={{ backgroundImage: `url(${pattern.url})`, backgroundSize: "240px" }}
+        style={{ backgroundImage: "radial-gradient(rgba(168,130,55,.35) 1px, transparent 1px)", backgroundSize: "24px 24px" }}
       />
       <div className="relative mx-auto max-w-5xl">
         <Reveal className="text-center">

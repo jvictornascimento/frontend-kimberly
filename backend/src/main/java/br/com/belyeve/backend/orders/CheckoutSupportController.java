@@ -2,9 +2,7 @@ package br.com.belyeve.backend.orders;
 
 import br.com.belyeve.backend.config.AppProperties;
 import jakarta.validation.Valid;
-import jakarta.validation.constraints.Min;
 import jakarta.validation.constraints.NotBlank;
-import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Pattern;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -28,7 +26,7 @@ public class CheckoutSupportController {
 
     @PostMapping("/shipping/quote")
     public List<ShippingOptionResponse> shippingQuote(@Valid @RequestBody ShippingQuoteRequest request) {
-        if (isPedreiraSP(request.city(), request.state())) {
+        if (isPedreiraSP(request.zipCode(), request.city(), request.state())) {
             return List.of(ShippingOptionResponse.localDelivery());
         }
         return List.of(ShippingOptionResponse.carrier(properties.pricing().nonLocalShippingCents()));
@@ -52,8 +50,10 @@ public class CheckoutSupportController {
         return null;
     }
 
-    private boolean isPedreiraSP(String city, String state) {
-        return normalize(city).equals("pedreira") && state.toUpperCase(Locale.ROOT).equals("SP");
+    private boolean isPedreiraSP(String zipCode, String city, String state) {
+        return zipCode.replace("-", "").startsWith("13920")
+                || (city != null && state != null
+                && normalize(city).equals("pedreira") && state.trim().equalsIgnoreCase("SP"));
     }
 
     private String normalize(String value) {
@@ -64,9 +64,9 @@ public class CheckoutSupportController {
 
     public record ShippingQuoteRequest(
             @NotBlank @Pattern(regexp = "\\d{5}-?\\d{3}") String zipCode,
-            @NotBlank String city,
-            @NotBlank @Pattern(regexp = "(?i)[A-Z]{2}") String state,
-            @NotNull @Min(1) Integer quantity
+            String city,
+            String state,
+            Integer quantity
     ) {
     }
 

@@ -1,4 +1,3 @@
-import pattern from "@/assets/belyeve-pattern-sage.png.asset.json";
 import { GUARANTEE_PER_SCOOP } from "@/data/scoops";
 
 /**
@@ -18,7 +17,7 @@ export function Hero() {
       <div
         aria-hidden
         className="pointer-events-none absolute inset-0 opacity-[0.07]"
-        style={{ backgroundImage: `url(${pattern.url})`, backgroundSize: "260px" }}
+        style={{ backgroundImage: "radial-gradient(rgba(168,130,55,.35) 1px, transparent 1px)", backgroundSize: "26px 26px" }}
       />
       <div className="relative mx-auto grid max-w-5xl items-center gap-8 md:grid-cols-[1fr_minmax(0,360px)] md:gap-14">
         <div>
@@ -84,7 +83,7 @@ function HeroMedia() {
             <div
               aria-hidden
               className="absolute inset-0 opacity-[0.12]"
-              style={{ backgroundImage: `url(${pattern.url})`, backgroundSize: "180px" }}
+              style={{ backgroundImage: "radial-gradient(rgba(168,130,55,.35) 1px, transparent 1px)", backgroundSize: "18px 18px" }}
             />
             <div className="relative flex h-full flex-col items-center justify-center px-6 text-center">
               <span className="flex h-14 w-14 items-center justify-center rounded-full border border-gold">
