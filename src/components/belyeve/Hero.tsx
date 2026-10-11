@@ -1,10 +1,6 @@
 import { GUARANTEE_PER_SCOOP } from "@/data/scoops";
 
-/**
- * Mídia do Hero. Substitua por vídeo real (vertical 9:16) quando existir:
- * { src: "https://...mp4", poster: "https://...jpg" }
- */
-const HERO_VIDEO: { src: string; poster?: string } | null = null;
+const HERO_VIDEO_ID = "r2WNM7rMB6s";
 
 const total = GUARANTEE_PER_SCOOP.jewelry + GUARANTEE_PER_SCOOP.gifts;
 
@@ -68,37 +64,15 @@ function HeroMedia() {
   return (
     <div className="mx-auto w-full max-w-[300px] md:max-w-none">
       <div className="relative aspect-[9/16] overflow-hidden rounded-sm border border-gold/60 bg-secondary">
-        {HERO_VIDEO ? (
-          <video
-            src={HERO_VIDEO.src}
-            poster={HERO_VIDEO.poster}
-            className="h-full w-full object-cover"
-            autoPlay
-            muted
-            loop
-            playsInline
-          />
-        ) : (
-          <>
-            <div
-              aria-hidden
-              className="absolute inset-0 opacity-[0.12]"
-              style={{ backgroundImage: "radial-gradient(rgba(168,130,55,.35) 1px, transparent 1px)", backgroundSize: "18px 18px" }}
-            />
-            <div className="relative flex h-full flex-col items-center justify-center px-6 text-center">
-              <span className="flex h-14 w-14 items-center justify-center rounded-full border border-gold">
-                <span
-                  aria-hidden
-                  className="ml-1 h-0 w-0 border-y-[9px] border-l-[14px] border-y-transparent border-l-gold"
-                />
-              </span>
-              <p className="font-display mt-5 text-2xl">Vídeo do Scoop</p>
-              <p className="mt-2 text-xs text-muted-foreground">
-                Em breve, um Scoop real feito pela Kimberly.
-              </p>
-            </div>
-          </>
-        )}
+        <iframe
+          src={`https://www.youtube-nocookie.com/embed/${HERO_VIDEO_ID}?playsinline=1&rel=0`}
+          title="Vídeo do Scoop surpresa BELYEVE"
+          className="absolute inset-0 h-full w-full border-0"
+          allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+          referrerPolicy="strict-origin-when-cross-origin"
+          loading="lazy"
+          allowFullScreen
+        />
       </div>
     </div>
   );
