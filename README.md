@@ -67,7 +67,7 @@ The Java 21 Spring Boot API lives in `backend/`. It stores orders in PostgreSQL 
 - Asaas PIX and credit card payments (up to three installments) run through the backend. Payment confirmation comes from provider responses and authenticated webhooks, not browser clicks.
 - Asaas sandbox and production have separate URLs and keys. `ASAAS_ENVIRONMENT` selects the environment; sandbox is the default.
 - Internal purchase emails use Spring Mail after an authoritative paid transition and transaction commit.
-- Customer confirmation email is pending [issue #24](https://github.com/jvictornascimento/frontend-kimberly/issues/24). Its previous PR was merged into an intermediate branch and is absent from `main`.
+- Customer confirmation email is implemented with independent environment control (`PURCHASE_CUSTOMER_EMAIL_ENABLED`) and uses the email stored in the order.
 - Pedreira/SP has free local delivery. Other destinations currently use the temporary `NON_LOCAL_SHIPPING_CENTS` rate. Real Melhor Envio quotes are pending [issue #27](https://github.com/jvictornascimento/frontend-kimberly/issues/27).
 
 Shipping integration must preserve free Pedreira/SP delivery and calculate other rates through `Frontend -> BELYEVE backend -> Melhor Envio`. The backend must validate the selected quote when creating an order.
@@ -123,6 +123,10 @@ When `VITE_API_BASE_URL` is empty, checkout services use local mocks.
 Do not commit secrets, API keys, access tokens, webhook secrets, or production credentials.
 
 The backend reads database, pricing, CORS and Asaas settings from environment variables. Use `.env.example` as a starting point and keep real values outside git.
+
+Paid-order email uses the backend's asynchronous post-commit event and Spring Mail SMTP settings (`MAIL_*`). Set `PURCHASE_CUSTOMER_EMAIL_ENABLED=true` to send confirmation to the email stored in the order. `PURCHASE_EMAIL_ENABLED` independently enables the internal notification to `PURCHASE_EMAIL_TO`. Both are disabled by default and share `PURCHASE_EMAIL_FROM`.
+
+Customer confirmation explains the WhatsApp contact, Scoop video in 2–5 business days and dispatch up to seven days after the subsequent WhatsApp confirmation. Browser actions never trigger a confirmation email directly.
 
 For payments, configure the selected environment's `ASAAS_SANDBOX_API_KEY` or `ASAAS_PRODUCTION_API_KEY`, plus `ASAAS_WEBHOOK_TOKEN`. The current Compose configuration also requires the sandbox key when selecting production.
 
