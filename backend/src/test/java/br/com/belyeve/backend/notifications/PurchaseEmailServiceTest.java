@@ -19,6 +19,23 @@ import static org.mockito.Mockito.when;
 
 class PurchaseEmailServiceTest {
     @Test
+    void sendsBothEmailsWhenBothAreEnabled() {
+        UUID orderId = UUID.randomUUID();
+        OrderRepository repository = mock(OrderRepository.class);
+        JavaMailSender mailSender = mock(JavaMailSender.class);
+        when(repository.findById(orderId)).thenReturn(Optional.of(order(orderId)));
+
+        new PurchaseEmailService(properties(true, true), mailSender, repository)
+                .sendPaidOrderEmail(new PaidOrderEvent(orderId));
+
+        var messages = org.mockito.ArgumentCaptor.forClass(SimpleMailMessage.class);
+        verify(mailSender, org.mockito.Mockito.times(2)).send(messages.capture());
+        assertThat(messages.getAllValues())
+                .extracting(message -> message.getTo()[0])
+                .containsExactly("loja@example.com", "cliente@example.com");
+    }
+
+    @Test
     void sendsCustomerEmailAfterPaidOrder() {
         UUID orderId = UUID.randomUUID();
         OrderEntity order = order(orderId);
@@ -80,6 +97,7 @@ class PurchaseEmailServiceTest {
         service.sendPaidOrderEmail(new PaidOrderEvent(UUID.randomUUID()));
 
         verify(mailSender, org.mockito.Mockito.never()).send(any(SimpleMailMessage.class));
+        org.mockito.Mockito.verifyNoInteractions(repository);
     }
 
     private AppProperties properties(boolean internalEnabled, boolean customerEnabled) {

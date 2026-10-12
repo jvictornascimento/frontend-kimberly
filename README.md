@@ -105,6 +105,10 @@ Do not commit secrets, API keys, access tokens, webhook secrets, or production c
 
 The backend reads database, pricing, CORS and Asaas settings from environment variables. Use `.env.example` as a starting point and keep real values outside git.
 
+Paid-order email uses the backend's asynchronous post-commit event and Spring Mail SMTP settings (`MAIL_*`). Set `PURCHASE_CUSTOMER_EMAIL_ENABLED=true` to send confirmation to the email stored in the order. `PURCHASE_EMAIL_ENABLED` independently enables the internal notification to `PURCHASE_EMAIL_TO`. Both are disabled by default and share `PURCHASE_EMAIL_FROM`.
+
+Customer confirmation explains the WhatsApp contact, Scoop video in 2–5 business days and dispatch up to seven days after the subsequent WhatsApp confirmation. Browser actions never trigger a confirmation email directly.
+
 ## Project Structure
 
 - `src/components/belyeve/`: landing page sections.
