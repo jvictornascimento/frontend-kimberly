@@ -67,7 +67,7 @@ The Java 21 Spring Boot API lives in `backend/`. It stores orders in PostgreSQL 
 - Asaas PIX and credit card payments (up to three installments) run through the backend. Payment confirmation comes from provider responses and authenticated webhooks, not browser clicks.
 - Asaas sandbox and production have separate URLs and keys. `ASAAS_ENVIRONMENT` selects the environment; sandbox is the default.
 - Internal purchase emails use Spring Mail after an authoritative paid transition and transaction commit.
-- Customer confirmation email is pending [issue #24](https://github.com/jvictornascimento/frontend-kimberly/issues/24). Its previous PR was merged into an intermediate branch and is absent from `main`.
+- Customer confirmation email is implemented with independent environment control (`PURCHASE_CUSTOMER_EMAIL_ENABLED`) and uses the email stored in the order.
 - Pedreira/SP has free local delivery. Other destinations currently use the temporary `NON_LOCAL_SHIPPING_CENTS` rate. Real Melhor Envio quotes are pending [issue #27](https://github.com/jvictornascimento/frontend-kimberly/issues/27).
 
 Shipping integration must preserve free Pedreira/SP delivery and calculate other rates through `Frontend -> BELYEVE backend -> Melhor Envio`. The backend must validate the selected quote when creating an order.

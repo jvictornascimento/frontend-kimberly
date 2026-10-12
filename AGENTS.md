@@ -228,7 +228,7 @@
 - Prompt 7: Codex - inspeção do repositório e planejamento.
 - Backend MVP já implementado: criação e consulta de pedidos, preços e totais no backend, PIX e cartão via Asaas, webhook autenticado com tratamento de duplicatas e email interno após pagamento confirmado.
 - Asaas possui configurações separadas para sandbox e produção, selecionadas por `ASAAS_ENVIRONMENT`; sandbox é o padrão.
-- Email de confirmação para a cliente ainda está pendente na Issue #24; o PR #25 foi mesclado em uma branch intermediária e não chegou à main. Atualizar este estado quando a implementação for integrada.
+- Email interno e email de confirmação para a cliente são implementados em `PurchaseEmailService`, após evento autoritativo de pagamento e commit da transação. `PURCHASE_EMAIL_ENABLED` e `PURCHASE_CUSTOMER_EMAIL_ENABLED` controlam cada envio de forma independente; ambos são desativados por padrão. SMTP deve ser configurado por ambiente.
 - Melhor Envio ainda está pendente na Issue #27. Atualmente, o backend usa `NON_LOCAL_SHIPPING_CENTS` como tarifa temporária fora de Pedreira/SP; isso não representa cotação real do provider.
 - Frontend, backend e PostgreSQL possuem configuração Docker Compose. Não provisionar ou alterar produção sem tarefa explícita.
 - Backend: Spring Boot + Java 21 + PostgreSQL + Docker em VPS.
