@@ -51,6 +51,7 @@
 - Não apresentar o banco como alternativa entre D1 e PostgreSQL; PostgreSQL está definido.
 
 ## Backend Spring Boot
+- O backend já está implementado em `backend/`, com Spring Boot, Java 21, PostgreSQL, JPA e migrations Flyway. Este repositório contém frontend e backend.
 - O backend Spring Boot será utilizado como API HTTP da BELYEVE e autoridade para pedidos, preços, frete, totais e estado de pagamento.
 - Controllers não devem concentrar regras de negócio.
 - Arquitetura conceitual: HTTP -> Controllers / Filters -> Input Validation -> Application / Use Cases -> Domain -> Repositories / Integrations.
@@ -225,10 +226,14 @@
 ## Sequência de desenvolvimento
 - Prompts 1-6: Lovable - frontend, design e UX.
 - Prompt 7: Codex - inspeção do repositório e planejamento.
-- Próxima etapa: backend MVP Spring Boot para armazenar vendas e suportar o checkout.
+- Backend MVP já implementado: criação e consulta de pedidos, preços e totais no backend, PIX e cartão via Asaas, webhook autenticado com tratamento de duplicatas e email interno após pagamento confirmado.
+- Asaas possui configurações separadas para sandbox e produção, selecionadas por `ASAAS_ENVIRONMENT`; sandbox é o padrão.
+- Email de confirmação para a cliente ainda está pendente na Issue #24; o PR #25 foi mesclado em uma branch intermediária e não chegou à main. Atualizar este estado quando a implementação for integrada.
+- Melhor Envio ainda está pendente na Issue #27. Atualmente, o backend usa `NON_LOCAL_SHIPPING_CENTS` como tarifa temporária fora de Pedreira/SP; isso não representa cotação real do provider.
+- Frontend, backend e PostgreSQL possuem configuração Docker Compose. Não provisionar ou alterar produção sem tarefa explícita.
 - Backend: Spring Boot + Java 21 + PostgreSQL + Docker em VPS.
 - Banco: PostgreSQL.
 - Hospedagem do PostgreSQL: VPS via Docker Compose inicialmente.
-- Integrações reais serão implementadas incrementalmente.
+- As demais integrações reais serão implementadas incrementalmente, nas respectivas Issues.
 - Não tratar Prompt 7 como permissão para grande rewrite.
 - Não implementar provider real ou infraestrutura fora do escopo da Issue atual.

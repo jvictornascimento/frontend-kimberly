@@ -27,6 +27,8 @@ The backend architecture is Spring Boot with PostgreSQL, deployed with Docker Co
 
 - Bun
 - Git
+- Java 21 and Maven for local backend development.
+- Docker with Compose for running the complete application and PostgreSQL.
 
 This repository includes `bun.lock`, so Bun is the preferred package manager for dependency installation.
 
@@ -53,7 +55,24 @@ docker compose up -d --build
 ```
 
 The frontend is exposed on `FRONTEND_PORT` and the backend on `BACKEND_PORT`.
-Set `FRONTEND_API_BASE_URL` to the public backend URL that the customer's browser can reach.
+Copy `.env.example` to `.env` and configure the required values before starting Compose.
+`FRONTEND_API_BASE_URL` is passed into the frontend build as `VITE_API_BASE_URL`.
+Use `/api` when a reverse proxy routes that path to the backend on the same origin, or a public backend URL reachable by the customer's browser. Compose does not configure that reverse proxy.
+
+## Current backend status
+
+The Java 21 Spring Boot API lives in `backend/`. It stores orders in PostgreSQL with JPA and versioned Flyway migrations, validates external requests with Jakarta Bean Validation, and determines prices, totals and payment status.
+
+- Order creation and status endpoints are implemented.
+- Asaas PIX and credit card payments (up to three installments) run through the backend. Payment confirmation comes from provider responses and authenticated webhooks, not browser clicks.
+- Asaas sandbox and production have separate URLs and keys. `ASAAS_ENVIRONMENT` selects the environment; sandbox is the default.
+- Internal purchase emails use Spring Mail after an authoritative paid transition and transaction commit.
+- Customer confirmation email is pending [issue #24](https://github.com/jvictornascimento/frontend-kimberly/issues/24). Its previous PR was merged into an intermediate branch and is absent from `main`.
+- Pedreira/SP has free local delivery. Other destinations currently use the temporary `NON_LOCAL_SHIPPING_CENTS` rate. Real Melhor Envio quotes are pending [issue #27](https://github.com/jvictornascimento/frontend-kimberly/issues/27).
+
+Shipping integration must preserve free Pedreira/SP delivery and calculate other rates through `Frontend -> BELYEVE backend -> Melhor Envio`. The backend must validate the selected quote when creating an order.
+
+The Scoop video is sent through WhatsApp in 2–5 business days. Dispatch takes up to seven days after the subsequent WhatsApp confirmation.
 
 ## Build
 
@@ -104,6 +123,10 @@ When `VITE_API_BASE_URL` is empty, checkout services use local mocks.
 Do not commit secrets, API keys, access tokens, webhook secrets, or production credentials.
 
 The backend reads database, pricing, CORS and Asaas settings from environment variables. Use `.env.example` as a starting point and keep real values outside git.
+
+For payments, configure the selected environment's `ASAAS_SANDBOX_API_KEY` or `ASAAS_PRODUCTION_API_KEY`, plus `ASAAS_WEBHOOK_TOKEN`. The current Compose configuration also requires the sandbox key when selecting production.
+
+For internal purchase email, configure SMTP through `MAIL_*`, set `PURCHASE_EMAIL_ENABLED=true`, and provide `PURCHASE_EMAIL_FROM` and `PURCHASE_EMAIL_TO`. Email is disabled by default.
 
 ## Project Structure
 
