@@ -68,9 +68,9 @@ The Java 21 Spring Boot API lives in `backend/`. It stores orders in PostgreSQL 
 - Asaas sandbox and production have separate URLs and keys. `ASAAS_ENVIRONMENT` selects the environment; sandbox is the default.
 - Internal purchase emails use Spring Mail after an authoritative paid transition and transaction commit.
 - Customer confirmation email is implemented with independent environment control (`PURCHASE_CUSTOMER_EMAIL_ENABLED`) and uses the email stored in the order.
-- Pedreira/SP has free local delivery. Other destinations currently use the temporary `NON_LOCAL_SHIPPING_CENTS` rate. Real Melhor Envio quotes are pending [issue #27](https://github.com/jvictornascimento/frontend-kimberly/issues/27).
+- Pedreira/SP has free local delivery, verified by the backend using ViaCEP. Other destinations use Melhor Envio quotes; the former fixed `NON_LOCAL_SHIPPING_CENTS` rate is no longer used.
 
-Shipping integration must preserve free Pedreira/SP delivery and calculate other rates through `Frontend -> BELYEVE backend -> Melhor Envio`. The backend must validate the selected quote when creating an order.
+Shipping rates follow `Frontend -> BELYEVE backend -> Melhor Envio`. Quotes are saved in PostgreSQL and expire after 15 minutes by default. Order creation validates their destination, quantity, current item price, service and environment. Each order stores the selected shipping price, carrier, service and transport estimate. Provider failures never fall back to a made-up rate or free shipping.
 
 The Scoop video is sent through WhatsApp in 2–5 business days. Dispatch takes up to seven days after the subsequent WhatsApp confirmation.
 
@@ -131,6 +131,26 @@ Customer confirmation explains the WhatsApp contact, Scoop video in 2–5 busine
 For payments, configure the selected environment's `ASAAS_SANDBOX_API_KEY` or `ASAAS_PRODUCTION_API_KEY`, plus `ASAAS_WEBHOOK_TOKEN`. The current Compose configuration also requires the sandbox key when selecting production.
 
 For internal purchase email, configure SMTP through `MAIL_*`, set `PURCHASE_EMAIL_ENABLED=true`, and provide `PURCHASE_EMAIL_FROM` and `PURCHASE_EMAIL_TO`. Email is disabled by default.
+
+## Melhor Envio shipping configuration
+
+Fill these backend variables in the local/VPS `.env` before enabling quotes:
+
+- `MELHOR_ENVIO_ENVIRONMENT`: `sandbox` (default) or `production`, independent of Asaas.
+- `MELHOR_ENVIO_SANDBOX_TOKEN` / `MELHOR_ENVIO_PRODUCTION_TOKEN`: a token with `shipping-calculate` permission for the selected account/environment. Tokens remain on the backend. OAuth token renewal must be handled operationally; this integration does not implement account authorization or automatic refresh.
+- `MELHOR_ENVIO_USER_AGENT`: application name and technical contact, e.g. `BELYEVE (technical@example.com)`; replace the example email with a real contact.
+- `MELHOR_ENVIO_ORIGIN_ZIP_CODE`: actual origin CEP, eight digits.
+- `SCOOP_1_PARCEL_*`, `SCOOP_2_PARCEL_*`, `SCOOP_3_PARCEL_*`: measured `WIDTH`, `HEIGHT`, `LENGTH` in cm and total packed `WEIGHT` in kg. Each profile describes one complete packed order of that quantity, not one unpacked Scoop. The included zero values are placeholders and are rejected when enabling shipping.
+- `MELHOR_ENVIO_SERVICES`: comma-separated carrier service IDs available to the account; default `1,2`. Configure only services BELYEVE can actually dispatch through.
+- `SHIPPING_QUOTE_TTL_SECONDS`: internal quote validity (default 900, permitted 60–3600 seconds).
+- `SHIPPING_TIMEOUT_SECONDS`: external request timeout (default 10, permitted 1–30 seconds).
+- Finally set `MELHOR_ENVIO_ENABLED=true` and rebuild/recreate the backend container.
+
+An enabled integration fails startup validation if required settings are missing. When disabled, verified Pedreira/SP delivery stays available; non-local quotes return a temporary unavailable error, without a fixed-rate fallback. Existing orders preserve their original shipping amount.
+
+The backend quotes one measured volume, with insurance equal to the authoritative items subtotal. It uses the provider's `custom_price` and `custom_delivery_time`/`custom_delivery_range`, which include account customizations. Shipping quotes do not purchase labels or schedule dispatch. Transport estimates start after dispatch; the video and WhatsApp confirmation sequence remains unchanged.
+
+Official references: [shipping calculation](https://docs.melhorenvio.com.br/reference/calculo-de-fretes-por-produtos), [API environments and headers](https://docs.melhorenvio.com.br/reference/introducao-api-melhor-envio), [ViaCEP](https://viacep.com.br/).
 
 ## Project Structure
 
