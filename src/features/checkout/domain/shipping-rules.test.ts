@@ -34,9 +34,11 @@ describe("checkout shipping rules", () => {
       priceCents: 1590,
     };
 
-    expect(formatDeliveryEstimate(carrierOption)).toBe("3 a 5 dias úteis");
+    expect(formatDeliveryEstimate(carrierOption)).toBe(
+      "3 a 5 dias úteis de transporte após o despacho",
+    );
     expect(formatDeliveryEstimate({ ...carrierOption, estimatedDays: { min: 4, max: 4 } })).toBe(
-      "4 dias úteis",
+      "4 dias úteis de transporte após o despacho",
     );
   });
 });

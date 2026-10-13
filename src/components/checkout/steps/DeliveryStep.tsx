@@ -51,7 +51,11 @@ export function DeliveryStep({ state }: { state: CheckoutState }) {
     }
   }, [quote.state, shipping]);
 
-  const canContinue = !hasErrors(errors) && shipping !== null;
+  const canContinue =
+    !hasErrors(errors) &&
+    quote.state.status === "success" &&
+    shipping !== null &&
+    quote.state.data.some((option) => option.id === shipping.id);
 
   return (
     <form

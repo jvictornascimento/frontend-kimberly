@@ -35,7 +35,6 @@ import { ENDPOINTS, apiRequest } from "./api-client";
 
 export async function getAddressByZipCode(zipCode: string): Promise<AddressLookup | null> {
   if (!USE_MOCKS) {
-    // TODO: Connect address lookup to BELYEVE API (backend proxies the CEP provider)
     return apiRequest<AddressLookup | null>(ENDPOINTS.address(zipCode));
   }
   await mockDelay(400);
@@ -45,7 +44,6 @@ export async function getAddressByZipCode(zipCode: string): Promise<AddressLooku
 
 export async function calculateShipping(input: ShippingQuoteInput): Promise<ShippingOption[]> {
   if (!USE_MOCKS) {
-    // TODO: Replace mock shipping service with BELYEVE API (backend quotes Melhor Envio + Pedreira rule)
     return apiRequest<ShippingOption[]>(ENDPOINTS.shippingQuote, {
       method: "POST",
       body: {
