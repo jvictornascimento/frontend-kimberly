@@ -16,7 +16,6 @@ app:
     scoop-one-price-cents: 10000
     scoop-two-price-cents: 19000
     scoop-three-price-cents: 27000
-    non-local-shipping-cents: 2500
   asaas:
     base-url: https://api-sandbox.asaas.com/v3
     api-key: test-key

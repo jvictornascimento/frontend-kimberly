@@ -12,3 +12,6 @@ backend
 target
 *.log
 *.local
+.env
+.env.*
+!.env.example

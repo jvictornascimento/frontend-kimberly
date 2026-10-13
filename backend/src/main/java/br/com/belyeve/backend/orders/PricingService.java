@@ -3,8 +3,6 @@ package br.com.belyeve.backend.orders;
 import br.com.belyeve.backend.config.AppProperties;
 import org.springframework.stereotype.Service;
 
-import java.text.Normalizer;
-import java.util.Locale;
 
 @Service
 public class PricingService {
@@ -17,40 +15,25 @@ public class PricingService {
         this.properties = properties;
     }
 
-    public Totals calculate(CreateOrderRequest request) {
-        long subtotal = packagePrice(request.scoopQuantity());
-        long unitPrice = Math.round((double) subtotal / request.scoopQuantity());
-        long discount = 0;
-        long shipping = isPedreiraSP(request.address().zipCode(), request.address().city(), request.address().state())
-                ? 0
-                : properties.pricing().nonLocalShippingCents();
-        long total = subtotal - discount + shipping;
-        return new Totals(unitPrice, subtotal, discount, shipping, total);
+    public Totals calculate(int quantity, long shippingCents) {
+        long subtotal = packagePrice(quantity);
+        if (shippingCents < 0) throw new BusinessException("Invalid shipping price");
+        long unitPrice = java.math.BigDecimal.valueOf(subtotal)
+                .divide(java.math.BigDecimal.valueOf(quantity), 0, java.math.RoundingMode.HALF_UP).longValueExact();
+        return new Totals(unitPrice, subtotal, 0, shippingCents, Math.addExact(subtotal, shippingCents));
     }
 
     public Guarantee guarantee(int scoopQuantity) {
         return new Guarantee(MIN_JEWELRY_PER_SCOOP * scoopQuantity, MIN_GIFTS_PER_SCOOP * scoopQuantity);
     }
 
-    private long packagePrice(int scoopQuantity) {
+    public long packagePrice(int scoopQuantity) {
         return switch (scoopQuantity) {
             case 1 -> properties.pricing().scoopOnePriceCents();
             case 2 -> properties.pricing().scoopTwoPriceCents();
             case 3 -> properties.pricing().scoopThreePriceCents();
             default -> throw new BusinessException("Invalid Scoop quantity");
         };
-    }
-
-    private boolean isPedreiraSP(String zipCode, String city, String state) {
-        return zipCode.replace("-", "").startsWith("13920")
-                || (city != null && state != null
-                && normalize(city).equals("pedreira") && state.trim().equalsIgnoreCase("SP"));
-    }
-
-    private String normalize(String value) {
-        return Normalizer.normalize(value.trim(), Normalizer.Form.NFD)
-                .replaceAll("\\p{M}", "")
-                .toLowerCase(Locale.ROOT);
     }
 
     public record Totals(long unitPriceCents, long subtotalCents, long discountCents, long shippingCents, long totalCents) {

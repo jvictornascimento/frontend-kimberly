@@ -70,6 +70,14 @@ public class OrderEntity {
     private long subtotalCents;
     private long discountCents;
     private long shippingCents;
+    private UUID shippingQuoteId;
+    @Column(length = 20) private String shippingKind;
+    @Column(length = 120) private String shippingCarrier;
+    @Column(length = 120) private String shippingService;
+    @Column(length = 20) private String shippingEnvironment;
+    private Integer shippingProviderServiceId;
+    private Integer shippingMinDays;
+    private Integer shippingMaxDays;
     private long totalCents;
     private Instant createdAt;
     private Instant updatedAt;
@@ -386,4 +394,21 @@ public class OrderEntity {
     public Instant getUpdatedAt() {
         return updatedAt;
     }
+
+    public UUID getShippingQuoteId() { return shippingQuoteId; }
+    public void setShippingQuoteId(UUID value) { shippingQuoteId = value; }
+    public String getShippingKind() { return shippingKind; }
+    public void setShippingKind(String value) { shippingKind = value; }
+    public String getShippingCarrier() { return shippingCarrier; }
+    public void setShippingCarrier(String value) { shippingCarrier = value; }
+    public String getShippingService() { return shippingService; }
+    public void setShippingService(String value) { shippingService = value; }
+    public String getShippingEnvironment() { return shippingEnvironment; }
+    public void setShippingEnvironment(String value) { shippingEnvironment = value; }
+    public Integer getShippingProviderServiceId() { return shippingProviderServiceId; }
+    public void setShippingProviderServiceId(Integer value) { shippingProviderServiceId = value; }
+    public Integer getShippingMinDays() { return shippingMinDays; }
+    public void setShippingMinDays(Integer value) { shippingMinDays = value; }
+    public Integer getShippingMaxDays() { return shippingMaxDays; }
+    public void setShippingMaxDays(Integer value) { shippingMaxDays = value; }
 }

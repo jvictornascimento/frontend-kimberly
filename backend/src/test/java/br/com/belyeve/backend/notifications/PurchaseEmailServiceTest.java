@@ -103,7 +103,7 @@ class PurchaseEmailServiceTest {
     private AppProperties properties(boolean internalEnabled, boolean customerEnabled) {
         return new AppProperties(
                 "http://localhost:3000",
-                new AppProperties.Pricing(10000, 19000, 27000, 2500),
+                new AppProperties.Pricing(10000, 19000, 27000),
                 new AppProperties.Asaas("sandbox", "https://api-sandbox.asaas.com/v3",
                         "https://api.asaas.com/v3", "sandbox-key", "production-key", "webhook-token"),
                 new AppProperties.PurchaseEmail(

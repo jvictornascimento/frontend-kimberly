@@ -14,7 +14,7 @@ public record CheckoutOrderRequest(
         @Valid @NotNull Item item,
         @Valid @NotNull CreateOrderRequest.CustomerRequest customer,
         @Valid @NotNull CreateOrderRequest.AddressRequest address,
-        @NotBlank @Size(max = 80) String shippingOptionId,
+        @NotBlank @Pattern(regexp = "[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}") String shippingOptionId,
         @NotBlank @Pattern(regexp = "pix|credit_card") String paymentMethod,
         @Min(1) @Max(3) Integer installments,
         @NotNull Boolean socialMediaConsent
@@ -38,7 +38,8 @@ public record CheckoutOrderRequest(
 
     public record Item(
             @NotBlank @Size(max = 80) String packageId,
-            @NotNull Integer quantity,
+            @tools.jackson.databind.annotation.JsonDeserialize(using = br.com.belyeve.backend.shipping.ScoopQuantityDeserializer.class)
+            @NotNull @Min(1) @Max(3) Integer quantity,
             Long unitPriceCents,
             @Valid @NotNull Preferences preferences
     ) {

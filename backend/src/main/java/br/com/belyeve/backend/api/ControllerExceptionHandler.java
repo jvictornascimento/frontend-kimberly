@@ -29,6 +29,16 @@ public class ControllerExceptionHandler {
         return response(status, status.getReasonPhrase(), request);
     }
 
+    @ExceptionHandler(br.com.belyeve.backend.shipping.ShippingUnavailableException.class)
+    ResponseEntity<StandardError> shippingUnavailable(br.com.belyeve.backend.shipping.ShippingUnavailableException error, HttpServletRequest request) {
+        return response(HttpStatus.SERVICE_UNAVAILABLE, error.getMessage(), request);
+    }
+
+    @ExceptionHandler(br.com.belyeve.backend.shipping.ShippingQuoteInvalidException.class)
+    ResponseEntity<StandardError> shippingQuoteInvalid(br.com.belyeve.backend.shipping.ShippingQuoteInvalidException error, HttpServletRequest request) {
+        return response(HttpStatus.CONFLICT, error.getMessage(), request);
+    }
+
     @ExceptionHandler(Exception.class)
     ResponseEntity<StandardError> internalServerError(Exception error, HttpServletRequest request) {
         log.error("Unexpected backend error", error);

@@ -1,8 +1,9 @@
 package br.com.belyeve.backend.orders;
 
-import br.com.belyeve.backend.config.AppProperties;
+import br.com.belyeve.backend.shipping.ShippingService;
+import br.com.belyeve.backend.shipping.ShippingQuoteRequest;
+import br.com.belyeve.backend.shipping.PostalAddressClient;
 import jakarta.validation.Valid;
-import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Pattern;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -11,25 +12,22 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-import java.text.Normalizer;
 import java.util.List;
-import java.util.Locale;
 
 @RestController
 @RequestMapping("/api")
 public class CheckoutSupportController {
-    private final AppProperties properties;
+    private final ShippingService shipping;
+    private final PostalAddressClient addresses;
 
-    public CheckoutSupportController(AppProperties properties) {
-        this.properties = properties;
+    public CheckoutSupportController(ShippingService shipping, PostalAddressClient addresses) {
+        this.shipping = shipping;
+        this.addresses = addresses;
     }
 
     @PostMapping("/shipping/quote")
     public List<ShippingOptionResponse> shippingQuote(@Valid @RequestBody ShippingQuoteRequest request) {
-        if (isPedreiraSP(request.zipCode(), request.city(), request.state())) {
-            return List.of(ShippingOptionResponse.localDelivery());
-        }
-        return List.of(ShippingOptionResponse.carrier(properties.pricing().nonLocalShippingCents()));
+        return shipping.quote(request);
     }
 
     @PostMapping("/payments/installments")
@@ -44,30 +42,8 @@ public class CheckoutSupportController {
 
     @GetMapping("/addresses/{zipCode}")
     public AddressLookupResponse address(@PathVariable @Pattern(regexp = "\\d{5}-?\\d{3}") String zipCode) {
-        if (zipCode.replace("-", "").startsWith("13920")) {
-            return new AddressLookupResponse("", "", "Pedreira", "SP");
-        }
-        return null;
-    }
-
-    private boolean isPedreiraSP(String zipCode, String city, String state) {
-        return zipCode.replace("-", "").startsWith("13920")
-                || (city != null && state != null
-                && normalize(city).equals("pedreira") && state.trim().equalsIgnoreCase("SP"));
-    }
-
-    private String normalize(String value) {
-        return Normalizer.normalize(value.trim(), Normalizer.Form.NFD)
-                .replaceAll("\\p{M}", "")
-                .toLowerCase(Locale.ROOT);
-    }
-
-    public record ShippingQuoteRequest(
-            @NotBlank @Pattern(regexp = "\\d{5}-?\\d{3}") String zipCode,
-            String city,
-            String state,
-            Integer quantity
-    ) {
+        var address = addresses.lookup(zipCode);
+        return address == null ? null : new AddressLookupResponse(address.street(), address.district(), address.city(), address.state());
     }
 
     public record InstallmentRequest(Long totalCents) {
