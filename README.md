@@ -183,3 +183,7 @@ Do not develop directly on `main`.
 ## License
 
 MIT License.
+
+## Checkout protection
+
+Order and payment creation share a backend limit of five requests per IP in 120 seconds. Turnstile can be enabled with environment settings. Configure trusted reverse proxy IPs before deploying on the VPS; see [checkout protection](docs/checkout-protection.md) for widget setup, IP trust, response codes, counter lifetime and validation.
