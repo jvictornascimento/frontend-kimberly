@@ -75,10 +75,13 @@ export async function getInstallmentOptions(
   return mockInstallmentOptions(totalCents, MAX_INSTALLMENTS);
 }
 
-export async function createOrder(input: CreateOrderInput): Promise<Order> {
+export async function createOrder(
+  input: CreateOrderInput,
+  turnstileToken?: string,
+): Promise<Order> {
   if (!USE_MOCKS) {
     // TODO: Connect order creation to backend
-    return apiRequest<Order>(ENDPOINTS.orders, { method: "POST", body: input });
+    return apiRequest<Order>(ENDPOINTS.orders, { method: "POST", body: input, turnstileToken });
   }
   await mockDelay(900);
   const { shippingOptionId, ...rest } = input;
@@ -95,12 +98,15 @@ export async function createOrder(input: CreateOrderInput): Promise<Order> {
   };
 }
 
-export async function createPayment(input: CreatePaymentInput): Promise<Payment> {
+export async function createPayment(
+  input: CreatePaymentInput,
+  turnstileToken?: string,
+): Promise<Payment> {
   if (!USE_MOCKS) {
     if (input.method === "pix") {
       const response = await apiRequest<Parameters<typeof fromPixPaymentResponse>[0]>(
         ENDPOINTS.payments,
-        { method: "POST", body: input },
+        { method: "POST", body: input, turnstileToken },
       );
       return fromPixPaymentResponse(response);
     }
@@ -108,7 +114,7 @@ export async function createPayment(input: CreatePaymentInput): Promise<Payment>
       paymentId: string;
       paymentStatus: PaymentStatus;
       installments: number;
-    }>(ENDPOINTS.payments, { method: "POST", body: input });
+    }>(ENDPOINTS.payments, { method: "POST", body: input, turnstileToken });
     if (!response.paymentId) throw new Error("Invalid credit card payment response");
     return {
       method: "credit_card",

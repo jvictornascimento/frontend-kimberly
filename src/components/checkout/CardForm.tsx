@@ -1,6 +1,7 @@
 import { useState } from "react";
 import { maskCardNumber, maskExpiry, onlyDigits } from "@/features/checkout/domain/masks";
 import { hasErrors, validateCard } from "@/features/checkout/domain/validation";
+import { useTurnstile } from "@/features/checkout/hooks/useTurnstile";
 import { usePayWithCard } from "@/features/checkout/hooks/useOrderActions";
 import { useTouched } from "@/features/checkout/hooks/useTouched";
 import type { CardFormData, PlacedOrder } from "@/features/checkout/types";
@@ -13,7 +14,8 @@ export function CardForm({ placed }: { placed: PlacedOrder }) {
   const [card, setCard] = useState<CardFormData>(EMPTY_CARD);
   const errors = validateCard(card);
   const { touch, visible, submit } = useTouched<keyof CardFormData>();
-  const { status, pay } = usePayWithCard(placed);
+  const { containerRef, getToken } = useTurnstile();
+  const { status, pay, cooldown, error } = usePayWithCard(placed, getToken);
   const err = (f: keyof CardFormData) => (visible(f) ? errors[f] : undefined);
   const set = (patch: Partial<CardFormData>) => setCard((c) => ({ ...c, ...patch }));
   const pending = status === "pending";
@@ -75,14 +77,25 @@ export function CardForm({ placed }: { placed: PlacedOrder }) {
           autoComplete="cc-csc"
         />
       </div>
+      <div ref={containerRef} className="mt-4" />
+      {cooldown > 0 && (
+        <p role="status" className="mt-4 text-sm">
+          Aguarde {cooldown} segundos para tentar novamente.
+        </p>
+      )}
       {status === "error" && (
         <div className="mt-4">
           <Notice tone="error" role="alert">
-            Não conseguimos enviar o pagamento. Confira os dados do cartão e tente novamente.
+            {error}
           </Notice>
         </div>
       )}
-      <PrimaryButton type="submit" className="mt-6" disabled={pending} aria-busy={pending}>
+      <PrimaryButton
+        type="submit"
+        className="mt-6"
+        disabled={pending || cooldown > 0}
+        aria-busy={pending}
+      >
         {pending ? "Enviando…" : "Pagar com cartão"}
       </PrimaryButton>
     </form>

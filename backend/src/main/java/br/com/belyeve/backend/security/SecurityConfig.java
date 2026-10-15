@@ -1,6 +1,10 @@
 package br.com.belyeve.backend.security;
 
 import br.com.belyeve.backend.config.AppProperties;
+import br.com.belyeve.backend.protection.*;
+import jakarta.validation.Validator;
+import tools.jackson.databind.json.JsonMapper;
+import org.springframework.security.web.access.intercept.AuthorizationFilter;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.http.HttpMethod;
@@ -31,8 +35,12 @@ public class SecurityConfig {
             """;
 
     @Bean
-    SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
+    SecurityFilterChain securityFilterChain(HttpSecurity http, CheckoutProtectionProperties protection,
+            ClientIpResolver ips, CheckoutRateLimiter limiter, TurnstileClient turnstile,
+            Validator validator, JsonMapper mapper) throws Exception {
         http
+                .addFilterBefore(new CheckoutProtectionFilter(protection, ips, limiter, turnstile, validator, mapper),
+                        AuthorizationFilter.class)
                 .csrf(csrf -> csrf.disable())
                 .cors(Customizer.withDefaults())
                 .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
@@ -65,8 +73,8 @@ public class SecurityConfig {
         CorsConfiguration config = new CorsConfiguration();
         config.setAllowedOrigins(List.of(properties.corsOrigin()));
         config.setAllowedMethods(List.of("GET", "POST", "OPTIONS"));
-        config.setAllowedHeaders(List.of("Content-Type", "X-Correlation-ID"));
-        config.setExposedHeaders(List.of("X-Correlation-ID"));
+        config.setAllowedHeaders(List.of("Content-Type", "X-Correlation-ID", "X-Turnstile-Token"));
+        config.setExposedHeaders(List.of("X-Correlation-ID", "Retry-After"));
         config.setAllowCredentials(false);
 
         UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();

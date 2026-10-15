@@ -1,6 +1,7 @@
 import { useState, type ReactNode } from "react";
 import { findPackage } from "@/features/checkout/domain/pricing";
 import { formatDeliveryEstimate } from "@/features/checkout/domain/shipping-rules";
+import { useTurnstile } from "@/features/checkout/hooks/useTurnstile";
 import { useSubmitOrder } from "@/features/checkout/hooks/useOrderActions";
 import { goToStep } from "@/features/checkout/state/checkout.store";
 import type { CheckoutState, CheckoutStep, OrderTotals } from "@/features/checkout/types";
@@ -40,7 +41,8 @@ export function ReviewStep({ state, totals }: { state: CheckoutState; totals: Or
     state;
   const [tried, setTried] = useState(false);
   const [card, setCard] = useState<CardFormData>(EMPTY_CARD);
-  const { status, submit, shippingExpired } = useSubmitOrder();
+  const { containerRef, getToken } = useTurnstile();
+  const { status, submit, shippingExpired, cooldown, error } = useSubmitOrder(getToken);
   const pending = status === "pending";
   const religiousAnswered = typeof selection.allowsReligiousItems === "boolean";
   const cardReady = paymentMethod !== "credit_card" || !hasErrors(validateCard(card));
@@ -157,6 +159,12 @@ export function ReviewStep({ state, totals }: { state: CheckoutState; totals: Or
         </div>
       )}
 
+      <div ref={containerRef} className="mt-6" />
+      {cooldown > 0 && (
+        <p role="status" className="mt-4 text-sm">
+          Aguarde {cooldown} segundos para tentar novamente.
+        </p>
+      )}
       {status === "error" && (
         <div className="mt-6">
           <Notice tone="error" role="alert">
@@ -168,7 +176,7 @@ export function ReviewStep({ state, totals }: { state: CheckoutState; totals: Or
                 </TextButton>
               </>
             ) : (
-              "Não conseguimos registrar seu pedido agora. Seus dados foram mantidos — tente novamente em instantes."
+              error
             )}
           </Notice>
         </div>
@@ -176,7 +184,7 @@ export function ReviewStep({ state, totals }: { state: CheckoutState; totals: Or
 
       <PrimaryButton
         className="mt-8"
-        disabled={pending || !religiousAnswered}
+        disabled={pending || !religiousAnswered || cooldown > 0}
         aria-busy={pending}
         onClick={() => {
           setTried(true);

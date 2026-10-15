@@ -27,6 +27,7 @@ class ReligiousItemsPreferenceHttpTest {
     @Autowired JsonMapper mapper;
     @Autowired OrderRepository orders;
     @MockitoBean ShippingService shipping;
+    private static final java.util.concurrent.atomic.AtomicInteger clients = new java.util.concurrent.atomic.AtomicInteger();
     private static final String QUOTE="10000000-0000-0000-0000-000000000001";
     private static final String BODY="""
         {"item":{"packageId":"scoop-1","quantity":1,"preferences":{
@@ -45,7 +46,7 @@ class ReligiousItemsPreferenceHttpTest {
     }
     @Test void savesEitherExplicitAnswerAndReturnsItWithoutChangingPricesOrConsent() throws Exception {
         for(boolean answer:new boolean[]{false,true}) {
-            String response=mvc.perform(post("/api/orders").contentType(MediaType.APPLICATION_JSON).content(BODY.formatted(answer)))
+            String response=mvc.perform(post("/api/orders").with(request -> { request.setRemoteAddr("198.51.100." + clients.incrementAndGet()); return request; }).contentType(MediaType.APPLICATION_JSON).content(BODY.formatted(answer)))
                     .andExpect(status().isCreated()).andExpect(jsonPath("$.item.preferences.allowsReligiousItems").value(answer))
                     .andExpect(jsonPath("$.socialMediaConsent").value(false)).andExpect(jsonPath("$.totals.totalCents").value(10000))
                     .andReturn().getResponse().getContentAsString();
@@ -58,15 +59,15 @@ class ReligiousItemsPreferenceHttpTest {
     }
     @Test void rejectsMissingNullAndCoercedAnswersBeforeDomainOrProviders() throws Exception {
         for(String answer:new String[]{"null","\"true\"","\"false\"","\"yes\"","1","0","{}","[]"}) {
-            mvc.perform(post("/api/orders").contentType(MediaType.APPLICATION_JSON).content(BODY.formatted(answer)))
+            mvc.perform(post("/api/orders").with(request -> { request.setRemoteAddr("198.51.100." + clients.incrementAndGet()); return request; }).contentType(MediaType.APPLICATION_JSON).content(BODY.formatted(answer)))
                     .andExpect(status().isBadRequest());
         }
-        mvc.perform(post("/api/orders").contentType(MediaType.APPLICATION_JSON)
+        mvc.perform(post("/api/orders").with(request -> { request.setRemoteAddr("198.51.100." + clients.incrementAndGet()); return request; }).contentType(MediaType.APPLICATION_JSON)
                 .content(BODY.replace("\"allowsReligiousItems\":%s,", ""))).andExpect(status().isBadRequest());
         verifyNoInteractions(shipping);
     }
     @Test void preservesUnknownAnswerOnHistoricalOrders() throws Exception {
-        String response=mvc.perform(post("/api/orders").contentType(MediaType.APPLICATION_JSON).content(BODY.formatted(false)))
+        String response=mvc.perform(post("/api/orders").with(request -> { request.setRemoteAddr("198.51.100." + clients.incrementAndGet()); return request; }).contentType(MediaType.APPLICATION_JSON).content(BODY.formatted(false)))
                 .andExpect(status().isCreated()).andReturn().getResponse().getContentAsString();
         UUID id=UUID.fromString(mapper.readTree(response).path("id").asText());
         var historical=orders.findById(id).orElseThrow();

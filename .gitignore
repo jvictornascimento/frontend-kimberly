@@ -32,3 +32,8 @@ backend/target
 *.njsproj
 *.sln
 *.sw?
+
+# Local environment files and credentials
+.env
+.env.*
+!.env.example

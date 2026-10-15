@@ -1,3 +1,4 @@
+import { useTurnstile } from "@/features/checkout/hooks/useTurnstile";
 import { Link } from "@tanstack/react-router";
 import {
   usePaymentStatusPolling,
@@ -7,7 +8,7 @@ import { resetCheckout } from "@/features/checkout/state/checkout.store";
 import type { OrderStatus, PlacedOrder } from "@/features/checkout/types";
 import { CardForm } from "./CardForm";
 import { PixPanel } from "./PixPanel";
-import { Notice } from "./ui";
+import { Notice, PrimaryButton } from "./ui";
 import { priceOr } from "./format";
 
 const STATUS_COPY: Record<
@@ -48,7 +49,8 @@ const STATUS_COPY: Record<
 };
 
 export function OrderConfirmation({ placed }: { placed: PlacedOrder }) {
-  useRecoverPixPayment(placed);
+  const { containerRef, getToken } = useTurnstile();
+  const recovery = useRecoverPixPayment(placed, getToken);
   usePaymentStatusPolling(placed);
   const { order, payment } = placed;
   const copy = STATUS_COPY[order.status] ?? STATUS_COPY.DRAFT;
@@ -74,6 +76,25 @@ export function OrderConfirmation({ placed }: { placed: PlacedOrder }) {
 
       {payment?.method === "pix" && order.status === "AWAITING_PAYMENT" && (
         <PixPanel payment={payment} />
+      )}
+      <div ref={containerRef} className="mt-4" />
+      {recovery.needsRecovery && (
+        <div className="mt-4">
+          {recovery.error && (
+            <Notice tone="error" role="alert">
+              {recovery.error}
+            </Notice>
+          )}
+          {recovery.cooldown > 0 && (
+            <p role="status">Aguarde {recovery.cooldown} segundos para tentar novamente.</p>
+          )}
+          <PrimaryButton
+            disabled={recovery.pending || recovery.cooldown > 0}
+            onClick={recovery.recover}
+          >
+            {recovery.pending ? "Preparando PIX…" : "Preparar pagamento PIX"}
+          </PrimaryButton>
+        </div>
       )}
       {needsCard && <CardForm placed={placed} />}
 
