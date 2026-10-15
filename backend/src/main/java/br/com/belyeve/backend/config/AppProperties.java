@@ -20,8 +20,7 @@ public record AppProperties(
     public record Pricing(
             @Min(1) long scoopOnePriceCents,
             @Min(1) long scoopTwoPriceCents,
-            @Min(1) long scoopThreePriceCents,
-            @Min(0) long nonLocalShippingCents
+            @Min(1) long scoopThreePriceCents
     ) {
     }
 

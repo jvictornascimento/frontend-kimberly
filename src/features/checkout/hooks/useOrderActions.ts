@@ -3,6 +3,7 @@ import { PAYMENT_STATUS_POLL_MS } from "../config";
 import { toCreateOrderInput } from "../adapters/order.adapter";
 import { createOrder, createPayment, getPaymentStatus } from "../services/checkout.service";
 import { setCheckout, updatePlacedOrder } from "../state/checkout.store";
+import { ApiError } from "../services/api-client";
 import type {
   CardFormData,
   CheckoutState,
@@ -19,12 +20,14 @@ export function useSubmitOrder() {
   const [status, setStatus] = useState<ActionStatus>("idle");
   const lock = useRef(false);
   const pendingOrder = useRef<Order | null>(null);
+  const [shippingExpired, setShippingExpired] = useState(false);
 
   async function submit(state: CheckoutState, card?: CardFormData) {
     const input = toCreateOrderInput(state);
     if (!input || lock.current) return;
     lock.current = true;
     setStatus("pending");
+    setShippingExpired(false);
     try {
       const order = pendingOrder.current ?? (await createOrder(input));
       pendingOrder.current = order;
@@ -43,13 +46,17 @@ export function useSubmitOrder() {
       setCheckout({
         placedOrder: { order: payment ? { ...order, status: payment.status } : order, payment },
       });
-    } catch {
+    } catch (error) {
+      if (!pendingOrder.current && error instanceof ApiError && error.status === 409) {
+        setShippingExpired(true);
+        setCheckout({ shipping: null, installment: null });
+      }
       lock.current = false;
       setStatus("error");
     }
   }
 
-  return { status, submit };
+  return { status, submit, shippingExpired };
 }
 
 export function usePayWithCard(placed: PlacedOrder) {

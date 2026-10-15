@@ -2,75 +2,24 @@ package br.com.belyeve.backend.orders;
 
 import br.com.belyeve.backend.config.AppProperties;
 import org.junit.jupiter.api.Test;
-
-import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.*;
 
 class PricingServiceTest {
     private final PricingService service = new PricingService(new AppProperties(
-            "http://localhost:3000",
-            new AppProperties.Pricing(10000, 19000, 27000, 2500),
+            "http://localhost:3000", new AppProperties.Pricing(10000, 19000, 27000),
             new AppProperties.Asaas("sandbox", "https://api-sandbox.asaas.com/v3",
                     "https://api.asaas.com/v3", "sandbox-key", "production-key", "webhook-token"),
-            new AppProperties.PurchaseEmail(false, null, null, false)
-    ));
+            new AppProperties.PurchaseEmail(false, null, null, false)));
 
-    @Test
-    void calculatesLocalDeliveryAsFreeForPedreiraSP() {
-        PricingService.Totals totals = service.calculate(request(2, "Pedréira", "SP"));
-
-        assertThat(totals.subtotalCents()).isEqualTo(19000);
-        assertThat(totals.shippingCents()).isZero();
-        assertThat(totals.totalCents()).isEqualTo(19000);
+    @Test void includesTheSelectedAuthoritativeRateInTotals() {
+        assertThat(service.calculate(2, 1987)).isEqualTo(new PricingService.Totals(9500, 19000, 0, 1987, 20987));
     }
-
-    @Test
-    void usesConfiguredShippingOutsidePedreiraSP() {
-        PricingService.Totals totals = service.calculate(request(1, "Campinas", "SP"));
-
-        assertThat(totals.subtotalCents()).isEqualTo(10000);
-        assertThat(totals.shippingCents()).isEqualTo(2500);
-        assertThat(totals.totalCents()).isEqualTo(12500);
-    }
-
-    @Test
-    void grantsLocalDeliveryFromPedreiraZipEvenWhenStateWasTypedLowercase() {
-        PricingService.Totals totals = service.calculate(request(1, "", "sp"));
-
-        assertThat(totals.shippingCents()).isZero();
-    }
-
-    @Test
-    void keepsMinimumGuaranteePerScoop() {
+    @Test void keepsFreeLocalDeliveryAndMinimumGuarantee() {
+        assertThat(service.calculate(3, 0).totalCents()).isEqualTo(27000);
         assertThat(service.guarantee(3)).isEqualTo(new PricingService.Guarantee(6, 9));
     }
-
-    private CreateOrderRequest request(int quantity, String city, String state) {
-        return new CreateOrderRequest(
-                quantity,
-                JewelryCategory.GOLD,
-                false,
-                null,
-                false,
-                null,
-                false,
-                null,
-                null,
-                false,
-                new CreateOrderRequest.CustomerRequest(
-                        "Cliente BELYEVE",
-                        "19999999999",
-                        "cliente@example.com",
-                        "52998224725"
-                ),
-                new CreateOrderRequest.AddressRequest(
-                        city.equalsIgnoreCase("Campinas") ? "13000000" : "13920000",
-                        "Rua das Flores",
-                        "123",
-                        null,
-                        "Centro",
-                        city,
-                        state
-                )
-        );
+    @Test void rejectsInvalidQuantityAndNegativeShipping() {
+        assertThatThrownBy(() -> service.calculate(4, 1000)).isInstanceOf(BusinessException.class);
+        assertThatThrownBy(() -> service.calculate(1, -1)).isInstanceOf(BusinessException.class);
     }
 }

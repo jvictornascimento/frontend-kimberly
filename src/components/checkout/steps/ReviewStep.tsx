@@ -40,7 +40,7 @@ export function ReviewStep({ state, totals }: { state: CheckoutState; totals: Or
     state;
   const [tried, setTried] = useState(false);
   const [card, setCard] = useState<CardFormData>(EMPTY_CARD);
-  const { status, submit } = useSubmitOrder();
+  const { status, submit, shippingExpired } = useSubmitOrder();
   const pending = status === "pending";
   const cardReady = paymentMethod !== "credit_card" || !hasErrors(validateCard(card));
 
@@ -144,8 +144,16 @@ export function ReviewStep({ state, totals }: { state: CheckoutState; totals: Or
       {status === "error" && (
         <div className="mt-6">
           <Notice tone="error" role="alert">
-            Não conseguimos registrar seu pedido agora. Seus dados foram mantidos — tente novamente
-            em instantes.
+            {shippingExpired ? (
+              <>
+                A cotação de frete expirou ou mudou. Seus dados foram mantidos.{" "}
+                <TextButton onClick={() => goToStep("delivery")}>
+                  Calcular frete novamente
+                </TextButton>
+              </>
+            ) : (
+              "Não conseguimos registrar seu pedido agora. Seus dados foram mantidos — tente novamente em instantes."
+            )}
           </Notice>
         </div>
       )}

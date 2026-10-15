@@ -27,5 +27,6 @@ export function isPedreiraSP(city: string, state: string) {
 export function formatDeliveryEstimate(option: ShippingOption) {
   if (!option.estimatedDays) return "Combinamos a entrega pelo WhatsApp";
   const { min, max } = option.estimatedDays;
-  return min === max ? `${min} dias úteis` : `${min} a ${max} dias úteis`;
+  const days = min === max ? `${min} dias úteis` : `${min} a ${max} dias úteis`;
+  return `${days} de transporte após o despacho`;
 }

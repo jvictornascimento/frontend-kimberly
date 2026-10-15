@@ -6,9 +6,16 @@ public record ShippingOptionResponse(
         String carrier,
         String service,
         EstimatedDays estimatedDays,
-        long priceCents
+        long priceCents,
+        java.time.Instant expiresAt
 ) {
     public static ShippingOptionResponse from(OrderEntity order) {
+        if (order.getShippingQuoteId() != null) {
+            return new ShippingOptionResponse(order.getShippingQuoteId().toString(), order.getShippingKind(),
+                    order.getShippingCarrier(), order.getShippingService(),
+                    order.getShippingMinDays() == null ? null : new EstimatedDays(order.getShippingMinDays(), order.getShippingMaxDays()),
+                    order.getShippingCents(), null);
+        }
         if (order.getShippingCents() == 0 && isPedreira(order)) {
             return localDelivery();
         }
@@ -22,7 +29,8 @@ public record ShippingOptionResponse(
                 "BELYEVE",
                 "Entrega grátis em Pedreira",
                 null,
-                0
+                0,
+                null
         );
     }
 
@@ -32,8 +40,9 @@ public record ShippingOptionResponse(
                 "carrier",
                 "BELYEVE",
                 "Frete configurado",
-                new EstimatedDays(5, 9),
-                priceCents
+                null,
+                priceCents,
+                null
         );
     }
 

@@ -40,6 +40,8 @@ export interface ShippingOption {
   /** Business days. null when delivery is arranged directly (e.g. Pedreira). */
   estimatedDays: { min: number; max: number } | null;
   priceCents: number;
+  /** Server quote validity; absent on mocks and historical orders. */
+  expiresAt?: string | null;
 }
 
 export interface ShippingQuoteInput {
