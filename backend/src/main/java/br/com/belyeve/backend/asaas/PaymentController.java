@@ -15,9 +15,11 @@ import java.util.UUID;
 @RequestMapping("/api")
 public class PaymentController {
     private final PaymentService paymentService;
+    private final br.com.belyeve.backend.protection.ClientIpResolver ips;
 
-    public PaymentController(PaymentService paymentService) {
+    public PaymentController(PaymentService paymentService, br.com.belyeve.backend.protection.ClientIpResolver ips) {
         this.paymentService = paymentService;
+        this.ips = ips;
     }
 
     @PostMapping("/orders/{orderId}/payments/pix")
@@ -32,7 +34,7 @@ public class PaymentController {
                 throw new br.com.belyeve.backend.orders.BusinessException("Card details are required");
             }
             return paymentService.createCard(request.orderId(), request.card(), request.installments(),
-                    httpRequest.getRemoteAddr());
+                    ips.resolve(httpRequest));
         }
         return paymentService.createPix(request.orderId());
     }

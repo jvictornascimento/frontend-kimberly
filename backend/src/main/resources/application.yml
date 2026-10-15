@@ -1,6 +1,6 @@
 server:
   port: ${SERVER_PORT:8081}
-  forward-headers-strategy: framework
+  forward-headers-strategy: none
 
 spring:
   application:
@@ -49,6 +49,12 @@ app:
     setup-key: ${MELHOR_ENVIO_SETUP_KEY:}
     encryption-key: ${MELHOR_ENVIO_TOKEN_ENCRYPTION_KEY:}
     user-agent: ${MELHOR_ENVIO_USER_AGENT:}
+  checkout-protection:
+    turnstile-enabled: ${TURNSTILE_ENABLED:false}
+    secret-key: ${TURNSTILE_SECRET_KEY:}
+    allowed-hostnames: ${TURNSTILE_ALLOWED_HOSTNAMES:}
+    trusted-proxy-cidrs: ${CHECKOUT_TRUSTED_PROXY_CIDRS:}
+    timeout-seconds: ${TURNSTILE_TIMEOUT_SECONDS:5}
   cors-origin: ${CORS_ORIGIN:http://localhost:3000}
   pricing:
     scoop-one-price-cents: ${SCOOP_ONE_PRICE_CENTS}
