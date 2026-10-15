@@ -86,6 +86,7 @@ public class PurchaseEmailService {
                 Pode conter peças masculinas: %s
                 Categoria masculina: %s
                 Pode conter piercing Prata 925: %s
+                Aceita artigos religiosos: %s
                 Locais do piercing: %s
                 Restrições: %s
                 Consentimento social: %s
@@ -107,6 +108,7 @@ public class PurchaseEmailService {
                 yesNo(order.isAllowsMalePieces()),
                 nullToDash(order.getMaleJewelryCategory()),
                 yesNo(order.isAllowsPiercing()),
+                yesNo(order.getAllowsReligiousItems()),
                 nullToDash(order.getPiercingLocations()),
                 nullToDash(order.getRestrictions()),
                 yesNo(order.isSocialMediaConsent()),
@@ -152,7 +154,8 @@ public class PurchaseEmailService {
         return format.format(cents / 100.0);
     }
 
-    private String yesNo(boolean value) {
+    private String yesNo(Boolean value) {
+        if (value == null) return "Não informado";
         return value ? "Sim" : "Não";
     }
 

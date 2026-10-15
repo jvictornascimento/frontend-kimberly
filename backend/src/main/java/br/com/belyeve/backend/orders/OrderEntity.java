@@ -52,6 +52,8 @@ public class OrderEntity {
     private JewelryCategory maleJewelryCategory;
 
     private boolean allowsPiercing;
+    // Null preserves the absence of an answer on orders placed before this question existed.
+    private Boolean allowsReligiousItems;
     private String piercingLocations;
     private String restrictions;
     private boolean socialMediaConsent;
@@ -233,6 +235,14 @@ public class OrderEntity {
 
     public void setAllowsPiercing(boolean allowsPiercing) {
         this.allowsPiercing = allowsPiercing;
+    }
+
+    public Boolean getAllowsReligiousItems() {
+        return allowsReligiousItems;
+    }
+
+    public void setAllowsReligiousItems(Boolean allowsReligiousItems) {
+        this.allowsReligiousItems = allowsReligiousItems;
     }
 
     public String getPiercingLocations() {
