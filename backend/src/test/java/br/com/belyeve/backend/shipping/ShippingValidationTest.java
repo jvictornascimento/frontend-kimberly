@@ -29,16 +29,16 @@ class ShippingValidationTest {
         var valid = ShippingFixtures.properties();
         assertThat(validator.validate(valid)).isEmpty();
         var invalid = new ShippingProperties(true, "sandbox", "", "production-token",
-                valid.userAgent(), valid.originZipCode(), valid.parcels(), 900, 10, "1,2");
+                valid.userAgent(), valid.originZipCode(), valid.parcels(), 900, 10, "1,2", false);
         assertThat(validator.validate(invalid)).isNotEmpty();
         var parcel = new ShippingProperties.Parcel(BigDecimal.ZERO, BigDecimal.ONE, BigDecimal.ONE, BigDecimal.ONE);
         var invalidParcel = new ShippingProperties(true, "sandbox", "sandbox-token", "",
-                valid.userAgent(), valid.originZipCode(), Map.of(1, parcel, 2, parcel, 3, parcel), 900, 10, "1,2");
+                valid.userAgent(), valid.originZipCode(), Map.of(1, parcel, 2, parcel, 3, parcel), 900, 10, "1,2", false);
         assertThat(validator.validate(invalidParcel)).isNotEmpty();
-        var disabled = new ShippingProperties(false, "sandbox", "", "", "", "", Map.of(), 900, 10, "1,2");
+        var disabled = new ShippingProperties(false, "sandbox", "", "", "", "", Map.of(), 900, 10, "1,2", false);
         assertThat(validator.validate(disabled)).isEmpty();
         var production = new ShippingProperties(true, "production", "sandbox-token", "production-token",
-                valid.userAgent(), valid.originZipCode(), valid.parcels(), 900, 10, "1,2");
+                valid.userAgent(), valid.originZipCode(), valid.parcels(), 900, 10, "1,2", false);
         assertThat(production.token()).isEqualTo("production-token");
         assertThat(production.baseUrl()).isEqualTo("https://melhorenvio.com.br");
     }

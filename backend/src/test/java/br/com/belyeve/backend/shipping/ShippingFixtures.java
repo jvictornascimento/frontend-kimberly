@@ -10,7 +10,7 @@ class ShippingFixtures {
         var parcel = new ShippingProperties.Parcel(new BigDecimal("20"), new BigDecimal("10"),
                 new BigDecimal("30"), new BigDecimal("0.75"));
         return new ShippingProperties(true, "sandbox", "sandbox-test-token", "production-test-token",
-                "BELYEVE (technical@example.com)", "13920013", Map.of(1, parcel, 2, parcel, 3, parcel), 900, 10, "1,2");
+                "BELYEVE (technical@example.com)", "13920013", Map.of(1, parcel, 2, parcel, 3, parcel), 900, 10, "1,2", false);
     }
     static PricingService pricing() {
         return new PricingService(new AppProperties("http://localhost:3000",

@@ -43,6 +43,9 @@ public class SecurityConfig {
                         .permissionsPolicyHeader(policy -> policy.policy(PERMISSIONS_POLICY)))
                 .authorizeHttpRequests(auth -> auth
                         .requestMatchers("/actuator/health").permitAll()
+                        .requestMatchers(HttpMethod.GET, "/api/integrations/melhor-envio/callback").permitAll()
+                        // Setup is authenticated inside the service; this header is never allowed by browser CORS.
+                        .requestMatchers(HttpMethod.POST, "/api/integrations/melhor-envio/authorize").permitAll()
                         .requestMatchers(HttpMethod.POST, "/api/orders").permitAll()
                         .requestMatchers(HttpMethod.POST, "/api/orders/*/payments/pix").permitAll()
                         .requestMatchers(HttpMethod.GET, "/api/orders/*/status").permitAll()
