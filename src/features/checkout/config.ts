@@ -12,3 +12,6 @@ export const USE_MOCKS = API_BASE_URL === "";
 export const MAX_INSTALLMENTS = 3;
 export const PAYMENT_STATUS_POLL_MS = 5000;
 export const CHECKOUT_STORAGE_KEY = "belyeve-checkout-v1";
+
+const rawSiteKey: unknown = import.meta.env["VITE_TURNSTILE_SITE_KEY"];
+export const TURNSTILE_SITE_KEY = typeof rawSiteKey === "string" ? rawSiteKey.trim() : "";
