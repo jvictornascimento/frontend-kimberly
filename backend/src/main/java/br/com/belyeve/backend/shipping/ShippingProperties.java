@@ -15,7 +15,7 @@ public record ShippingProperties(
         boolean enabled, String environment, String sandboxToken, String productionToken,
         String userAgent, String originZipCode, Map<Integer, Parcel> parcels,
         @Min(60) @Max(3600) int quoteTtlSeconds,
-        @Min(1) @Max(30) int timeoutSeconds, String services
+        @Min(1) @Max(30) int timeoutSeconds, String services, boolean oauthEnabled
 ) {
     public String baseUrl() {
         return "production".equals(environment) ? "https://melhorenvio.com.br" : "https://sandbox.melhorenvio.com.br";
@@ -29,7 +29,7 @@ public record ShippingProperties(
     public boolean isConfigured() {
         if (!enabled) return true;
         return ("sandbox".equals(environment) || "production".equals(environment))
-                && token() != null && !token().isBlank()
+                && (oauthEnabled || (token() != null && !token().isBlank()))
                 && originZipCode != null && originZipCode.matches("\\d{8}")
                 && userAgent != null && userAgent.length() <= 200
                 && userAgent.matches("[^\\r\\n]+\\([^\\s()]+@[^\\s()]+\\)")

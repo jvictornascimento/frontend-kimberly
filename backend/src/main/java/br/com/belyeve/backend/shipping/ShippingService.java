@@ -32,7 +32,8 @@ public class ShippingService {
         this.clock = clock;
     }
 
-    @Transactional
+    // Provider calls (including OAuth refresh) run before saveAll starts its own transaction.
+    // Do not hold a second pool connection while the token transaction acquires its row lock.
     public List<ShippingOptionResponse> quote(ShippingQuoteRequest request) {
         if (request.quantity() == null || request.quantity() < 1 || request.quantity() > 3) {
             throw new BusinessException("Invalid Scoop quantity");

@@ -36,6 +36,31 @@ class MelhorEnvioClientTest {
         server.verify();
     }
 
+    @Test void usesRotatedOAuthTokensAndNeverFallsBackAfterCredentialFailure() {
+        var valid = ShippingFixtures.properties();
+        var oauth = new ShippingProperties(true, "sandbox", "", "", valid.userAgent(), valid.originZipCode(),
+                valid.parcels(), 900, 10, "1,2", true);
+        assertThat(oauth.isConfigured()).isTrue();
+        var builder = RestClient.builder().baseUrl("https://sandbox.melhorenvio.com.br");
+        var server = MockRestServiceServer.bindTo(builder).build();
+        server.expect(anything()).andExpect(header("Authorization", "Bearer first-oauth-token"))
+                .andRespond(withSuccess(RATE, MediaType.APPLICATION_JSON));
+        server.expect(anything()).andExpect(header("Authorization", "Bearer rotated-oauth-token"))
+                .andRespond(withSuccess(RATE, MediaType.APPLICATION_JSON));
+        var token = new java.util.concurrent.atomic.AtomicReference<>("first-oauth-token");
+        var client = new MelhorEnvioClient(builder.build(), oauth, () -> {
+            if (token.get() == null) throw new IllegalStateException("private credential failure");
+            return token.get();
+        });
+        assertThat(client.calculate("01001000", 1, 10000)).isNotEmpty();
+        token.set("rotated-oauth-token");
+        assertThat(client.calculate("01001000", 1, 10000)).isNotEmpty();
+        token.set(null);
+        assertThatThrownBy(() -> client.calculate("01001000", 1, 10000))
+                .isInstanceOf(ShippingUnavailableException.class).hasMessageNotContaining("private");
+        server.verify();
+    }
+
     @Test void rejectsMalformedPricesTimesAndMissingCustomFields() {
         var mapper = JsonMapper.builder().build();
         for (String invalid : new String[]{"{}", "null", "[null]", RATE.replace("19.87", "19.871"),
@@ -66,7 +91,7 @@ class MelhorEnvioClientTest {
                 .calculate("01001000", 1, 10000)).isInstanceOf(ShippingUnavailableException.class);
         server.verify();
 
-        var disabled = new ShippingProperties(false, "sandbox", "", "", "", "", java.util.Map.of(), 900, 10, "1,2");
+        var disabled = new ShippingProperties(false, "sandbox", "", "", "", "", java.util.Map.of(), 900, 10, "1,2", false);
         var unusedBuilder = RestClient.builder();
         var unusedServer = MockRestServiceServer.bindTo(unusedBuilder).build();
         assertThatThrownBy(() -> new MelhorEnvioClient(unusedBuilder.build(), disabled)

@@ -1,10 +1,11 @@
 package br.com.belyeve.backend.shipping;
 
+import br.com.belyeve.backend.integrations.melhorenvio.MelhorEnvioOAuthService;
+import java.util.function.Supplier;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.client.JdkClientHttpRequestFactory;
 import org.springframework.stereotype.Component;
 import org.springframework.web.client.RestClient;
-import org.springframework.web.client.RestClientException;
 import tools.jackson.databind.JsonNode;
 
 import java.math.BigDecimal;
@@ -19,10 +20,12 @@ import java.util.Map;
 public class MelhorEnvioClient {
     private final RestClient client;
     private final ShippingProperties properties;
+    private final Supplier<String> token;
 
     @org.springframework.beans.factory.annotation.Autowired
-    public MelhorEnvioClient(RestClient.Builder builder, ShippingProperties properties) {
+    public MelhorEnvioClient(RestClient.Builder builder, ShippingProperties properties, MelhorEnvioOAuthService oauth) {
         this.properties = properties;
+        this.token = properties.oauthEnabled() ? oauth::accessToken : properties::token;
         Duration timeout = Duration.ofSeconds(properties.timeoutSeconds());
         var factory = new JdkClientHttpRequestFactory(HttpClient.newBuilder().connectTimeout(timeout).build());
         factory.setReadTimeout(timeout);
@@ -30,8 +33,13 @@ public class MelhorEnvioClient {
     }
 
     MelhorEnvioClient(RestClient client, ShippingProperties properties) {
+        this(client, properties, properties::token);
+    }
+
+    MelhorEnvioClient(RestClient client, ShippingProperties properties, Supplier<String> token) {
         this.client = client;
         this.properties = properties;
+        this.token = token;
     }
 
     public List<Rate> calculate(String destinationZip, int quantity, long subtotalCents) {
@@ -48,13 +56,13 @@ public class MelhorEnvioClient {
                 "services", properties.services());
         try {
             JsonNode response = client.post().uri("/api/v2/me/shipment/calculate")
-                    .header(HttpHeaders.AUTHORIZATION, "Bearer " + properties.token())
+                    .header(HttpHeaders.AUTHORIZATION, "Bearer " + token.get())
                     .header(HttpHeaders.USER_AGENT, properties.userAgent())
                     .header(HttpHeaders.ACCEPT, "application/json")
                     .header(HttpHeaders.CONTENT_TYPE, "application/json")
                     .body(body).retrieve().body(JsonNode.class);
             return parse(response);
-        } catch (RestClientException error) {
+        } catch (RuntimeException error) {
             // Do not log provider bodies or exception messages containing request details.
             throw new ShippingUnavailableException();
         }
