@@ -152,6 +152,10 @@ The backend quotes one measured volume, with insurance equal to the authoritativ
 
 Official references: [shipping calculation](https://docs.melhorenvio.com.br/reference/calculo-de-fretes-por-produtos), [API environments and headers](https://docs.melhorenvio.com.br/reference/introducao-api-melhor-envio), [ViaCEP](https://viacep.com.br/).
 
+## Religious items preference
+
+The shared landing/checkout preferences ask whether the customer accepts religious items. Both Yes and No are valid; neither is selected initially. The answer is required before checkout completion, shown in review, stored with the order and included in the internal paid-order email. `item.preferences.allowsReligiousItems` must be a JSON boolean; missing/null, strings and numbers are rejected. Flyway V7 adds a nullable column so historical orders preserve an unknown answer. Older saved checkout selections ask the new question without losing previous answers.
+
 ## Melhor Envio OAuth callback
 
 The registered callback is `https://www.belyeve.com.br/api/integrations/melhor-envio/callback`. App credentials, one-use authorization links, encrypted token storage, refresh and reverse-proxy setup are documented in [Melhor Envio OAuth](docs/melhor-envio-oauth.md). OAuth is disabled by default and requests only freight calculation permission.

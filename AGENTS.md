@@ -141,6 +141,7 @@
 - Tamanhos de anel devem vir de configuração/dados.
 - O checkout também pode perguntar se o Scoop pode conter peças masculinas e, quando sim, qual preferência usar: Dourado, Prata/inox ou Misto.
 - O checkout também pode perguntar se pode conter piercing de furo Prata 925 e, quando sim, quais locais são aceitos: nariz e/ou orelha (hélix).
+- A cliente deve responder explicitamente se aceita receber artigos religiosos (`allowsReligiousItems`); Sim e Não têm o mesmo peso visual e nenhuma opção vem selecionada. Não aceita é uma resposta válida. Pedidos antigos sem resposta mantêm valor desconhecido.
 - Categorias possíveis de brindes incluem skincare, maquiagem, cosméticos, cuidados para unhas, chaveiros e outros produtos.
 - A comunicação pode incluir "e muito mais".
 - Não fixar o domínio em uma lista fechada de brindes sem necessidade.
