@@ -22,7 +22,7 @@ interface PreferencesFieldsProps {
   onChange: (patch: Partial<ScoopPreferences>) => void;
 }
 
-/** Category, rings and "pieces I don't wear". Shared by the landing and the checkout. */
+/** Scoop preferences shared by the landing and the checkout. */
 export function PreferencesFields({ value, onChange }: PreferencesFieldsProps) {
   return (
     <>
@@ -231,6 +231,25 @@ export function PreferencesFields({ value, onChange }: PreferencesFieldsProps) {
               })}
             </div>
           </div>
+        </div>
+      </fieldset>
+
+      <fieldset className="mt-8">
+        <legend className="text-sm font-semibold">Você aceita receber artigos religiosos?</legend>
+        <div className="mt-3 grid grid-cols-2 gap-3">
+          {[
+            { label: "Não", flag: false },
+            { label: "Sim", flag: true },
+          ].map((option) => (
+            <ChoiceRadio
+              key={option.label}
+              name="religious-items"
+              checked={value.allowsReligiousItems === option.flag}
+              onSelect={() => onChange({ allowsReligiousItems: option.flag })}
+              title={option.label}
+              center
+            />
+          ))}
         </div>
       </fieldset>
 

@@ -7,7 +7,13 @@ import type { CheckoutState, CreateOrderInput } from "../types";
 export function toCreateOrderInput(state: CheckoutState): CreateOrderInput | null {
   const { selection, customer, address, shipping, paymentMethod, installment, socialMediaConsent } =
     state;
-  if (!shipping || !paymentMethod || socialMediaConsent === null) return null;
+  if (
+    !shipping ||
+    !paymentMethod ||
+    socialMediaConsent === null ||
+    typeof selection.allowsReligiousItems !== "boolean"
+  )
+    return null;
   const pkg = findPackage(selection.quantity);
   const { quantity, ...preferences } = selection;
   return {

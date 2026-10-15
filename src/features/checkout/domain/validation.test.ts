@@ -19,12 +19,21 @@ const selection = (overrides: Partial<ScoopSelection> = {}): ScoopSelection => (
   allowsMalePieces: false,
   maleMetal: null,
   allowsPiercing: false,
+  allowsReligiousItems: false,
   piercingLocations: [],
   avoidNote: "",
   ...overrides,
 });
 
 describe("checkout preference validation", () => {
+  it("requires an explicit religious items answer and accepts either choice", () => {
+    expect(preferencesError(selection({ allowsReligiousItems: null }))).toBe(
+      "Conte se você aceita receber artigos religiosos para continuar.",
+    );
+    expect(preferencesError(selection({ allowsReligiousItems: false }))).toBeNull();
+    expect(preferencesError(selection({ allowsReligiousItems: true }))).toBeNull();
+  });
+
   it("requires a metal category", () => {
     expect(preferencesError(selection({ metal: null }))).toBe(
       "Escolha a categoria para continuar.",

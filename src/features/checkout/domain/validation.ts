@@ -68,6 +68,8 @@ export function preferencesError(selection: ScoopSelection): string | null {
     return "Conte se pode conter piercing de furo para continuar.";
   if (selection.allowsPiercing && selection.piercingLocations.length === 0)
     return "Escolha onde pode conter piercing de furo para continuar.";
+  if (typeof selection.allowsReligiousItems !== "boolean")
+    return "Conte se você aceita receber artigos religiosos para continuar.";
   return null;
 }
 
