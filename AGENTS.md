@@ -245,3 +245,7 @@
 - Criação de pedido/pagamento compartilha limite de cinco requisições por IP em 120 segundos. Cinco falhas iniciam bloqueio de dois minutos. Webhooks e polling ficam fora dessa quota.
 - Turnstile é configurável por ambiente; validar cada token no backend com hostname/action esperados e solicitar novo token por operação. Tokens nunca vão para sessionStorage.
 - Confiar em IP encaminhado somente pelos proxies configurados em `CHECKOUT_TRUSTED_PROXY_CIDRS`; manter o modelo de confiança documentado em `docs/checkout-protection.md`.
+
+## Assets da marca
+- Fragier Regular está em `public/fonts/Fragier.otf`, registrada em `src/styles.css`; Poppins continua na interface.
+- O logo oficial está em `public/images/belyeve-logo.png` e os headers usam `BrandLogo`; não substituir por texto nem depender da URL temporária de preview do Lovable.

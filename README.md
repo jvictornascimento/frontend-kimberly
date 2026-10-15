@@ -187,3 +187,7 @@ MIT License.
 ## Checkout protection
 
 Order and payment creation share a backend limit of five requests per IP in 120 seconds. Turnstile can be enabled with environment settings. Configure trusted reverse proxy IPs before deploying on the VPS; see [checkout protection](docs/checkout-protection.md) for widget setup, IP trust, response codes, counter lifetime and validation.
+
+## Brand assets
+
+The official Fragier Regular brand font supplied by BELYEVE is served locally from `public/fonts/Fragier.otf`, with `font-display: swap`; interface text continues to use Poppins. The original logo is served from `public/images/belyeve-logo.png` and shared by the landing/checkout headers through `BrandLogo`. These assets do not depend on Lovable preview asset URLs.
