@@ -38,6 +38,17 @@ management:
         include: health,info
 
 app:
+  melhor-envio-oauth:
+    enabled: ${MELHOR_ENVIO_OAUTH_ENABLED:false}
+    environment: ${MELHOR_ENVIO_ENVIRONMENT:sandbox}
+    sandbox-client-id: ${MELHOR_ENVIO_SANDBOX_CLIENT_ID:}
+    sandbox-client-secret: ${MELHOR_ENVIO_SANDBOX_CLIENT_SECRET:}
+    production-client-id: ${MELHOR_ENVIO_PRODUCTION_CLIENT_ID:}
+    production-client-secret: ${MELHOR_ENVIO_PRODUCTION_CLIENT_SECRET:}
+    redirect-uri: ${MELHOR_ENVIO_REDIRECT_URI:https://www.belyeve.com.br/api/integrations/melhor-envio/callback}
+    setup-key: ${MELHOR_ENVIO_SETUP_KEY:}
+    encryption-key: ${MELHOR_ENVIO_TOKEN_ENCRYPTION_KEY:}
+    user-agent: ${MELHOR_ENVIO_USER_AGENT:}
   cors-origin: ${CORS_ORIGIN:http://localhost:3000}
   pricing:
     scoop-one-price-cents: ${SCOOP_ONE_PRICE_CENTS}
@@ -56,6 +67,7 @@ app:
     to: ${PURCHASE_EMAIL_TO:}
     customer-enabled: ${PURCHASE_CUSTOMER_EMAIL_ENABLED:false}
   shipping:
+    oauth-enabled: ${MELHOR_ENVIO_OAUTH_ENABLED:false}
     enabled: ${MELHOR_ENVIO_ENABLED:false}
     environment: ${MELHOR_ENVIO_ENVIRONMENT:sandbox}
     sandbox-token: ${MELHOR_ENVIO_SANDBOX_TOKEN:}
