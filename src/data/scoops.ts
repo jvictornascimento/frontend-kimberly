@@ -156,6 +156,7 @@ export interface ScoopOrderDraft {
   allowsMalePieces: boolean | null;
   maleMetal: MetalCategory | null;
   allowsPiercing: boolean | null;
+  allowsReligiousItems: boolean | null;
   piercingLocations: PiercingLocation[];
   /** Observação opcional: tipo de peça que a cliente não usa. */
   avoidNote: string;
@@ -169,6 +170,7 @@ export const EMPTY_ORDER: ScoopOrderDraft = {
   allowsMalePieces: null,
   maleMetal: null,
   allowsPiercing: null,
+  allowsReligiousItems: null,
   piercingLocations: [],
   avoidNote: "",
 };

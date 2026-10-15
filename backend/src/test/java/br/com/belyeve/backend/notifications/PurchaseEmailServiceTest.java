@@ -85,6 +85,23 @@ class PurchaseEmailServiceTest {
     }
 
     @Test
+    void includesReligiousItemsPreferenceWithoutInferringHistoricalConsent() {
+        for (Boolean answer : new Boolean[]{true, false, null}) {
+            UUID id = UUID.randomUUID();
+            var order = order(id);
+            order.setAllowsReligiousItems(answer);
+            var repository = mock(OrderRepository.class);
+            var sender = mock(JavaMailSender.class);
+            when(repository.findById(id)).thenReturn(Optional.of(order));
+            new PurchaseEmailService(properties(true, false), sender, repository)
+                    .sendPaidOrderEmail(new PaidOrderEvent(id));
+            String expected = answer == null ? "Não informado" : (answer ? "Sim" : "Não");
+            verify(sender).send(argThat((SimpleMailMessage message) -> message.getText() != null
+                    && message.getText().contains("Aceita artigos religiosos: " + expected)));
+        }
+    }
+
+    @Test
     void skipsWhenBothEmailTypesAreDisabled() {
         OrderRepository repository = mock(OrderRepository.class);
         JavaMailSender mailSender = mock(JavaMailSender.class);

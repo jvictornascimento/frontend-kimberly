@@ -42,6 +42,7 @@ export function ReviewStep({ state, totals }: { state: CheckoutState; totals: Or
   const [card, setCard] = useState<CardFormData>(EMPTY_CARD);
   const { status, submit, shippingExpired } = useSubmitOrder();
   const pending = status === "pending";
+  const religiousAnswered = typeof selection.allowsReligiousItems === "boolean";
   const cardReady = paymentMethod !== "credit_card" || !hasErrors(validateCard(card));
 
   return (
@@ -57,6 +58,10 @@ export function ReviewStep({ state, totals }: { state: CheckoutState; totals: Or
             {findPackage(selection.quantity).label} · {metalLabel(selection.metal)}
           </p>
           <p>Anéis: {ringsLabel(selection)}</p>
+          <p>
+            Artigos religiosos:{" "}
+            {religiousAnswered ? (selection.allowsReligiousItems ? "Sim" : "Não") : "Não informado"}
+          </p>
           {selection.avoidNote.trim() && <p>Observação: {selection.avoidNote.trim()}</p>}
         </Block>
         <Block title="Seus dados" step="customer">
@@ -141,6 +146,17 @@ export function ReviewStep({ state, totals }: { state: CheckoutState; totals: Or
         </section>
       )}
 
+      {!religiousAnswered && (
+        <div className="mt-6">
+          <Notice role="alert">
+            Responda se você aceita receber artigos religiosos antes de finalizar.
+          </Notice>
+          <TextButton onClick={() => goToStep("scoop")}>
+            Responder sobre artigos religiosos
+          </TextButton>
+        </div>
+      )}
+
       {status === "error" && (
         <div className="mt-6">
           <Notice tone="error" role="alert">
@@ -160,7 +176,7 @@ export function ReviewStep({ state, totals }: { state: CheckoutState; totals: Or
 
       <PrimaryButton
         className="mt-8"
-        disabled={pending}
+        disabled={pending || !religiousAnswered}
         aria-busy={pending}
         onClick={() => {
           setTried(true);

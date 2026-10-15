@@ -12,6 +12,7 @@ const checkoutState = (overrides: Partial<CheckoutState> = {}): CheckoutState =>
     allowsMalePieces: true,
     maleMetal: "misto",
     allowsPiercing: true,
+    allowsReligiousItems: false,
     piercingLocations: ["nariz"],
     avoidNote: "Não uso pulseiras.",
   },
@@ -62,6 +63,7 @@ describe("checkout order adapter", () => {
           allowsMalePieces: true,
           maleMetal: "misto",
           allowsPiercing: true,
+          allowsReligiousItems: false,
           piercingLocations: ["nariz"],
           avoidNote: "Não uso pulseiras.",
         },
@@ -79,6 +81,24 @@ describe("checkout order adapter", () => {
       paymentMethod: "pix",
       installments: null,
     });
+  });
+
+  it("requires an answer and preserves both religious items choices in the payload", () => {
+    const state = checkoutState();
+    expect(
+      toCreateOrderInput({
+        ...state,
+        selection: { ...state.selection, allowsReligiousItems: null },
+      }),
+    ).toBeNull();
+    for (const answer of [false, true]) {
+      expect(
+        toCreateOrderInput({
+          ...state,
+          selection: { ...state.selection, allowsReligiousItems: answer },
+        })?.item.preferences.allowsReligiousItems,
+      ).toBe(answer);
+    }
   });
 
   it("maps credit card installments without exposing card data", () => {

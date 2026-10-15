@@ -30,6 +30,7 @@ public class OrderService {
         order.setRingSize(trimToNull(request.ringSize()));
         order.setAllowsMalePieces(request.allowsMalePieces());
         order.setMaleJewelryCategory(request.allowsMalePieces() ? request.maleJewelryCategory() : null);
+        order.setAllowsReligiousItems(request.allowsReligiousItems());
         order.setAllowsPiercing(request.allowsPiercing());
         order.setPiercingLocations(request.allowsPiercing() ? trimToNull(request.piercingLocations()) : null);
         order.setRestrictions(trimToNull(request.restrictions()));
@@ -63,6 +64,9 @@ public class OrderService {
 
     @Transactional
     public OrderEntity create(CheckoutOrderRequest request) {
+        if (request.item().preferences().allowsReligiousItems() == null) {
+            throw new BusinessException("Religious items preference is required");
+        }
         if ("credit_card".equals(request.paymentMethod())
                 && (request.installments() == null || request.installments() < 1 || request.installments() > 3)) {
             throw new BusinessException("Invalid installment count");

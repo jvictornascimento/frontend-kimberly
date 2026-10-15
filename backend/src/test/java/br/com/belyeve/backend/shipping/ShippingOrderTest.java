@@ -23,7 +23,7 @@ class ShippingOrderTest {
         when(repository.save(any(OrderEntity.class))).thenAnswer(invocation -> invocation.getArgument(0));
         var request = new CheckoutOrderRequest(
                 new CheckoutOrderRequest.Item("scoop-2", 2, 1L,
-                        new CheckoutOrderRequest.Preferences("dourado", false, null, false, null, false, null, null)),
+                        new CheckoutOrderRequest.Preferences("dourado", false, null, false, null, false, false, null, null)),
                 new CreateOrderRequest.CustomerRequest("Cliente BELYEVE", "19999999999", "cliente@example.com", "52998224725"),
                 address, id.toString(), "pix", null, false);
         OrderEntity order = new OrderService(repository, ShippingFixtures.pricing(), shipping).create(request);

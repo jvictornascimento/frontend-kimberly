@@ -16,6 +16,8 @@ public record CreateOrderRequest(
         @NotNull Boolean allowsMalePieces,
         JewelryCategory maleJewelryCategory,
         @NotNull Boolean allowsPiercing,
+        @NotNull @tools.jackson.databind.annotation.JsonDeserialize(using = br.com.belyeve.backend.api.StrictBooleanDeserializer.class)
+        Boolean allowsReligiousItems,
         @Size(max = 80) String piercingLocations,
         @Size(max = 500) String restrictions,
         @NotNull Boolean socialMediaConsent,

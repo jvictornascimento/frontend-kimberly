@@ -35,13 +35,23 @@ const INITIAL_STATE: CheckoutState = {
   placedOrder: null,
 };
 
+/** Older saved checkouts must ask the new question instead of assuming an answer. */
+export function restoreSelection(saved?: Partial<ScoopSelection>): ScoopSelection {
+  return {
+    ...EMPTY_ORDER,
+    ...saved,
+    allowsReligiousItems:
+      typeof saved?.allowsReligiousItems === "boolean" ? saved.allowsReligiousItems : null,
+  };
+}
+
 function load(): CheckoutState {
   if (typeof window === "undefined") return INITIAL_STATE;
   try {
     const raw = window.sessionStorage.getItem(CHECKOUT_STORAGE_KEY);
-    return raw
-      ? { ...INITIAL_STATE, ...(JSON.parse(raw) as Partial<CheckoutState>) }
-      : INITIAL_STATE;
+    if (!raw) return INITIAL_STATE;
+    const saved = JSON.parse(raw) as Partial<CheckoutState>;
+    return { ...INITIAL_STATE, ...saved, selection: restoreSelection(saved.selection) };
   } catch {
     return INITIAL_STATE;
   }

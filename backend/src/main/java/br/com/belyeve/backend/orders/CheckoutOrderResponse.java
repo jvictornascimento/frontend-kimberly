@@ -26,6 +26,7 @@ public record CheckoutOrderResponse(
                 order.isAllowsMalePieces(),
                 order.getMaleJewelryCategory() == null ? null : toMetalValue(order.getMaleJewelryCategory()),
                 order.isAllowsPiercing(),
+                order.getAllowsReligiousItems(),
                 splitPiercingLocations(order.getPiercingLocations()),
                 order.getRestrictions()
         );

@@ -28,6 +28,7 @@ public record CheckoutOrderRequest(
                 item.preferences().allowsMalePieces(),
                 item.preferences().maleJewelryCategory(),
                 item.preferences().allowsPiercing(),
+                item.preferences().allowsReligiousItems(),
                 item.preferences().joinedPiercingLocations(),
                 item.preferences().avoidNote(),
                 socialMediaConsent,
@@ -52,6 +53,8 @@ public record CheckoutOrderRequest(
             @NotNull Boolean allowsMalePieces,
             @Pattern(regexp = "dourado|prata|misto") String maleMetal,
             @NotNull Boolean allowsPiercing,
+            @NotNull @tools.jackson.databind.annotation.JsonDeserialize(using = br.com.belyeve.backend.api.StrictBooleanDeserializer.class)
+            Boolean allowsReligiousItems,
             @Size(max = 2) List<@Pattern(regexp = "nariz|helix") String> piercingLocations,
             @Size(max = 500) String avoidNote
     ) {
