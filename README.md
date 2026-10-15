@@ -137,7 +137,7 @@ For internal purchase email, configure SMTP through `MAIL_*`, set `PURCHASE_EMAI
 Fill these backend variables in the local/VPS `.env` before enabling quotes:
 
 - `MELHOR_ENVIO_ENVIRONMENT`: `sandbox` (default) or `production`, independent of Asaas.
-- `MELHOR_ENVIO_SANDBOX_TOKEN` / `MELHOR_ENVIO_PRODUCTION_TOKEN`: a token with `shipping-calculate` permission for the selected account/environment. Tokens remain on the backend. OAuth token renewal must be handled operationally; this integration does not implement account authorization or automatic refresh.
+- `MELHOR_ENVIO_SANDBOX_TOKEN` / `MELHOR_ENVIO_PRODUCTION_TOKEN`: a token with `shipping-calculate` permission for the selected account/environment. Tokens remain on the backend. These manual tokens are used only when OAuth is disabled; renew them operationally. Enable the OAuth flow below for app authorization and automatic refresh instead.
 - `MELHOR_ENVIO_USER_AGENT`: application name and technical contact, e.g. `BELYEVE (technical@example.com)`; replace the example email with a real contact.
 - `MELHOR_ENVIO_ORIGIN_ZIP_CODE`: actual origin CEP, eight digits.
 - `SCOOP_1_PARCEL_*`, `SCOOP_2_PARCEL_*`, `SCOOP_3_PARCEL_*`: measured `WIDTH`, `HEIGHT`, `LENGTH` in cm and total packed `WEIGHT` in kg. Each profile describes one complete packed order of that quantity, not one unpacked Scoop. The included zero values are placeholders and are rejected when enabling shipping.
@@ -151,6 +151,10 @@ An enabled integration fails startup validation if required settings are missing
 The backend quotes one measured volume, with insurance equal to the authoritative items subtotal. It uses the provider's `custom_price` and `custom_delivery_time`/`custom_delivery_range`, which include account customizations. Shipping quotes do not purchase labels or schedule dispatch. Transport estimates start after dispatch; the video and WhatsApp confirmation sequence remains unchanged.
 
 Official references: [shipping calculation](https://docs.melhorenvio.com.br/reference/calculo-de-fretes-por-produtos), [API environments and headers](https://docs.melhorenvio.com.br/reference/introducao-api-melhor-envio), [ViaCEP](https://viacep.com.br/).
+
+## Melhor Envio OAuth callback
+
+The registered callback is `https://www.belyeve.com.br/api/integrations/melhor-envio/callback`. App credentials, one-use authorization links, encrypted token storage, refresh and reverse-proxy setup are documented in [Melhor Envio OAuth](docs/melhor-envio-oauth.md). OAuth is disabled by default and requests only freight calculation permission.
 
 ## Project Structure
 

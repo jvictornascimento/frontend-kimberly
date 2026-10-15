@@ -231,6 +231,7 @@
 - Email interno e email de confirmação para a cliente são implementados em `PurchaseEmailService`, após evento autoritativo de pagamento e commit da transação. `PURCHASE_EMAIL_ENABLED` e `PURCHASE_CUSTOMER_EMAIL_ENABLED` controlam cada envio de forma independente; ambos são desativados por padrão. SMTP deve ser configurado por ambiente.
 - Melhor Envio calcula cotações no backend em `backend/.../shipping/`. ViaCEP valida o município pelo CEP antes de aplicar frete grátis em Pedreira/SP; texto enviado pelo navegador não concede a gratuidade. Cotações ficam no PostgreSQL com validade, destino e quantidade vinculados; o pedido preserva preço, serviço, transportadora e ambiente. Não usar tarifa fixa como fallback para falhas do provider.
 - `MELHOR_ENVIO_ENABLED` é falso por padrão. Para habilitar, configurar token do ambiente selecionado, CEP de origem, User-Agent com email técnico e medidas reais de um pacote completo para cada quantidade (1, 2 ou 3 Scoops). Não inventar medidas, peso ou credenciais.
+- A autorização de app Melhor Envio usa o callback `/api/integrations/melhor-envio/callback` e início protegido por chave de configuração. Tokens OAuth são cifrados no PostgreSQL, separados por ambiente, e renovados no backend antes da cotação; solicitar somente `shipping-calculate`. Ver `docs/melhor-envio-oauth.md`.
 - Frontend, backend e PostgreSQL possuem configuração Docker Compose. Não provisionar ou alterar produção sem tarefa explícita.
 - Backend: Spring Boot + Java 21 + PostgreSQL + Docker em VPS.
 - Banco: PostgreSQL.
