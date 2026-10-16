@@ -12,14 +12,20 @@
  * Tipografia: Fragier (marca) + Poppins (interface).
  */
 
-/* Official brand font supplied by BELYEVE. Interface text keeps Poppins. */
-@font-face {
-  font-family: "Fragier";
-  src: url("/fonts/Fragier.otf") format("opentype");
-  font-weight: 400;
-  font-style: normal;
-  font-display: swap;
-}
+/*
+ * Fragier ainda não está disponível como webfont no projeto.
+ * Ao receber o arquivo oficial, coloque-o em public/fonts/ e descomente:
+ *
+ * @font-face {
+ *   font-family: "Fragier";
+ *   src: url("/fonts/Fragier.woff2") format("woff2");
+ *   font-weight: 400;
+ *   font-display: swap;
+ * }
+ *
+ * Até lá, a stack --font-display cai em uma serifada próxima em caráter.
+ * Esta substituição é TEMPORÁRIA, não definitiva.
+ */
 
 @theme inline {
   --font-sans: "Poppins", ui-sans-serif, system-ui, sans-serif;
