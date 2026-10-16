@@ -1,5 +1,9 @@
 export type VerificationAction = "checkout_order" | "checkout_payment";
-export type GetVerificationToken = (action: VerificationAction) => Promise<string | undefined>;
+export type ChallengeAppearance = "always" | "execute" | "interaction-only";
+export type GetVerificationToken = (
+  action: VerificationAction,
+  appearance?: ChallengeAppearance,
+) => Promise<string | undefined>;
 export interface Turnstile {
   render(container: HTMLElement, options: Record<string, unknown>): string;
   execute(id: string): void;
@@ -46,6 +50,7 @@ export function startChallenge(
   container: HTMLElement,
   sitekey: string,
   action: VerificationAction,
+  appearance: ChallengeAppearance = "interaction-only",
 ): Challenge {
   let widget: string | undefined;
   let disposed = false;
@@ -65,7 +70,7 @@ export function startChallenge(
         sitekey,
         action,
         execution: "execute",
-        appearance: "interaction-only",
+        appearance,
         "response-field": false,
         callback: (value: string) => finish(value),
         "error-callback": () => {

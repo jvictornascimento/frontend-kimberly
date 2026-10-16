@@ -35,6 +35,7 @@ describe("Turnstile operation challenges", () => {
     expect(options[0]).toMatchObject({
       action: "checkout_order",
       execution: "execute",
+      appearance: "interaction-only",
       "response-field": false,
     });
     expect(options[1]).toMatchObject({ action: "checkout_payment" });
@@ -42,6 +43,20 @@ describe("Turnstile operation challenges", () => {
     expect(api.execute).toHaveBeenNthCalledWith(2, "2");
     expect(api.remove).toHaveBeenCalledTimes(1);
     payment.dispose();
+  });
+  it("can keep the pre-check widget visible while the customer verifies", async () => {
+    const { api, options, fire } = provider();
+    const challenge = startChallenge(
+      api,
+      {} as HTMLElement,
+      "test-sitekey",
+      "checkout_order",
+      "always",
+    );
+    fire(0, "callback", "order-token");
+    await expect(challenge.token).resolves.toBe("order-token");
+    expect(options[0]).toMatchObject({ appearance: "always", action: "checkout_order" });
+    challenge.dispose();
   });
   it("rejects failures, expiry, timeout and unmount cancellation and allows a new challenge", async () => {
     for (const event of ["error-callback", "expired-callback", "timeout-callback", "dispose"]) {

@@ -1,7 +1,8 @@
-import { useState, type ReactNode } from "react";
+import { useCallback, useEffect, useRef, useState, type ReactNode } from "react";
 import { findPackage } from "@/features/checkout/domain/pricing";
 import { formatDeliveryEstimate } from "@/features/checkout/domain/shipping-rules";
-import { useTurnstile } from "@/features/checkout/hooks/useTurnstile";
+import { useTurnstile, type GetVerificationToken } from "@/features/checkout/hooks/useTurnstile";
+import { USE_MOCKS } from "@/features/checkout/config";
 import { useSubmitOrder } from "@/features/checkout/hooks/useOrderActions";
 import { goToStep } from "@/features/checkout/state/checkout.store";
 import type { CheckoutState, CheckoutStep, OrderTotals } from "@/features/checkout/types";
@@ -13,6 +14,9 @@ import { hasErrors, validateCard } from "@/features/checkout/domain/validation";
 import type { CardFormData } from "@/features/checkout/types";
 
 const EMPTY_CARD: CardFormData = { number: "", holderName: "", expiry: "", cvv: "" };
+const ORDER_TOKEN_MAX_AGE_MS = 4 * 60 * 1000;
+
+type VerificationStatus = "checking" | "verified" | "error" | "consumed";
 
 function Block({
   title,
@@ -42,7 +46,87 @@ export function ReviewStep({ state, totals }: { state: CheckoutState; totals: Or
   const [tried, setTried] = useState(false);
   const [card, setCard] = useState<CardFormData>(EMPTY_CARD);
   const { containerRef, getToken } = useTurnstile();
-  const { status, submit, shippingExpired, cooldown, error } = useSubmitOrder(getToken);
+  const orderToken = useRef<{ value: string; issuedAt: number } | null>(null);
+  const [verificationStatus, setVerificationStatus] = useState<VerificationStatus>("checking");
+  const [verificationAttempt, setVerificationAttempt] = useState(0);
+  const [verificationError, setVerificationError] = useState<string | null>(null);
+
+  useEffect(() => {
+    let current = true;
+    orderToken.current = null;
+    setVerificationStatus("checking");
+    setVerificationError(null);
+    getToken("checkout_order", "always")
+      .then((token) => {
+        if (!current) return;
+        if (!USE_MOCKS && !token) {
+          throw new Error("Não foi possível iniciar a verificação. Tente novamente.");
+        }
+        orderToken.current = token ? { value: token, issuedAt: Date.now() } : null;
+        setVerificationStatus("verified");
+      })
+      .catch((cause: unknown) => {
+        if (!current) return;
+        orderToken.current = null;
+        setVerificationError(
+          cause instanceof Error
+            ? cause.message
+            : "Não foi possível concluir a verificação. Tente novamente.",
+        );
+        setVerificationStatus("error");
+      });
+    return () => {
+      current = false;
+      orderToken.current = null;
+    };
+  }, [getToken, verificationAttempt]);
+
+  useEffect(() => {
+    const savedToken = orderToken.current;
+    if (verificationStatus !== "verified" || !savedToken) return;
+    const remaining = ORDER_TOKEN_MAX_AGE_MS - (Date.now() - savedToken.issuedAt);
+    const refresh = () => {
+      if (orderToken.current !== savedToken) return;
+      orderToken.current = null;
+      setVerificationStatus("checking");
+      setVerificationAttempt((attempt) => attempt + 1);
+    };
+    if (remaining <= 0) {
+      refresh();
+      return;
+    }
+    const timer = window.setTimeout(refresh, remaining);
+    return () => window.clearTimeout(timer);
+  }, [verificationStatus, verificationAttempt]);
+
+  const getSubmitToken = useCallback<GetVerificationToken>(
+    async (action) => {
+      if (action !== "checkout_order" || USE_MOCKS) return getToken(action);
+      const savedToken = orderToken.current;
+      if (!savedToken || Date.now() - savedToken.issuedAt >= ORDER_TOKEN_MAX_AGE_MS) {
+        throw new Error("A verificação expirou. Confirme novamente para continuar.");
+      }
+      orderToken.current = null;
+      setVerificationStatus("consumed");
+      return savedToken.value;
+    },
+    [getToken],
+  );
+
+  const retryVerification = () => {
+    orderToken.current = null;
+    setVerificationAttempt((attempt) => attempt + 1);
+  };
+
+  const { status, submit, shippingExpired, cooldown, error } = useSubmitOrder(getSubmitToken);
+
+  useEffect(() => {
+    if (status === "error" && verificationStatus === "consumed") {
+      setVerificationStatus("checking");
+      setVerificationAttempt((attempt) => attempt + 1);
+    }
+  }, [status, verificationStatus]);
+
   const pending = status === "pending";
   const religiousAnswered = typeof selection.allowsReligiousItems === "boolean";
   const cardReady = paymentMethod !== "credit_card" || !hasErrors(validateCard(card));
@@ -159,7 +243,33 @@ export function ReviewStep({ state, totals }: { state: CheckoutState; totals: Or
         </div>
       )}
 
-      <div ref={containerRef} className="mt-6" />
+      {!USE_MOCKS && (
+        <section
+          className="mt-6 border border-border bg-card px-5 py-5"
+          aria-labelledby="human-check-title"
+        >
+          <h2 id="human-check-title" className="text-sm font-semibold">
+            Confirme que você é humano
+          </h2>
+          <p className="mt-1 text-sm text-muted-foreground">
+            Conclua a verificação para liberar a finalização do pedido.
+          </p>
+          <div ref={containerRef} className="mt-4 flex min-h-16 justify-center" />
+          <p className="mt-2 text-sm" role="status" aria-live="polite">
+            {verificationStatus === "checking" && "Aguardando a verificação…"}
+            {verificationStatus === "verified" && "Verificação concluída. Você já pode finalizar."}
+            {verificationStatus === "consumed" && "Verificação confirmada."}
+          </p>
+          {verificationStatus === "error" && (
+            <div className="mt-2">
+              <Notice tone="error" role="alert">
+                {verificationError ?? "Não foi possível concluir a verificação."}{" "}
+                <TextButton onClick={retryVerification}>Tentar novamente</TextButton>
+              </Notice>
+            </div>
+          )}
+        </section>
+      )}
       {cooldown > 0 && (
         <p role="status" className="mt-4 text-sm">
           Aguarde {cooldown} segundos para tentar novamente.
@@ -184,7 +294,9 @@ export function ReviewStep({ state, totals }: { state: CheckoutState; totals: Or
 
       <PrimaryButton
         className="mt-8"
-        disabled={pending || !religiousAnswered || cooldown > 0}
+        disabled={
+          pending || !religiousAnswered || cooldown > 0 || verificationStatus !== "verified"
+        }
         aria-busy={pending}
         onClick={() => {
           setTried(true);
